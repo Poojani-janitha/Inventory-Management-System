@@ -1,0 +1,54 @@
+Here are **10 example questions** you can ask your intelligent inventory chatbot:
+
+## 🔍 **Product Information Questions:**
+
+1. **"Is wheat available?"** - Check if wheat is in stock
+2. **"Quantity of demo product"** - Get exact quantity of demo product
+3. **"How many timber do we have?"** - Check timber stock levels
+4. **"Search for drill"** - Find all drill-related products
+
+## 📊 **Inventory Management Questions:**
+
+5. **"Show me low stock products"** - Get products with less than 50 units
+6. **"What are my most expensive products?"** - Find highest-priced items
+7. **"Show me all products"** - Get complete product list with categories
+
+## 💰 **Sales & Revenue Questions:**
+
+8. **"Show me recent sales"** - Get latest sales transactions
+9. **"What are my top selling products?"** - Find best-performing products
+
+## 📁 **Category Questions:**
+
+10. **"Show me all categories"** - Get product categories with counts
+
+## 🎯 **Bonus Advanced Questions:**
+
+- **"Is portable band saw available?"** - Check specific product availability
+- **"How many cereal products do we have?"** - Search by product type
+- **"Find products under $50"** - Price-based search
+- **"What products need restocking?"** - Low inventory alert
+- **"Show me machinery products"** - Category-specific search
+
+## 💡 **Natural Language Examples:**
+
+- **"Do we have any wheat left?"**
+- **"How much demo product is in stock?"**
+- **"What's the quantity of timber?"**
+- **"Can you find drill press for me?"**
+- **"Show me what's running low"**
+
+The chatbot understands natural language, so you can ask questions in different ways and it will find the right information from your database! 🚀
+
+Try any of these questions and see how the chatbot responds with real data from your inventory system!
+
+
+low stocks
+under $50
+Show me all categories
+What are my most expensive products?
+Is portable band saw available?
+What products need restocking?
+How many timber do we have?
+recent sales?
+What are my top selling products?  // limit result to 5 rowd=s/ desending order
