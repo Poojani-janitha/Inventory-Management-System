@@ -1,6 +1,6 @@
 # Inventory-Management-System
 Smart inventory management system
-
+--------------------------
 
 1) create your own branch in the web
 
