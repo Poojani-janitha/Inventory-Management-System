@@ -32,9 +32,9 @@
    </ul>
   </li>
   <li>
-    <a href="media.php" >
-      <i class="glyphicon glyphicon-picture"></i>
-      <span>Media Files</span>
+    <a href="order.php" >
+      <i class="glyphicon glyphicon-shopping-cart"></i>
+      <span>Order</span>
     </a>
   </li>
   <li>
