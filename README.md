@@ -4,7 +4,7 @@ Smart inventory management system
 1)clone this repo inside the htdoc folder of XAMPP
 
 
-2)create data base in phpmyadmin "inventory_system"
+2)create data base in phpmyadmin "inventory_system".
 
 
 3) import "inventory_system.sql" file inside the DATABAS FILE folder in phpmyadmin
