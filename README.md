@@ -10,7 +10,8 @@ Smart inventory management system
 
 4) switch to your branch in local repo
 
-5)create database in phpmyadmin "inventory_system"
+5)create database in phpmyadmin "inventory_system".
+
 
 
 6) import "inventory_system.sql" file  inside the DATABASE FILE folder (phpmyadmin has option to import sql files)
