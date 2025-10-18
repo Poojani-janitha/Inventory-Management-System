@@ -4,7 +4,7 @@ Smart inventory management system
 
 1) create your own branch in the web
 
-2)clone this repo inside the htdoc folder of XAMPP
+2)create data base in phpmyadmin "inventory_system".
 
 3)open the cloned folder in vscode editor 
 
