@@ -3,14 +3,15 @@ $page_title = 'Order Management';
 require_once('includes/load.php');
 page_require_level(1);
 
-// Get all products for dropdown
-$all_products = find_all('products');
+// Get all categories
+$all_categories = find_all('categories');
 
-// Get all orders with JOIN
-$sql = "SELECT o.*, p.name as product_name, s.supplier_name 
-        FROM orders o 
-        LEFT JOIN products p ON o.product_id = p.id 
-        LEFT JOIN suppliers s ON o.supplier_id = s.id 
+// Get all orders
+$sql = "SELECT o.*, p.name as product_name, s.supplier_name, c.name as category_name
+        FROM orders o
+        LEFT JOIN products p ON o.product_id = p.id
+        LEFT JOIN suppliers s ON o.supplier_id = s.id
+        LEFT JOIN categories c ON p.categorie_id = c.id
         ORDER BY o.date DESC";
 $all_orders = find_by_sql($sql);
 ?>
@@ -18,9 +19,10 @@ $all_orders = find_by_sql($sql);
 <?php
 // ======================== PLACE NEW ORDER ========================
 if (isset($_POST['place_order'])) {
-    $req_fields = array('product-id', 'supplier-id', 'order-quantity');
+    $req_fields = array('category-id', 'product-id', 'supplier-id', 'order-quantity');
     validate_fields($req_fields);
     
+    $category_id = (int)$db->escape($_POST['category-id']);
     $product_id = (int)$db->escape($_POST['product-id']);
     $supplier_id = (int)$db->escape($_POST['supplier-id']);
     $order_qty = (int)$db->escape($_POST['order-quantity']);
@@ -33,7 +35,7 @@ if (isset($_POST['place_order'])) {
                 VALUES ('{$product_id}', '{$supplier_id}', '{$order_qty}', NOW(), 'Pending')";
         
         if ($db->query($sql)) {
-            // Send email to supplier
+            // Send email
             $to = $supplier['email'];
             $subject = "New Order Request - " . $product['name'];
             $message = "Dear {$supplier['supplier_name']},\n\n".
@@ -121,7 +123,7 @@ if (isset($_POST['edit_order'])) {
 </div>
 
 <div class="row">
-    <!-- ================= PLACE NEW ORDER ================= -->
+    <!-- ======= PLACE NEW ORDER ======= -->
     <div class="col-md-5">
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -129,35 +131,41 @@ if (isset($_POST['edit_order'])) {
             </div>
             <div class="panel-body">
                 <form method="post" action="order.php">
+                    <!-- CATEGORY -->
                     <div class="form-group">
-                        <label>Select Product</label>
-                        <select class="form-control" name="product-id" id="product-select" required>
-                            <option value="">Select Product</option>
-                            <?php foreach ($all_products as $product): ?>
-                                <option value="<?php echo (int)$product['id']; ?>">
-                                    <?php echo remove_junk(ucfirst($product['name'])); ?>
+                        <label>Select Category</label>
+                        <select class="form-control" name="category-id" id="category-select" required>
+                            <option value="">Select Category</option>
+                            <?php foreach ($all_categories as $cat): ?>
+                                <option value="<?php echo (int)$cat['id']; ?>">
+                                    <?php echo remove_junk(ucfirst($cat['name'])); ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
                     </div>
-                    
+
+                    <!-- PRODUCT -->
                     <div class="form-group">
-                        <label>Product Name</label>
-                        <input type="text" class="form-control" id="product-name" readonly placeholder="Select product first">
+                        <label>Select Product</label>
+                        <select class="form-control" name="product-id" id="product-select" required>
+                            <option value="">Select category first</option>
+                        </select>
                     </div>
-                    
+
+                    <!-- SUPPLIER -->
                     <div class="form-group">
                         <label>Select Supplier</label>
                         <select class="form-control" name="supplier-id" id="supplier-select" required>
                             <option value="">Select product first</option>
                         </select>
                     </div>
-                    
+
+                    <!-- QUANTITY -->
                     <div class="form-group">
                         <label>Order Quantity</label>
                         <input type="number" class="form-control" name="order-quantity" min="1" required>
                     </div>
-                    
+
                     <button type="submit" name="place_order" class="btn btn-primary">
                         <span class="glyphicon glyphicon-send"></span> Place Order
                     </button>
@@ -166,7 +174,7 @@ if (isset($_POST['edit_order'])) {
         </div>
     </div>
 
-    <!-- ================= ALL ORDERS TABLE ================= -->
+    <!-- ======= ALL ORDERS ======= -->
     <div class="col-md-7">
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -177,6 +185,7 @@ if (isset($_POST['edit_order'])) {
                     <thead>
                         <tr>
                             <th>#</th>
+                            <th>Category</th>
                             <th>Product</th>
                             <th>Supplier</th>
                             <th>Quantity</th>
@@ -189,6 +198,7 @@ if (isset($_POST['edit_order'])) {
                         <?php foreach ($all_orders as $order): ?>
                         <tr>
                             <td><?php echo count_id(); ?></td>
+                            <td><?php echo remove_junk($order['category_name']); ?></td>
                             <td><?php echo remove_junk($order['product_name']); ?></td>
                             <td><?php echo remove_junk($order['supplier_name']); ?></td>
                             <td><?php echo $order['quantity']; ?></td>
@@ -213,7 +223,7 @@ if (isset($_POST['edit_order'])) {
     </div>
 </div>
 
-<!-- ================= EDIT ORDER MODAL ================= -->
+<!-- ======= EDIT ORDER MODAL ======= -->
 <div id="editModal" class="modal fade" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -227,7 +237,7 @@ if (isset($_POST['edit_order'])) {
           <div class="form-group">
             <label>Product</label>
             <select class="form-control" name="edit-product-id" id="edit-product-id" required>
-              <?php foreach ($all_products as $p): ?>
+              <?php foreach (find_all('products') as $p): ?>
                 <option value="<?php echo $p['id']; ?>"><?php echo $p['name']; ?></option>
               <?php endforeach; ?>
             </select>
@@ -236,10 +246,7 @@ if (isset($_POST['edit_order'])) {
           <div class="form-group">
             <label>Supplier</label>
             <select class="form-control" name="edit-supplier-id" id="edit-supplier-id" required>
-              <option value="">Select supplier</option>
-              <?php
-              $suppliers = find_all('suppliers');
-              foreach ($suppliers as $s): ?>
+              <?php foreach (find_all('suppliers') as $s): ?>
                 <option value="<?php echo $s['id']; ?>"><?php echo $s['supplier_name']; ?></option>
               <?php endforeach; ?>
             </select>
@@ -269,70 +276,68 @@ if (isset($_POST['edit_order'])) {
   </div>
 </div>
 
-<!-- ================= AJAX SCRIPT ================= -->
+<!-- ======= AJAX SCRIPTS ======= -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    var categorySelect = document.getElementById('category-select');
     var productSelect = document.getElementById('product-select');
-    var productName = document.getElementById('product-name');
     var supplierSelect = document.getElementById('supplier-select');
 
-    if (productSelect) {
-        productSelect.addEventListener('change', function() {
-            var productId = this.value;
-            var selectedText = this.options[this.selectedIndex].text;
-            productName.value = selectedText;
+    // Category -> Products
+    categorySelect.addEventListener('change', function() {
+        var categoryId = this.value;
+        productSelect.innerHTML = '<option value="">Loading products...</option>';
+        supplierSelect.innerHTML = '<option value="">Select product first</option>';
+        if (categoryId) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', 'get_products.php', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    try {
+                        var products = JSON.parse(xhr.responseText);
+                        productSelect.innerHTML = '<option value="">Select Product</option>';
+                        products.forEach(function(p) {
+                            var option = document.createElement('option');
+                            option.value = p.id;
+                            option.text = p.name;
+                            productSelect.appendChild(option);
+                        });
+                    } catch (e) { productSelect.innerHTML = '<option>Error loading products</option>'; }
+                }
+            };
+            xhr.send('category_id=' + encodeURIComponent(categoryId));
+        }
+    });
 
-            if (productId) {
-                supplierSelect.innerHTML = '<option value="">Loading suppliers...</option>';
+    // Product -> Suppliers
+    productSelect.addEventListener('change', function() {
+        var productId = this.value;
+        supplierSelect.innerHTML = '<option value="">Loading suppliers...</option>';
+        if (productId) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', 'get_suppliers.php', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    try {
+                        var suppliers = JSON.parse(xhr.responseText);
+                        supplierSelect.innerHTML = '<option value="">Select Supplier</option>';
+                        suppliers.forEach(function(s) {
+                            var option = document.createElement('option');
+                            option.value = s.id;
+                            option.text = s.supplier_name + ' (' + s.contact_number + ')';
+                            supplierSelect.appendChild(option);
+                        });
+                    } catch (e) { supplierSelect.innerHTML = '<option>Error loading suppliers</option>'; }
+                }
+            };
+            xhr.send('product_id=' + encodeURIComponent(productId));
+        }
+    });
 
-                var xhr = new XMLHttpRequest();
-                xhr.open('POST', 'get_suppliers.php', true);
-                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-
-                xhr.onload = function() {
-                    if (xhr.status === 200) {
-                        try {
-                            var suppliers = JSON.parse(xhr.responseText);
-                            supplierSelect.innerHTML = '';
-
-                            if (suppliers.length > 0) {
-                                var defaultOption = document.createElement('option');
-                                defaultOption.value = '';
-                                defaultOption.text = 'Select Supplier';
-                                supplierSelect.appendChild(defaultOption);
-
-                                suppliers.forEach(function(supplier) {
-                                    var option = document.createElement('option');
-                                    option.value = supplier.id;
-                                    option.text = supplier.supplier_name + ' (' + supplier.contact_number + ')';
-                                    supplierSelect.appendChild(option);
-                                });
-                            } else {
-                                supplierSelect.innerHTML = '<option value="">No suppliers found for this product</option>';
-                            }
-                        } catch (e) {
-                            console.error('JSON parse error:', e, xhr.responseText);
-                            supplierSelect.innerHTML = '<option value="">Error loading suppliers</option>';
-                        }
-                    } else {
-                        supplierSelect.innerHTML = '<option value="">Server error: ' + xhr.status + '</option>';
-                    }
-                };
-
-                xhr.onerror = function() {
-                    supplierSelect.innerHTML = '<option value="">Network error</option>';
-                };
-
-                xhr.send('product_id=' + encodeURIComponent(productId));
-            } else {
-                supplierSelect.innerHTML = '<option value="">Select product first</option>';
-            }
-        });
-    }
-
-    // Populate modal for editing
-    const editButtons = document.querySelectorAll('.editBtn');
-    editButtons.forEach(btn => {
+    // Edit button modal
+    document.querySelectorAll('.editBtn').forEach(btn => {
         btn.addEventListener('click', function() {
             document.getElementById('edit-order-id').value = this.dataset.id;
             document.getElementById('edit-product-id').value = this.dataset.product;
