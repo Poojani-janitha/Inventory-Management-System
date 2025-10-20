@@ -1,10 +1,16 @@
 <?php
-  require_once('includes/load.php');
 
 /*--------------------------------------------------------------*/
 /* Function for find all database table rows by table name
 /*--------------------------------------------------------------*/
+// Sanitize incoming table names to avoid trailing slashes or invalid chars
+function _normalize_table($table){
+  // allow letters, numbers and underscore only
+  return preg_replace('/[^a-zA-Z0-9_]/','', (string)$table);
+}
+
 function find_all($table) {
+   $table = _normalize_table($table);
    global $db;
    if(tableExists($table))
    {
@@ -26,6 +32,7 @@ function find_by_sql($sql)
 /*--------------------------------------------------------------*/
 function find_by_id($table,$id)
 {
+  $table = _normalize_table($table);
   global $db;
   $id = (int)$id;
     if(tableExists($table)){
@@ -41,6 +48,7 @@ function find_by_id($table,$id)
 /*--------------------------------------------------------------*/
 function delete_by_id($table,$id)
 {
+  $table = _normalize_table($table);
   global $db;
   if(tableExists($table))
    {
@@ -56,6 +64,7 @@ function delete_by_id($table,$id)
 /*--------------------------------------------------------------*/
 
 function count_by_id($table){
+  $table = _normalize_table($table);
   global $db;
   if(tableExists($table))
   {
@@ -68,6 +77,7 @@ function count_by_id($table){
 /* Determine if database table exists
 /*--------------------------------------------------------------*/
 function tableExists($table){
+  $table = _normalize_table($table);
   global $db;
   $table_exit = $db->query('SHOW TABLES FROM '.DB_NAME.' LIKE "'.$db->escape($table).'"');
       if($table_exit) {
