@@ -1,0 +1,161 @@
+#include <ESP8266WiFi.h>
+#include <ESP8266HTTPClient.h>
+#include <DHT.h>
+
+// WiFi
+const char* ssid     = "FOT_WiFi";   // open network (no password)
+const char* password = "";           // empty for open network
+
+// Server
+const char* host = "192.168.3.32";   // your computer running XAMPP
+const int   port = 80;                // default HTTP
+
+// DHT11
+#define DHTPIN 2           // GPIO2 (D4 on many NodeMCU boards)
+#define DHTTYPE DHT11
+DHT dht(DHTPIN, DHTTYPE);
+
+unsigned long lastSendMs = 0;
+const unsigned long sendIntervalMs = 15000; // 15 seconds
+
+void setup() {
+  Serial.begin(115200);
+  delay(200);
+  Serial.setDebugOutput(false);
+  dht.begin();
+
+  // Connect to WiFi (open network)
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, password);
+  Serial.print("Connecting to WiFi");
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println();
+  Serial.print("Connected. IP: ");
+  Serial.println(WiFi.localIP());
+}
+
+void loop() {
+  if (millis() - lastSendMs >= sendIntervalMs) {
+    lastSendMs = millis();
+
+    float h = dht.readHumidity();
+    float t = dht.readTemperature(); // Celsius
+
+    if (isnan(h) || isnan(t)) {
+      Serial.println("DHT read failed");
+      return;
+    }
+
+    Serial.print("Temp: "); Serial.print(t, 1);
+    Serial.print(" °C  Hum: "); Serial.print(h, 1);
+    Serial.println(" %RH");
+
+    if (WiFi.status() == WL_CONNECTED) {
+      WiFiClient client;
+      HTTPClient http;
+
+      // OPTION A: Full URL (avoid duplicated host strings)
+      String url = String("http://") + host + ":" + port +
+                   "/Inventory-Management-System/InventorySystem_PHP/iot/ingest.php" +
+                   "?temp=" + String(t, 1) + "&hum=" + String(h, 1);
+
+      Serial.print("GET ");
+      Serial.println(url);
+
+      if (http.begin(client, url)) {
+        int httpCode = http.GET();
+        Serial.print("HTTP code: ");
+        Serial.println(httpCode);
+        if (httpCode > 0) {
+          String payload = http.getString();
+          Serial.println(payload);
+        }
+        http.end();
+      } else {
+        Serial.println("HTTP begin failed");
+      }
+    } else {
+      Serial.println("WiFi not connected");
+    }
+  }
+}
+
+#include <ESP8266WiFi.h>
+#include <ESP8266HTTPClient.h>
+#include <DHT.h>
+
+// WiFi
+const char* ssid     = "FOT_WiFi";   // open network (no password)
+const char* password = "";           // empty for open network
+
+// Server
+const char* host = "192.168.3.32";   // your computer running XAMPP
+const int   port = 80;                // default HTTP
+const char* ingestPath = "/Inventory-Management-System/InventorySystem_PHP/iot/ingest.php";
+
+// DHT11
+#define DHTPIN 2           // GPIO2 (D4 on many NodeMCU boards)
+#define DHTTYPE DHT11
+DHT dht(DHTPIN, DHTTYPE);
+
+unsigned long lastSendMs = 0;
+const unsigned long sendIntervalMs = 15000; // 15 seconds
+
+void setup() {
+  Serial.begin(115200);
+  delay(100);
+  dht.begin();
+
+  // Connect to WiFi (open network)
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, password);
+  Serial.print("Connecting to WiFi");
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println();
+  Serial.print("Connected. IP: ");
+  Serial.println(WiFi.localIP());
+}
+
+void loop() {
+  if (millis() - lastSendMs >= sendIntervalMs) {
+    lastSendMs = millis();
+
+    float h = dht.readHumidity();
+    float t = dht.readTemperature(); // Celsius
+
+    if (isnan(h) || isnan(t)) {
+      Serial.println("Failed to read from DHT sensor!");
+      return;
+    }
+
+    if (WiFi.status() == WL_CONNECTED) {
+      WiFiClient client;
+      HTTPClient http;
+
+      String url = String("http://") + host + ":" + port + ingestPath + "?temp=" + String(t, 1) + "&hum=" + String(h, 1);
+      Serial.print("POST ");
+      Serial.println(url);
+
+      if (http.begin(client, url)) {
+        int httpCode = http.GET();
+        Serial.print("HTTP code: ");
+        Serial.println(httpCode);
+        if (httpCode > 0) {
+          String payload = http.getString();
+          Serial.println(payload);
+        }
+        http.end();
+      } else {
+        Serial.println("HTTP begin failed");
+      }
+    }
+  }
+}
+
+
