@@ -184,6 +184,8 @@
 
   </div>
 
+<!-- IoT widget is now rendered globally from layouts/header.php -->
+
 <!-- Chatbot Interface -->
 <div class="row">
   <div class="col-md-12">
