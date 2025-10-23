@@ -283,10 +283,7 @@ CREATE TABLE product (
         ON DELETE RESTRICT,
     FOREIGN KEY (s_id) REFERENCES supplier_info(s_id)
         ON UPDATE CASCADE
-        ON DELETE RESTRICT,
-    FOREIGN KEY (media_id) REFERENCES media(id)
-        ON UPDATE CASCADE
-        ON DELETE SET DEFAULT
+        ON DELETE RESTRICT
 );
 INSERT INTO product (p_id, product_name, quantity, buying_price, selling_price, category_name, s_id, expire_date, media_id) VALUES
 
@@ -466,29 +463,3 @@ CREATE TABLE sales (
         ON UPDATE CASCADE
         ON DELETE RESTRICT
 );
-
--- Media table for product images
-CREATE TABLE media (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    file_name VARCHAR(255) NOT NULL,
-    file_type VARCHAR(50),
-    file_size INT,
-    uploaded_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Insert default no_image entry
-INSERT INTO media (id, file_name, file_type, file_size) VALUES
-(1, 'no_image.png', 'image/png', 0);
-
--- Insert some sample sales data
-INSERT INTO sales (p_id, product_name, qty, price, date) VALUES
-('p001', 'Amoxicillin 500mg', 5, 325.00, '2025-01-15 10:30:00'),
-('p003', 'Paracetamol 500mg', 10, 350.00, '2025-01-15 11:15:00'),
-('p005', 'Vitamin C 1000mg', 3, 225.00, '2025-01-15 14:20:00'),
-('p008', 'Aspirin 100mg', 8, 336.00, '2025-01-16 09:45:00'),
-('p011', 'Benadryl 100ml', 2, 300.00, '2025-01-16 16:30:00'),
-('p013', 'Dettol 100ml', 4, 380.00, '2025-01-17 12:00:00'),
-('p016', 'Vitamin D3 1000IU', 2, 190.00, '2025-01-17 15:15:00'),
-('p021', 'Amoxicillin 500mg', 6, 396.00, '2025-01-18 10:00:00'),
-('p025', 'Tixylix 100ml', 1, 155.00, '2025-01-18 13:30:00'),
-('p030', 'Vitamin C 1000mg', 5, 375.00, '2025-01-19 11:45:00');
