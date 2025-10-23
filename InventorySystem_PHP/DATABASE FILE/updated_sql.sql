@@ -282,7 +282,7 @@ CREATE TABLE product (
         ON DELETE RESTRICT,
     FOREIGN KEY (s_id) REFERENCES supplier_info(s_id)
         ON UPDATE CASCADE
-        ON DELETE RESTRICT
+        ON DELETE RESTRICT 
 );
 INSERT INTO product (p_id, product_name, quantity, buying_price, selling_price, category_name, s_id, expire_date) VALUES
 
