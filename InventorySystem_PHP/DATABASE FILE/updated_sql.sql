@@ -273,6 +273,7 @@ CREATE TABLE product (
     category_name VARCHAR(100) NOT NULL,
     s_id VARCHAR(10) NOT NULL,  
     expire_date DATE,
+    media_id INT DEFAULT 1,
     recorded_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CHECK (p_id LIKE 'p%'),
     CHECK (quantity >= 0),
@@ -282,78 +283,81 @@ CREATE TABLE product (
         ON DELETE RESTRICT,
     FOREIGN KEY (s_id) REFERENCES supplier_info(s_id)
         ON UPDATE CASCADE
-        ON DELETE RESTRICT
+        ON DELETE RESTRICT,
+    FOREIGN KEY (media_id) REFERENCES media(id)
+        ON UPDATE CASCADE
+        ON DELETE SET DEFAULT
 );
-INSERT INTO product (p_id, product_name, quantity, buying_price, selling_price, category_name, s_id, expire_date) VALUES
+INSERT INTO product (p_id, product_name, quantity, buying_price, selling_price, category_name, s_id, expire_date, media_id) VALUES
 
-('p001', 'Amoxicillin 500mg', 120, 45.00, 65.00, 'Antibiotic', 's01', '2026-08-15'),
-('p002', 'Azithromycin 250mg', 90, 65.00, 85.00, 'Antibiotic', 's01', '2026-09-20'),
-('p003', 'Paracetamol 500mg', 180, 22.00, 35.00, 'Painkiller', 's01', '2027-02-18'),
-('p004', 'Ibuprofen 200mg', 150, 35.00, 50.00, 'Painkiller', 's01', '2027-04-12'),
-('p005', 'Vitamin C 1000mg', 100, 55.00, 75.00, 'Vitamin', 's01', '2027-01-30'),
-
-
-('p006', 'Cefuroxime 250mg', 70, 80.00, 105.00, 'Antibiotic', 's02', '2026-07-10'),
-('p007', 'Ciprofloxacin 500mg', 85, 75.00, 98.00, 'Antibiotic', 's02', '2026-11-05'),
-('p008', 'Aspirin 100mg', 160, 28.00, 42.00, 'Painkiller', 's02', '2027-03-15'),
-('p009', 'Multivitamin Tablet', 90, 95.00, 125.00, 'Vitamin', 's02', '2027-11-20'),
-('p010', 'Gaviscon 150ml', 75, 125.00, 165.00, 'Antacid', 's02', '2026-12-15'),
+('p001', 'Amoxicillin 500mg', 120, 45.00, 65.00, 'Antibiotic', 's01', '2026-08-15', 1),
+('p002', 'Azithromycin 250mg', 90, 65.00, 85.00, 'Antibiotic', 's01', '2026-09-20', 1),
+('p003', 'Paracetamol 500mg', 180, 22.00, 35.00, 'Painkiller', 's01', '2027-02-18', 1),
+('p004', 'Ibuprofen 200mg', 150, 35.00, 50.00, 'Painkiller', 's01', '2027-04-12', 1),
+('p005', 'Vitamin C 1000mg', 100, 55.00, 75.00, 'Vitamin', 's01', '2027-01-30', 1),
 
 
-('p011', 'Benadryl 100ml', 60, 115.00, 150.00, 'Cough Syrup', 's03', '2026-09-15'),
-('p012', 'Corex 100ml', 55, 110.00, 145.00, 'Cough Syrup', 's03', '2026-11-08'),
-('p013', 'Dettol 100ml', 100, 70.00, 95.00, 'Antiseptic', 's03', '2027-06-20'),
-('p014', 'Savlon 200ml', 85, 90.00, 120.00, 'Antiseptic', 's03', '2027-07-15'),
-('p015', 'Panadol Extra', 140, 32.00, 45.00, 'Painkiller', 's03', '2026-11-25'),
+('p006', 'Cefuroxime 250mg', 70, 80.00, 105.00, 'Antibiotic', 's02', '2026-07-10', 1),
+('p007', 'Ciprofloxacin 500mg', 85, 75.00, 98.00, 'Antibiotic', 's02', '2026-11-05', 1),
+('p008', 'Aspirin 100mg', 160, 28.00, 42.00, 'Painkiller', 's02', '2027-03-15', 1),
+('p009', 'Multivitamin Tablet', 90, 95.00, 125.00, 'Vitamin', 's02', '2027-11-20', 1),
+('p010', 'Gaviscon 150ml', 75, 125.00, 165.00, 'Antacid', 's02', '2026-12-15', 1),
 
 
-('p016', 'Vitamin D3 1000IU', 80, 70.00, 95.00, 'Vitamin', 's04', '2028-01-15'),
-('p017', 'Zinc Tablet 50mg', 100, 60.00, 82.00, 'Vitamin', 's04', '2027-10-30'),
-('p018', 'Eno Sachet', 150, 25.00, 35.00, 'Antacid', 's04', '2027-08-20'),
-('p019', 'Digene Tablet', 90, 40.00, 58.00, 'Antacid', 's04', '2027-09-10'),
-('p020', 'Erythromycin 500mg', 70, 85.00, 110.00, 'Antibiotic', 's04', '2026-11-22'),
+('p011', 'Benadryl 100ml', 60, 115.00, 150.00, 'Cough Syrup', 's03', '2026-09-15', 1),
+('p012', 'Corex 100ml', 55, 110.00, 145.00, 'Cough Syrup', 's03', '2026-11-08', 1),
+('p013', 'Dettol 100ml', 100, 70.00, 95.00, 'Antiseptic', 's03', '2027-06-20', 1),
+('p014', 'Savlon 200ml', 85, 90.00, 120.00, 'Antiseptic', 's03', '2027-07-15', 1),
+('p015', 'Panadol Extra', 140, 32.00, 45.00, 'Painkiller', 's03', '2026-11-25', 1),
 
 
-('p021', 'Amoxicillin 500mg', 100, 46.00, 66.00, 'Antibiotic', 's05', '2026-08-15'),
-('p022', 'Ibuprofen 200mg', 130, 33.00, 48.00, 'Painkiller', 's05', '2027-04-20'),
-('p023', 'Diclofenac 50mg', 90, 40.00, 58.00, 'Painkiller', 's05', '2027-03-25'),
-('p024', 'Multivitamin Tablet', 100, 90.00, 120.00, 'Vitamin', 's05', '2027-11-20'),
-('p025', 'Tixylix 100ml', 50, 118.00, 155.00, 'Cough Syrup', 's05', '2026-09-30'),
+('p016', 'Vitamin D3 1000IU', 80, 70.00, 95.00, 'Vitamin', 's04', '2028-01-15', 1),
+('p017', 'Zinc Tablet 50mg', 100, 60.00, 82.00, 'Vitamin', 's04', '2027-10-30', 1),
+('p018', 'Eno Sachet', 150, 25.00, 35.00, 'Antacid', 's04', '2027-08-20', 1),
+('p019', 'Digene Tablet', 90, 40.00, 58.00, 'Antacid', 's04', '2027-09-10', 1),
+('p020', 'Erythromycin 500mg', 70, 85.00, 110.00, 'Antibiotic', 's04', '2026-11-22', 1),
 
 
-('p026', 'Azithromycin 500mg', 80, 70.00, 92.00, 'Antibiotic', 's06', '2025-10-03'),
-('p027', 'Dettol 200ml', 70, 130.00, 170.00, 'Antiseptic', 's06', '2027-05-25'),
-('p028', 'Gaviscon 150ml', 60, 120.00, 160.00, 'Antacid', 's06', '2026-12-15'),
-('p029', 'Aspirin 100mg', 120, 30.00, 45.00, 'Painkiller', 's06', '2026-12-01'),
-('p030', 'Vitamin C 1000mg', 90, 54.00, 75.00, 'Vitamin', 's06', '2027-01-30'),
+('p021', 'Amoxicillin 500mg', 100, 46.00, 66.00, 'Antibiotic', 's05', '2026-08-15', 1),
+('p022', 'Ibuprofen 200mg', 130, 33.00, 48.00, 'Painkiller', 's05', '2027-04-20', 1),
+('p023', 'Diclofenac 50mg', 90, 40.00, 58.00, 'Painkiller', 's05', '2027-03-25', 1),
+('p024', 'Multivitamin Tablet', 100, 90.00, 120.00, 'Vitamin', 's05', '2027-11-20', 1),
+('p025', 'Tixylix 100ml', 50, 118.00, 155.00, 'Cough Syrup', 's05', '2026-09-30', 1),
 
 
-('p031', 'Ciprofloxacin 500mg', 75, 74.00, 95.00, 'Antibiotic', 's07', '2026-11-05'),
-('p032', 'Paracetamol 500mg', 150, 21.50, 35.00, 'Painkiller', 's07', '2027-03-15'),
-('p033', 'Ibuprofen 400mg', 100, 45.00, 65.00, 'Painkiller', 's07', '2027-06-18'),
-('p034', 'Digene Tablet', 80, 38.00, 55.00, 'Antacid', 's07', '2027-09-10'),
-('p035', 'Vitamin D3 1000IU', 75, 68.00, 90.00, 'Vitamin', 's07', '2028-01-15'),
+('p026', 'Azithromycin 500mg', 80, 70.00, 92.00, 'Antibiotic', 's06', '2025-10-03', 1),
+('p027', 'Dettol 200ml', 70, 130.00, 170.00, 'Antiseptic', 's06', '2027-05-25', 1),
+('p028', 'Gaviscon 150ml', 60, 120.00, 160.00, 'Antacid', 's06', '2026-12-15', 1),
+('p029', 'Aspirin 100mg', 120, 30.00, 45.00, 'Painkiller', 's06', '2026-12-01', 1),
+('p030', 'Vitamin C 1000mg', 90, 54.00, 75.00, 'Vitamin', 's06', '2027-01-30', 1),
 
 
-('p036', 'Benadryl 100ml', 55, 117.00, 155.00, 'Cough Syrup', 's08', '2026-10-15'),
-('p037', 'Corex 100ml', 60, 108.00, 148.00, 'Cough Syrup', 's08', '2026-11-08'),
-('p038', 'Savlon 200ml', 85, 89.00, 120.00, 'Antiseptic', 's08', '2027-07-15'),
-('p039', 'Panadol Extra', 130, 30.00, 45.00, 'Painkiller', 's08', '2026-11-25'),
-('p040', 'Zinc Tablet 50mg', 90, 58.00, 80.00, 'Vitamin', 's08', '2027-10-30'),
+('p031', 'Ciprofloxacin 500mg', 75, 74.00, 95.00, 'Antibiotic', 's07', '2026-11-05', 1),
+('p032', 'Paracetamol 500mg', 150, 21.50, 35.00, 'Painkiller', 's07', '2027-03-15', 1),
+('p033', 'Ibuprofen 400mg', 100, 45.00, 65.00, 'Painkiller', 's07', '2027-06-18', 1),
+('p034', 'Digene Tablet', 80, 38.00, 55.00, 'Antacid', 's07', '2027-09-10', 1),
+('p035', 'Vitamin D3 1000IU', 75, 68.00, 90.00, 'Vitamin', 's07', '2028-01-15', 1),
 
 
-('p041', 'Cefuroxime 500mg', 60, 88.00, 115.00, 'Antibiotic', 's09', '2026-08-25'),
-('p042', 'Erythromycin 500mg', 70, 84.00, 110.00, 'Antibiotic', 's09', '2025-11-22'),
-('p043', 'Eno Sachet', 200, 24.50, 35.00, 'Antacid', 's09', '2027-08-20'),
-('p044', 'Diclofenac 50mg', 90, 39.00, 58.00, 'Painkiller', 's09', '2027-03-25'),
-('p045', 'Multivitamin Tablet', 95, 92.00, 120.00, 'Vitamin', 's09', '2027-11-20'),
+('p036', 'Benadryl 100ml', 55, 117.00, 155.00, 'Cough Syrup', 's08', '2026-10-15', 1),
+('p037', 'Corex 100ml', 60, 108.00, 148.00, 'Cough Syrup', 's08', '2026-11-08', 1),
+('p038', 'Savlon 200ml', 85, 89.00, 120.00, 'Antiseptic', 's08', '2027-07-15', 1),
+('p039', 'Panadol Extra', 130, 30.00, 45.00, 'Painkiller', 's08', '2026-11-25', 1),
+('p040', 'Zinc Tablet 50mg', 90, 58.00, 80.00, 'Vitamin', 's08', '2027-10-30', 1),
 
 
-('p046', 'Amoxicillin 500mg', 120, 47.00, 68.00, 'Antibiotic', 's10', '2026-08-15'),
-('p047', 'Cefuroxime 250mg', 70, 82.00, 105.00, 'Antibiotic', 's10', '2026-07-10'),
-('p048', 'Aspirin 100mg', 140, 29.00, 42.00, 'Painkiller', 's10', '2027-03-15'),
-('p049', 'Dettol 100ml', 100, 72.00, 95.00, 'Antiseptic', 's10', '2027-06-20'),
-('p050', 'Vitamin C 1000mg', 95, 56.00, 75.00, 'Vitamin', 's10', '2027-01-30');
+('p041', 'Cefuroxime 500mg', 60, 88.00, 115.00, 'Antibiotic', 's09', '2026-08-25', 1),
+('p042', 'Erythromycin 500mg', 70, 84.00, 110.00, 'Antibiotic', 's09', '2025-11-22', 1),
+('p043', 'Eno Sachet', 200, 24.50, 35.00, 'Antacid', 's09', '2027-08-20', 1),
+('p044', 'Diclofenac 50mg', 90, 39.00, 58.00, 'Painkiller', 's09', '2027-03-25', 1),
+('p045', 'Multivitamin Tablet', 95, 92.00, 120.00, 'Vitamin', 's09', '2027-11-20', 1),
+
+
+('p046', 'Amoxicillin 500mg', 120, 47.00, 68.00, 'Antibiotic', 's10', '2026-08-15', 1),
+('p047', 'Cefuroxime 250mg', 70, 82.00, 105.00, 'Antibiotic', 's10', '2026-07-10', 1),
+('p048', 'Aspirin 100mg', 140, 29.00, 42.00, 'Painkiller', 's10', '2027-03-15', 1),
+('p049', 'Dettol 100ml', 100, 72.00, 95.00, 'Antiseptic', 's10', '2027-06-20', 1),
+('p050', 'Vitamin C 1000mg', 95, 56.00, 75.00, 'Vitamin', 's10', '2027-01-30', 1);
 
 CREATE TABLE return_details (
     return_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -449,3 +453,42 @@ INSERT INTO user_groups (id, group_name, group_level, group_status) VALUES
 (1, 'Admin', 1, 1),
 (2, 'Staff', 2, 1),
 (3, 'finance_DEP', 3, 1);
+
+-- Sales table for recording sales transactions
+CREATE TABLE sales (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    p_id VARCHAR(10) NOT NULL,
+    product_name VARCHAR(150) NOT NULL,
+    qty INT NOT NULL CHECK (qty > 0),
+    price DECIMAL(10,2) NOT NULL CHECK (price >= 0),
+    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (p_id) REFERENCES product(p_id)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
+);
+
+-- Media table for product images
+CREATE TABLE media (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    file_name VARCHAR(255) NOT NULL,
+    file_type VARCHAR(50),
+    file_size INT,
+    uploaded_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Insert default no_image entry
+INSERT INTO media (id, file_name, file_type, file_size) VALUES
+(1, 'no_image.png', 'image/png', 0);
+
+-- Insert some sample sales data
+INSERT INTO sales (p_id, product_name, qty, price, date) VALUES
+('p001', 'Amoxicillin 500mg', 5, 325.00, '2025-01-15 10:30:00'),
+('p003', 'Paracetamol 500mg', 10, 350.00, '2025-01-15 11:15:00'),
+('p005', 'Vitamin C 1000mg', 3, 225.00, '2025-01-15 14:20:00'),
+('p008', 'Aspirin 100mg', 8, 336.00, '2025-01-16 09:45:00'),
+('p011', 'Benadryl 100ml', 2, 300.00, '2025-01-16 16:30:00'),
+('p013', 'Dettol 100ml', 4, 380.00, '2025-01-17 12:00:00'),
+('p016', 'Vitamin D3 1000IU', 2, 190.00, '2025-01-17 15:15:00'),
+('p021', 'Amoxicillin 500mg', 6, 396.00, '2025-01-18 10:00:00'),
+('p025', 'Tixylix 100ml', 1, 155.00, '2025-01-18 13:30:00'),
+('p030', 'Vitamin C 1000mg', 5, 375.00, '2025-01-19 11:45:00');
