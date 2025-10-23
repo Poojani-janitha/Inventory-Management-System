@@ -1,0 +1,268 @@
+1)
+CREATE DATABASE sensor_db;
+USE sensor_db;
+
+CREATE TABLE dht11 (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  temperature FLOAT,
+  humidity FLOAT,
+  datetime DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+
+2)
+
+<?php
+
+//include the database connection here
+
+// test_data.php
+header('Content-Type: application/json; charset=utf-8');
+// If you will fetch this file from another origin in future, you can enable CORS:
+// header("Access-Control-Allow-Origin: *");
+
+$db_host = '127.0.0.1';
+$db_user = 'root';
+$db_pass = '';        // change to your MySQL password
+$db_name = 'sensor_db';
+
+$conn = new mysqli($db_host, $db_user, $db_pass, $db_name);
+if ($conn->connect_error) {
+    http_response_code(500);
+    echo json_encode(["success" => false, "message" => "DB_CONNECT_ERROR"]);
+    exit;
+}
+
+// Read raw JSON body
+$raw = file_get_contents('php://input');
+$data = json_decode($raw, true);
+
+if (!is_array($data)) {
+
+    http_response_code(400);
+    echo json_encode(["success" => false, "message" => "INVALID_JSON"]);
+    $conn->close();
+    exit;
+}
+
+if (isset($data['temperature']) && isset($data['humidity'])) {
+    $temperature = floatval($data['temperature']);
+    $humidity = floatval($data['humidity']);
+
+    $stmt = $conn->prepare("INSERT INTO dht11 (temperature, humidity) VALUES (?, ?)");
+    if (!$stmt) {
+        http_response_code(500);
+        echo json_encode(["success" => false, "message" => "PREPARE_ERROR"]);
+        $conn->close();
+        exit;
+    }
+
+    $stmt->bind_param("dd", $temperature, $humidity);
+    if ($stmt->execute()) {
+        echo json_encode(["success" => true, "message" => "Inserted", "id" => $stmt->insert_id]);
+    } else {
+        http_response_code(500);
+        echo json_encode(["success" => false, "message" => "INSERT_ERROR"]);
+    }
+    $stmt->close();
+} else {
+    http_response_code(400);
+    echo json_encode(["success" => false, "message" => "MISSING_FIELDS"]);
+}
+
+$conn->close();
+?>
+
+
+3)
+
+<?php
+// get_data.php
+header('Content-Type: application/json; charset=utf-8');
+
+$db_host = '127.0.0.1';
+$db_user = 'root';
+$db_pass = '';
+$db_name = 'sensor_db';
+
+$conn = new mysqli($db_host, $db_user, $db_pass, $db_name);
+if ($conn->connect_error) {
+    http_response_code(500);
+    echo json_encode(["success" => false, "message" => "DB_CONNECT_ERROR"]);
+    exit;
+}
+
+$limit = 100; // change if you want more rows
+$sql = "SELECT id, temperature, humidity, datetime FROM dht11 ORDER BY id DESC LIMIT ?";
+$stmt = $conn->prepare($sql);
+if (!$stmt) {
+    http_response_code(500);
+    echo json_encode(["success" => false, "message" => "PREPARE_ERROR"]);
+    $conn->close();
+    exit;
+}
+
+$stmt->bind_param("i", $limit);
+$stmt->execute();
+$result = $stmt->get_result();
+
+$rows = [];
+while ($r = $result->fetch_assoc()) {
+    // optional: format datetime if you like
+    $rows[] = $r;
+}
+$stmt->close();
+
+echo json_encode(["success" => true, "data" => $rows]);
+?>
+
+
+4)
+
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Sensor Data Viewer</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    table { border-collapse: collapse; width: 100%; max-width: 800px; }
+    th, td { padding: 8px 12px; border: 1px solid #ccc; text-align: center; }
+    th { background: #f0f0f0; }
+    #refresh { margin: 12px 0; }
+  </style>
+</head>
+<body>
+  <h2>Latest Sensor Readings</h2>
+  <button id="refresh">Refresh</button>
+  <table id="dataTable">
+    <thead>
+      <tr><th>ID</th><th>Temperature (°C)</th><th>Humidity (%)</th><th>Datetime</th></tr>
+    </thead>
+    <tbody>
+      <tr><td colspan="4">Loading...</td></tr>
+    </tbody>
+  </table>
+
+  <script>
+    const apiUrl = 'get_data.php'; // same folder
+    async function loadData() {
+      const tbody = document.querySelector('#dataTable tbody');
+      tbody.innerHTML = '<tr><td colspan="4">Loading...</td></tr>';
+      try {
+        const resp = await fetch(apiUrl);
+        const json = await resp.json();
+        if (!json.success) {
+          tbody.innerHTML = '<tr><td colspan="4">Error: ' + (json.message || 'Unknown') + '</td></tr>';
+          return;
+        }
+        const rows = json.data;
+        if (!rows || rows.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="4">No data</td></tr>';
+          return;
+        }
+        // rows are in descending order; you can reverse if you want oldest first
+        let html = '';
+        rows.forEach(r => {
+          html += `<tr>
+            <td>${r.id}</td>
+            <td>${Number(r.temperature).toFixed(2)}</td>
+            <td>${Number(r.humidity).toFixed(2)}</td>
+            <td>${r.datetime}</td>
+          </tr>`;
+        });
+        tbody.innerHTML = html;
+      } catch (err) {
+        tbody.innerHTML = '<tr><td colspan="4">Fetch error: ' + err.message + '</td></tr>';
+      }
+    }
+
+    document.getElementById('refresh').addEventListener('click', loadData);
+    // auto-refresh every 10 seconds
+    loadData();
+    setInterval(loadData, 10000);
+  </script>
+</body>
+</html>
+
+
+
+5)
+
+#include <ESP8266WiFi.h>
+#include <ESP8266HTTPClient.h>
+#include <DHT.h>
+
+const char* ssid = "Pooja";
+const char* password = "jayarathna";
+
+// change to your PC's local IP and folder
+const char* serverUrl = "http://192.168.1.100/project_folder/test_data.php";
+
+#define DHTPIN D2
+#define DHTTYPE DHT11
+DHT dht(DHTPIN, DHTTYPE);
+
+void setup() {
+  Serial.begin(115200);
+  delay(10);
+  dht.begin();
+  connectWiFi();
+}
+
+void loop() {
+  if (WiFi.status() != WL_CONNECTED) {
+    connectWiFi();
+  }
+
+  float t = dht.readTemperature();
+  float h = dht.readHumidity();
+
+  if (isnan(t) || isnan(h)) {
+    Serial.println("Failed to read from DHT sensor!");
+    delay(2000);
+    return;
+  }
+
+  // Create JSON string
+  // Example: {"temperature":26.45,"humidity":62.30}
+  String json = "{\"temperature\":" + String(t, 2) + ",\"humidity\":" + String(h, 2) + "}";
+  Serial.print("Sending JSON: ");
+  Serial.println(json);
+
+  HTTPClient http;
+  http.begin(serverUrl);
+  http.addHeader("Content-Type", "application/json");
+
+  int httpCode = http.POST(json);
+  String payload = "";
+  if (httpCode > 0) {
+    payload = http.getString();
+  } else {
+    Serial.printf("HTTP POST failed, error: %d\n", httpCode);
+  }
+
+  Serial.print("HTTP Code: ");
+  Serial.println(httpCode);
+  Serial.print("Server reply: ");
+  Serial.println(payload);
+  Serial.println("-------------------------");
+
+  http.end();
+  delay(10000); // send every 10 seconds
+}
+
+void connectWiFi() {
+  Serial.printf("Connecting to %s", ssid);
+  WiFi.mode(WIFI_STA);
+  WiFi.disconnect();
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println();
+  Serial.print("Connected, IP: ");
+  Serial.println(WiFi.localIP());
+}
+
