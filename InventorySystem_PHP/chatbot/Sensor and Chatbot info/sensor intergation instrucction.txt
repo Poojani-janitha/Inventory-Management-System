@@ -1,0 +1,153 @@
+1)install esp32
+2)install DHT Sensor  Library
+3)create a database "sensor db"
+4) create a table "dht11"
+id int auto increment
+temparature int 
+humidity  int 
+dataand time   DATETIME
+
+
+
+insert INTO dht11(temparature,humidity)VALUES(23,42);
+
+5)create php script inside the htdoc
+
+test_data.php
+
+<?
+	
+//$conn is the connection variable
+//connecttion to the database
+
+if(isset($_POST("temparature"))&& isset($_POST("humidity"))){
+$t =$_POST("temparature");
+$h =$_POST("humidity");
+
+$sql = "INSERT INTO dht11(temparature,humidity)VALUES (".$t.",".$h.")";
+
+mysqli_query($conn,$sql);
+}
+?>
+
+
+
+6)in arduino ide
+
+#include<WiFi.h>
+#include<HTTPClient.h>
+
+#include<DHT.h>
+#define  DHTPIN 19 //D19
+#define  DHTTYPE DHT11
+
+DHT dht11(DHTPIN,DHTTYPE);
+
+String URL = "http://192.###.###.##/project_folder/test_data.php"
+//test using the url bar in the browser
+
+
+const chat* ssid = "OPPO A54"
+const char* password = "12345"
+
+
+int temparature =0;
+int humidity = 0;
+
+
+void setup(){
+	Serial.begin(115200);
+	
+	dht11.begin();
+	
+	connectWiFi();
+	
+}
+
+void loop(){
+	if(Wifi.status() != WL_CONNECTED){
+		connectWiFi();
+	
+	}
+	Load_DHT11_Data();
+	
+	
+	String postData = "temparature = "+String(temparature)+ "&humidity="+String(Humidity);
+	HTTPClient http;// this is use to send the http post request to the webserver
+	
+	http.begin(URL);
+	
+	int httpCode = http.POST(postData) ; //create the post request
+	
+	//if succesfully send data to the server we receive 200
+	
+	
+	String payload = http.getString();
+	
+	http.addHeader("Content-Type","application/x-www-form-urlencoded ");
+	
+	Serial.print("URL: ");
+	Serial.println(URL);
+	
+	Serial.print("Data: ");
+	Serial.println(postData);
+	
+	
+	Serial.print("httpCode: ");
+	Serial.println(httpCode);
+	
+	Serial.print("payload: ");
+	Serial.println(payload);
+	
+	Serial.println("-----------------------------------");
+	
+
+}
+
+void Load_DHT11_Data(){
+
+	temparature = dht11.readTemperature();  //Celsius
+	humidity = dht11.readHumidity();
+	
+	
+	//check if any reads failed.
+	if(isnan(temparature)|| isnan(humidity)){
+	
+		Serial.println(fail to read from DHT sensor!);
+		temparature = 0;
+		humidity = 0;
+	
+	}
+	Serial.printf("Temparature: %d *C\n",temparature);
+	Serial.printf("Humidity: %d %%\n",humidity);
+
+
+}
+
+void connectWiFi(){
+
+	Wifi.mode(WIFI_OFF);
+	delay(1000);
+	
+	//this line hides the viewing of ESP as wifi hotspot
+	wifi.mode(WIFI_STA);
+	
+	WiFi.begin(ssid,password);
+	Serial.println("Connecting to WiFi");
+	
+	
+	while(WiFi.status() != WL_CONNECTED){
+		delay(500);
+		Serial.print(".");
+	}
+	
+	Serial.print("Connected to : ");
+	Serial.println(ssid);
+	
+	
+	Serial.print("IP address: ");
+	Serial.println(WiFi.localIP());
+	
+
+
+}

@@ -1,0 +1,83 @@
+<?php
+// admin.php
+header('Content-Type: text/html; charset=utf-8');
+?>
+
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Admin - Latest Temperature</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; display: flex; flex-direction: column; align-items: center; }
+
+    /* Temperature display box */
+    #temp-box {
+        width: 150px;
+        height: 50px;
+        font-size: 24px;
+        text-align: center;
+        border: 2px solid #ccc;
+        border-radius: 8px;
+        margin-top: 50px;
+        line-height: 50px;
+        background: #f0f0f0;
+        transition: border 0.3s, background 0.3s;
+    }
+
+    /* High temperature style */
+    .high-temp {
+        border: 2px solid red;
+        background: #ffe5e5;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Latest Temperature</h2>
+  <div id="temp-box" >-- °C</div>
+
+  <!-- Sound alert -->
+  <audio id="alert-sound" src="alert.mp3" preload="auto"></audio>
+
+  <script>
+    const apiUrl = 'get_data.php'; // fetch data from PHP
+    const tempBox = document.getElementById('temp-box');
+    const alertSound = document.getElementById('alert-sound');
+
+    async function loadLatestTemp() {
+      try {
+        const resp = await fetch(apiUrl);
+        const json = await resp.json();
+
+        if (!json.success || !json.data || json.data.length === 0) {
+          tempBox.innerText = '-- °C';
+          tempBox.classList.remove('high-temp');
+          return;
+        }
+
+        // Latest temperature
+        const latestTemp = parseFloat(json.data[0].temperature);
+        tempBox.innerText = latestTemp.toFixed(2) + " °C";
+
+        // Check high temperature
+        if (latestTemp > 40) {
+          tempBox.classList.add('high-temp');
+          alertSound.play();
+        } else {
+          tempBox.classList.remove('high-temp');
+        }
+
+      } catch (err) {
+        tempBox.innerText = 'Error';
+        tempBox.classList.remove('high-temp');
+        console.error(err);
+      }
+    }
+
+    // Load initially and refresh every 5 seconds
+    loadLatestTemp();
+    setInterval(loadLatestTemp, 5000);
+  </script>
+</body>
+</html>

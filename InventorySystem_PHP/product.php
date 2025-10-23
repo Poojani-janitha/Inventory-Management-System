@@ -34,10 +34,15 @@
               </tr>
             </thead>
             <tbody>
-              <?php foreach ($products as $product):?>
+              <?php $count = 1; foreach ($products as $product):?>
               <tr>
+<<<<<<< HEAD
                 <td class="text-center"><?php echo count_id();?></td>
                 <!-- <td>
+=======
+                <td class="text-center"><?php echo $count++;?></td>
+                <td>
+>>>>>>> d0d722e9e0d9be224cf00b85a3a8308ff9598136
                   <?php if($product['media_id'] === '0'): ?>
                     <img class="img-avatar img-circle" src="uploads/products/no_image.png" alt="">
                   <?php else: ?>
