@@ -38,9 +38,9 @@ $sales = find_all_sale();
              </tr>
             </thead>
            <tbody>
-             <?php foreach ($sales as $sale):?>
+             <?php $count = 1; foreach ($sales as $sale):?>
              <tr>
-               <td class="text-center"><?php echo count_id();?></td>
+                <td class="text-center"><?php echo $count++;?></td>
                <td><?php echo remove_junk($sale['name']); ?></td>
                <td class="text-center"><?php echo (int)$sale['qty']; ?></td>
                <td class="text-center"><?php echo remove_junk($sale['price']); ?></td>

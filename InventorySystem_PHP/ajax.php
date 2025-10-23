@@ -36,16 +36,17 @@
 
           $html .= "<tr>";
 
-          $html .= "<td id=\"s_name\">".$result['name']."</td>";
-          $html .= "<input type=\"hidden\" name=\"s_id\" value=\"{$result['id']}\">";
+          $html .= "<td id=\"s_name\">".$result['product_name']."</td>";
+          $html .= "<input type=\"hidden\" name=\"s_id\" value=\"{$result['p_id']}\">";
+          $html .= "<input type=\"hidden\" name=\"product_name\" value=\"{$result['product_name']}\">";
           $html  .= "<td>";
-          $html  .= "<input type=\"text\" class=\"form-control\" name=\"price\" value=\"{$result['sale_price']}\">";
+          $html  .= "<input type=\"text\" class=\"form-control\" name=\"price\" value=\"{$result['selling_price']}\">";
           $html  .= "</td>";
           $html .= "<td id=\"s_qty\">";
           $html .= "<input type=\"text\" class=\"form-control\" name=\"quantity\" value=\"1\">";
           $html  .= "</td>";
           $html  .= "<td>";
-          $html  .= "<input type=\"text\" class=\"form-control\" name=\"total\" value=\"{$result['sale_price']}\">";
+          $html  .= "<input type=\"text\" class=\"form-control\" name=\"total\" value=\"{$result['selling_price']}\">";
           $html  .= "</td>";
           $html  .= "<td>";
           $html  .= "<input type=\"date\" class=\"form-control datePicker\" name=\"date\" data-date data-date-format=\"yyyy-mm-dd\">";

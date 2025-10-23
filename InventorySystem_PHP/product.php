@@ -33,9 +33,9 @@
               </tr>
             </thead>
             <tbody>
-              <?php foreach ($products as $product):?>
+              <?php $count = 1; foreach ($products as $product):?>
               <tr>
-                <td class="text-center"><?php echo count_id();?></td>
+                <td class="text-center"><?php echo $count++;?></td>
                 <td>
                   <?php if($product['media_id'] === '0'): ?>
                     <img class="img-avatar img-circle" src="uploads/products/no_image.png" alt="">
