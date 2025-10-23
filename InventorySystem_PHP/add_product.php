@@ -16,11 +16,12 @@
      $p_qty   = remove_junk($db->escape($_POST['product-quantity']));
      $p_buy   = remove_junk($db->escape($_POST['buying-price']));
      $p_sale  = remove_junk($db->escape($_POST['saleing-price']));
-     if (is_null($_POST['product-photo']) || $_POST['product-photo'] === "") {
-       $media_id = '0';
-     } else {
-       $media_id = remove_junk($db->escape($_POST['product-photo']));
-     }
+     $p_exdate  = remove_junk($db->escape($_POST['Expire date']));
+    //  if (is_null($_POST['product-photo']) || $_POST['product-photo'] === "") {
+    //    $media_id = '0';
+    //  } else {
+    //    $media_id = remove_junk($db->escape($_POST['product-photo']));
+    //  }
      $date    = make_date();
      $query  = "INSERT INTO products (";
      $query .=" name,quantity,buy_price,sale_price,categorie_id,media_id,date";
@@ -83,7 +84,7 @@
                   </div>
                   <div class="col-md-6">
                     <select class="form-control" name="product-photo">
-                      <option value="">Select Product Photo</option>
+                      <!-- <option value="">Select Product Photo</option> -->
                     <?php  foreach ($all_photo as $photo): ?>
                       <option value="<?php echo (int)$photo['id'] ?>">
                         <?php echo $photo['file_name'] ?></option>
