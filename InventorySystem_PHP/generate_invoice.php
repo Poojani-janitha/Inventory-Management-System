@@ -204,7 +204,7 @@ function generateInvoiceHTML($invoice_number, $customer_name, $customer_phone, $
         </button>
         <div class="invoice-container">
             <div class="header">
-                <div class="company-name">Pharmacy Management System</div>
+                <div class="company-name">Inventory Management System</div>
                 <div class="company-details">
                     123 Main Street, Colombo 01, Sri Lanka<br>
                     Phone: +94 11 234 5678 | Email: info@pharmacy.com<br>

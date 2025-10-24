@@ -31,3 +31,4 @@ if (isset($_POST['category_name']) && !empty($_POST['category_name'])) {
     echo json_encode([]);
 }
 ?>
+
