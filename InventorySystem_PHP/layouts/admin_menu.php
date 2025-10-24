@@ -43,8 +43,8 @@
        <span>Sales</span>
       </a>
       <ul class="nav submenu">
-         <li><a href="sales.php">Manage Sales</a> </li>
-         <li><a href="add_sale.php">Add Sale</a> </li>
+         <li><a href="manage_sales.php">Manage Sales</a> </li>
+         <li><a href="add_sales.php">Add Sale</a> </li>
      </ul>
   </li>
   <li>
@@ -53,7 +53,7 @@
        <span>Sales Report</span>
       </a>
       <ul class="nav submenu">
-        <li><a href="sales_report.php">Sales by dates </a></li>
+        <!-- <li><a href="sales_report.php">Sales by dates </a></li> -->
         <li><a href="monthly_sales.php">Monthly sales</a></li>
         <li><a href="daily_sales.php">Daily sales</a> </li>
       </ul>
