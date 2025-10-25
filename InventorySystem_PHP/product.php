@@ -20,7 +20,7 @@
           <span class="glyphicon glyphicon-th"></span>
           <span>All  Available  Products</span>
         </strong>
-        <a href="add_product.php" class="btn btn-info pull-right">Add New</a>
+        <!-- <a href="add_product.php" class="btn btn-info pull-right">Add New</a> -->
       </div>
       <div class="panel-body">
         <table class="table table-bordered table-striped">
