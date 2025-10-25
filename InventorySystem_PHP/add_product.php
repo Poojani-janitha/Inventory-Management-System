@@ -16,7 +16,7 @@ $existing_product=false;
 
 // Load details if called with ?o_id=
 if(isset($_GET['o_id'])){
-  $o_id=(int)$_GET['o_id'];
+  // $o_id=(int)$_GET['3'];
   
   // Query purchase order details directly
   $sql="SELECT * FROM purchase_order WHERE o_id={$o_id} LIMIT 1";
