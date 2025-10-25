@@ -451,15 +451,31 @@ INSERT INTO user_groups (id, group_name, group_level, group_status) VALUES
 (3, 'finance_DEP', 3, 1);
 
 -- Sales table for recording sales transactions
+
 CREATE TABLE sales (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    p_id VARCHAR(10) NOT NULL,
-    product_name VARCHAR(150) NOT NULL,
-    qty INT NOT NULL CHECK (qty > 0),
-    price DECIMAL(10,2) NOT NULL CHECK (price >= 0),
-    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (p_id) REFERENCES product(p_id)
+    sales_id INT AUTO_INCREMENT PRIMARY KEY,
+    sale_product_id VARCHAR(10) NOT NULL,
+    category_name VARCHAR(100) NOT NULL,
+    sale_selling_price DECIMAL(10,2),
+    total DECIMAL(10,2),
+    discount DECIMAL(10,2),
+    name VARCHAR(100),
+    pNumber VARCHAR(10),
+    email VARCHAR(100),
+    invoice_number VARCHAR(20) NOT NULL,
+    quantity INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+   
+    FOREIGN KEY (sale_product_id) REFERENCES product(p_id)
         ON UPDATE CASCADE
-        ON DELETE RESTRICT
+        ON DELETE RESTRICT,
+
+    FOREIGN KEY (category_name) REFERENCES categories(category_name)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+
+   
+    INDEX idx_invoice_number (invoice_number)
 );
 

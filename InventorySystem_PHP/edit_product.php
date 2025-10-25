@@ -26,15 +26,17 @@ if(!$product){
        $p_qty   = remove_junk($db->escape($_POST['product-quantity']));
        $p_buy   = remove_junk($db->escape($_POST['buying-price']));
        $p_sale  = remove_junk($db->escape($_POST['saleing-price']));
-       if (is_null($_POST['product-photo']) || $_POST['product-photo'] === "") {
-         $media_id = '1';
-       } else {
-         $media_id = remove_junk($db->escape($_POST['product-photo']));
-       }
-       $query   = "UPDATE product SET";
-       $query  .=" product_name ='{$p_name}', quantity ='{$p_qty}',";
-       $query  .=" buying_price ='{$p_buy}', selling_price ='{$p_sale}', category_name ='{$p_cat}', s_id='{$p_supplier}', media_id='{$media_id}'";
-       $query  .=" WHERE p_id ='{$product['p_id']}'";
+       $p_expire = remove_junk($db->escape($_POST['expire-date']));
+      //  if (is_null($_POST['product-photo']) || $_POST['product-photo'] === "") {
+      //    $media_id = '0';
+      //  } else {
+      //    $media_id = remove_junk($db->escape($_POST['product-photo']));
+      //  }
+
+       $query   = "UPDATE products SET";
+       $query  .=" name ='{$p_name}', quantity ='{$p_qty}',";
+       $query  .=" buy_price ='{$p_buy}', sale_price ='{$p_sale}', categorie_id ='{$p_cat}',expire_date ='{$p_expire}'";
+       $query  .=" WHERE id ='{$product['id']}'";
        $result = $db->query($query);
                if($result && $db->affected_rows() === 1){
                  $session->msg('s',"Product updated ");
@@ -63,7 +65,7 @@ if(!$product){
         <div class="panel-heading">
           <strong>
             <span class="glyphicon glyphicon-th"></span>
-            <span>Add New Product</span>
+            <span>Update Product</span>
          </strong>
         </div>
         <div class="panel-body">
@@ -88,24 +90,40 @@ if(!$product){
                    <?php endforeach; ?>
                  </select>
                   </div>
-                  <div class="col-md-4">
-                    <select class="form-control" name="product-supplier">
-                      <option value=""> Select a supplier</option>
-                      <?php  foreach ($all_suppliers as $supplier): ?>
-                        <option value="<?php echo $supplier['s_id'];?>" <?php if($product['s_id'] === $supplier['s_id']): echo "selected"; endif; ?> >
-                          <?php echo $supplier['s_name'] ?></option>
-                      <?php endforeach; ?>
-                    </select>
-                  </div>
-                  <div class="col-md-4">
+                  <!-- <div class="col-md-6">
                     <select class="form-control" name="product-photo">
                       <option value=""> No image</option>
                       <?php  foreach ($all_photo as $photo): ?>
                         <option value="<?php echo (int)$photo['id'];?>" <?php if($product['media_id'] === $photo['id']): echo "selected"; endif; ?> >
                           <?php echo $photo['file_name'] ?></option>
-                      <?php endforeach; ?>
+                      <?php endforeach; ?> 
                     </select>
-                  </div>
+                  </div> -->
+
+                   <!-- Category & Expire Date -->
+                   <div class="col-md-6">
+                     <select class="form-control" name="product-categorie">
+                       <option value="">Select a category</option>
+                       <?php foreach ($all_categories as $cat): ?>
+                        <option value="<?php echo (int)$cat['id']; ?>" <?php if ($product['categorie_id'] === $cat['id']) echo "selected"; ?>>
+                          <?php echo remove_junk($cat['name']); ?>
+                        </option>
+                      <?php endforeach; ?>
+                     </select>
+                   </div>
+
+                   <div class="col-md-6">
+                     <label for="expire-date">Expire Date</label>
+                     <div class="input-group">
+                       <span class="input-group-addon">
+                         <i class="glyphicon glyphicon-calendar"></i>
+                       </span>
+                       <input type="date" class="form-control" name="expire-date" value="<?php echo remove_junk($product['expire_date']); ?>">
+                     </div>
+                   </div>
+            </div>
+          </div>
+
                 </div>
               </div>
 
