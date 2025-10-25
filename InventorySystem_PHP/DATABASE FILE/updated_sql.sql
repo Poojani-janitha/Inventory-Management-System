@@ -104,7 +104,7 @@ CREATE TABLE supplier_product (
         ON DELETE RESTRICT,
     FOREIGN KEY (s_id) REFERENCES supplier_info(s_id)
         ON UPDATE CASCADE
-        ON DELETE CASCADE
+        ON DELETE CASCADE 
 );
 
 
