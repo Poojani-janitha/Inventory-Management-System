@@ -31,28 +31,34 @@ function find_by_sql($sql)
 /*--------------------------------------------------------------*/
 /*  Function for Find data from table by id
 /*--------------------------------------------------------------*/
-function find_by_id($table,$id)
-{
-  $table = _normalize_table($table);
-  global $db;
-  
-  // Handle different primary key names for different tables
-  $primary_key = 'id';
-  if($table === 'product') {
-    $primary_key = 'p_id';
-    $id = $db->escape($id); // Don't cast to int for p_id
-  } else {
-    $id = (int)$id;
-  }
-  
-    if(tableExists($table)){
-          $sql = $db->query("SELECT * FROM {$db->escape($table)} WHERE {$primary_key}='{$db->escape($id)}' LIMIT 1");
-          if($result = $db->fetch_assoc($sql))
-            return $result;
-          else
-            return null;
-     }
+function find_by_id($table, $id, $primary_key = null) {
+    $table = _normalize_table($table);
+    global $db;
+
+    // Set default primary key
+    if ($primary_key === null) {
+        if ($table === 'product') {
+            $primary_key = 'p_id';
+        } elseif ($table === 'purchase_order') {
+            $primary_key = 'o_id';  // <- fix for purchase_order
+        } else {
+            $primary_key = 'id';
+        }
+    }
+
+    // Cast id to int unless it's product (string possible)
+    $id = ($table === 'product') ? $db->escape($id) : (int)$id;
+
+    if (tableExists($table)) {
+        $sql = $db->query("SELECT * FROM {$db->escape($table)} WHERE {$primary_key}='{$db->escape($id)}' LIMIT 1");
+        if ($sql && $db->num_rows($sql) > 0) {
+            return $db->fetch_assoc($sql);
+        }
+    }
+
+    return null;
 }
+
 /*--------------------------------------------------------------*/
 /* Function for Delete data from table by id
 /*--------------------------------------------------------------*/

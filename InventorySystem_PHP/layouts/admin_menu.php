@@ -23,6 +23,22 @@
   </li>
   <li>
     <a href="#" class="submenu-toggle">
+      <i class="glyphicon glyphicon-folder-open"></i>
+      <span>Supplier</span>
+    </a>
+    <ul class="nav submenu">
+      <li><a href="add_supplier.php">Add Supplier</a></li>
+      <li><a href="add_supplier_product.php">Add Supplier Product</a></li>
+    </ul>
+  </li>
+  <li>
+    <a href="order.php" >
+      <i class="glyphicon glyphicon-shopping-cart"></i>
+      <span>Order</span>
+    </a>
+  </li>
+  <li>
+    <a href="#" class="submenu-toggle">
       <i class="glyphicon glyphicon-th-large"></i>
       <span>Products</span>
     </a>
@@ -31,12 +47,7 @@
        <li><a href="add_product.php">Add Products</a> </li>
    </ul>
   </li>
-  <li>
-    <a href="order.php" >
-      <i class="glyphicon glyphicon-shopping-cart"></i>
-      <span>Order</span>
-    </a>
-  </li>
+  
   <li>
     <a href="#" class="submenu-toggle">
       <i class="glyphicon glyphicon-credit-card"></i>

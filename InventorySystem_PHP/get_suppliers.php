@@ -26,3 +26,4 @@ if (isset($_POST['product_name']) && !empty($_POST['product_name'])) {
     echo json_encode([]);
 }
 ?>
+
