@@ -50,8 +50,10 @@
                 <td class="text-center"><?php echo remove_junk($product['expire_date']); ?></td>
                 <td class="text-center">
                   <div class="btn-group">
-                    <a href="edit_product.php?id=<?php echo (int)$product['p_id']; ?>" class="btn btn-xs btn-warning" data-toggle="tooltip" title="Edit">
-                      <i class="glyphicon glyphicon-edit"></i>
+                    <!-- <a href="edit_product.php?id=<?php echo (int)$product['p_id']; ?>" class="btn btn-xs btn-warning" data-toggle="tooltip" title="Edit"> -->
+                    <a href="edit_product.php?id=<?php echo urlencode($product['p_id']); ?>" class="btn btn-xs btn-warning" data-toggle="tooltip" title="Edit">
+  
+                    <i class="glyphicon glyphicon-edit"></i>
                     </a>
                     <a href="delete_product.php?id=<?php echo (int)$product['p_id']; ?>" class="btn btn-xs btn-danger" data-toggle="tooltip" title="Delete">
                       <i class="glyphicon glyphicon-trash"></i>
