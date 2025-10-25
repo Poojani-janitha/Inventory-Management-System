@@ -45,7 +45,7 @@
                 <?php endif; ?>
                 </td> -->
                 <td> <?php echo remove_junk($product['name']); ?></td>
-                <td class="text-center"> <?php echo remove_junk($product['categorie']); ?></td>
+                <td class="text-center"> <?php echo remove_junk($product['category_name']); ?></td>
                 <td class="text-center"> <?php echo remove_junk($product['quantity']); ?></td>
                 <td class="text-center"> <?php echo remove_junk($product['buy_price']); ?></td>
                 <td class="text-center"> <?php echo remove_junk($product['sale_price']); ?></td>
