@@ -13,24 +13,20 @@
    validate_fields($req_fields);
    if(empty($errors)){
      $p_name  = remove_junk($db->escape($_POST['product-title']));
-     $p_cat   = remove_junk($db->escape($_POST['product-categorie']));
+     $p_cat   = remove_junk($db->escape($_POST['product-category_name']));
      $p_supplier = remove_junk($db->escape($_POST['product-supplier']));
      $p_qty   = remove_junk($db->escape($_POST['product-quantity']));
      $p_buy   = remove_junk($db->escape($_POST['buying-price']));
      $p_sale  = remove_junk($db->escape($_POST['saleing-price']));
-     if (is_null($_POST['product-photo']) || $_POST['product-photo'] === "") {
-       $media_id = '1';
-     } else {
-       $media_id = remove_junk($db->escape($_POST['product-photo']));
-     }
-     
-     // Generate new product ID
-     $last_product = find_by_sql("SELECT p_id FROM product ORDER BY p_id DESC LIMIT 1");
-     $last_id = $last_product ? intval(substr($last_product[0]['p_id'], 1)) : 0;
-     $new_id = 'p' . str_pad($last_id + 1, 3, '0', STR_PAD_LEFT);
-     
-     $query  = "INSERT INTO product (";
-     $query .=" p_id,product_name,quantity,buying_price,selling_price,category_name,s_id,media_id,recorded_date";
+     $p_exdate  = remove_junk($db->escape($_POST['Expire date']));
+    //  if (is_null($_POST['product-photo']) || $_POST['product-photo'] === "") {
+    //    $media_id = '0';
+    //  } else {
+    //    $media_id = remove_junk($db->escape($_POST['product-photo']));
+    //  }
+     $date    = make_date();
+     $query  = "INSERT INTO products (";
+     $query .=" name,quantity,buy_price,sale_price,categorie_id,media_id,date";
      $query .=") VALUES (";
      $query .=" '{$new_id}', '{$p_name}', '{$p_qty}', '{$p_buy}', '{$p_sale}', '{$p_cat}', '{$p_supplier}', '{$media_id}', NOW()";
      $query .=")";
@@ -98,7 +94,7 @@
                   </div>
                   <div class="col-md-4">
                     <select class="form-control" name="product-photo">
-                      <option value="">Select Product Photo</option>
+                      <!-- <option value="">Select Product Photo</option> -->
                     <?php  foreach ($all_photo as $photo): ?>
                       <option value="<?php echo (int)$photo['id'] ?>">
                         <?php echo $photo['file_name'] ?></option>

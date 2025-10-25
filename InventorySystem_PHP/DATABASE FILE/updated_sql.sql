@@ -450,6 +450,7 @@ INSERT INTO user_groups (id, group_name, group_level, group_status) VALUES
 (2, 'Staff', 2, 1),
 (3, 'finance_DEP', 3, 1);
 
+-- Sales table for recording sales transactions
 
 CREATE TABLE sales (
     sales_id INT AUTO_INCREMENT PRIMARY KEY,

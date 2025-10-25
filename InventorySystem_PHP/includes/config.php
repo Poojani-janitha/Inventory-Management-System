@@ -12,7 +12,7 @@
 |
 |
 */
-  define( 'DB_HOST', '127.0.0.1:3307' );          // Set database host
+  define( 'DB_HOST', 'localhost:3306' );          // Set database host
   define( 'DB_USER', 'root' );             // Set database user
   define( 'DB_PASS', '' );             // Set database password
   define( 'DB_NAME', 'inventory_system' );        // Set database name
