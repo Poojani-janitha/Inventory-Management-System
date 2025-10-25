@@ -1,145 +1,138 @@
 <?php
-  $page_title = 'Add Product';
-  require_once('includes/load.php');
-  // Checkin What level user has permission to view this page
-  page_require_level(2);
-  $all_categories = find_all('categories');
-  $all_photo = find_all('media');
-  $all_suppliers = find_all('supplier_info');
+$page_title = 'Add Product';
+require_once('includes/load.php');
+page_require_level(2);
+
+// Initialize variables
+$p_id = '';
+$product_name = '';
+$category_name = '';
+$quantity = 0;
+$buying_price = 0.00;
+$selling_price = 0.00;
+$expire_date = '';
+$s_id = ''; // Supplier ID
+
+// If redirected from purchase_order 'Add' button
+if(isset($_GET['o_id'])){
+    $o_id = (int)$_GET['o_id'];
+    $order = find_by_id('purchase_order', $o_id);
+    if($order){
+        // Pre-fill form from purchase order
+        $product_name   = $order['product_name'];
+        $category_name  = $order['category_name'];
+        $quantity       = $order['quantity'];
+        $buying_price   = $order['price'];
+        $s_id           = $order['s_id']; // load supplier ID from purchase_order
+    } else {
+        $session->msg('d','Purchase order not found.');
+        redirect('purchase_orders.php');
+    }
+}
+
+// Handle form submission
+if(isset($_POST['add_product'])){
+    $req_fields = ['p_id','product_name','category_name','quantity','buying_price','selling_price','s_id'];
+    validate_fields($req_fields);
+
+    if(empty($errors)){
+        $p_id           = remove_junk($db->escape($_POST['p_id']));
+        $product_name   = remove_junk($db->escape($_POST['product_name']));
+        $category_name  = remove_junk($db->escape($_POST['category_name']));
+        $quantity       = (int)$_POST['quantity'];
+        $buying_price   = (float)$_POST['buying_price'];
+        $selling_price  = (float)$_POST['selling_price'];
+        $expire_date    = remove_junk($db->escape($_POST['expire_date']));
+        $s_id           = remove_junk($db->escape($_POST['s_id']));
+
+        // Insert product, recorded_date will be auto-set by database
+        $sql = "INSERT INTO product (p_id, product_name, quantity, buying_price, selling_price, category_name, s_id, expire_date) VALUES (";
+        $sql .= "'{$p_id}','{$product_name}',{$quantity},{$buying_price},{$selling_price},'{$category_name}','{$s_id}',";
+        $sql .= $expire_date ? "'{$expire_date}'" : "NULL";
+        $sql .= ")";
+        
+        if($db->query($sql)){
+            // Optionally, update purchase_order status
+            if(isset($o_id)){
+                $db->query("UPDATE purchase_order SET status='Added' WHERE o_id={$o_id}");
+            }
+            $session->msg('s',"Product has been added successfully.");
+            redirect('product.php');
+        } else {
+            $session->msg('d','Failed to add product.');
+            redirect('add_product.php');
+        }
+    } else {
+        $session->msg("d", $errors);
+        redirect('add_product.php');
+    }
+}
+
+// Generate a new product ID if adding manually
+if(!$p_id){
+    $p_id = 'p'.str_pad(rand(1,9999),4,'0',STR_PAD_LEFT);
+}
 ?>
-<?php
- if(isset($_POST['add_product'])){
-   $req_fields = array('product-title','product-categorie','product-supplier','product-quantity','buying-price', 'saleing-price' );
-   validate_fields($req_fields);
-   if(empty($errors)){
-     $p_name  = remove_junk($db->escape($_POST['product-title']));
-     $p_cat   = remove_junk($db->escape($_POST['product-category_name']));
-     $p_supplier = remove_junk($db->escape($_POST['product-supplier']));
-     $p_qty   = remove_junk($db->escape($_POST['product-quantity']));
-     $p_buy   = remove_junk($db->escape($_POST['buying-price']));
-     $p_sale  = remove_junk($db->escape($_POST['saleing-price']));
-     $p_exdate  = remove_junk($db->escape($_POST['Expire date']));
-    //  if (is_null($_POST['product-photo']) || $_POST['product-photo'] === "") {
-    //    $media_id = '0';
-    //  } else {
-    //    $media_id = remove_junk($db->escape($_POST['product-photo']));
-    //  }
-     $date    = make_date();
-     $query  = "INSERT INTO products (";
-     $query .=" name,quantity,buy_price,sale_price,categorie_id,media_id,date";
-     $query .=") VALUES (";
-     $query .=" '{$new_id}', '{$p_name}', '{$p_qty}', '{$p_buy}', '{$p_sale}', '{$p_cat}', '{$p_supplier}', '{$media_id}', NOW()";
-     $query .=")";
-     if($db->query($query)){
-       $session->msg('s',"Product added ");
-       redirect('add_product.php', false);
-     } else {
-       $session->msg('d',' Sorry failed to added!');
-       redirect('product.php', false);
-     }
 
-   } else{
-     $session->msg("d", $errors);
-     redirect('add_product.php',false);
-   }
-
- }
-
-?>
 <?php include_once('layouts/header.php'); ?>
-<div class="row">
-  <div class="col-md-12">
-    <?php echo display_msg($msg); ?>
-  </div>
-</div>
-  <div class="row">
-  <div class="col-md-8">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <strong>
-            <span class="glyphicon glyphicon-th"></span>
-            <span>Add New Product</span>
-         </strong>
-        </div>
-        <div class="panel-body">
-         <div class="col-md-12">
-          <form method="post" action="add_product.php" class="clearfix">
-              <div class="form-group">
-                <div class="input-group">
-                  <span class="input-group-addon">
-                   <i class="glyphicon glyphicon-th-large"></i>
-                  </span>
-                  <input type="text" class="form-control" name="product-title" placeholder="Product Title">
-               </div>
-              </div>
-              <div class="form-group">
-                <div class="row">
-                  <div class="col-md-4">
-                    <select class="form-control" name="product-categorie">
-                      <option value="">Select Product Category</option>
-                    <?php  foreach ($all_categories as $cat): ?>
-                      <option value="<?php echo $cat['category_name'] ?>">
-                        <?php echo $cat['category_name'] ?></option>
-                    <?php endforeach; ?>
-                    </select>
-                  </div>
-                  <div class="col-md-4">
-                    <select class="form-control" name="product-supplier">
-                      <option value="">Select Supplier</option>
-                    <?php  foreach ($all_suppliers as $supplier): ?>
-                      <option value="<?php echo $supplier['s_id'] ?>">
-                        <?php echo $supplier['s_name'] ?></option>
-                    <?php endforeach; ?>
-                    </select>
-                  </div>
-                  <div class="col-md-4">
-                    <select class="form-control" name="product-photo">
-                      <!-- <option value="">Select Product Photo</option> -->
-                    <?php  foreach ($all_photo as $photo): ?>
-                      <option value="<?php echo (int)$photo['id'] ?>">
-                        <?php echo $photo['file_name'] ?></option>
-                    <?php endforeach; ?>
-                    </select>
-                  </div>
-                </div>
-              </div>
 
-              <div class="form-group">
-               <div class="row">
-                 <div class="col-md-4">
-                   <div class="input-group">
-                     <span class="input-group-addon">
-                      <i class="glyphicon glyphicon-shopping-cart"></i>
-                     </span>
-                     <input type="number" class="form-control" name="product-quantity" placeholder="Product Quantity">
-                  </div>
-                 </div>
-                 <div class="col-md-4">
-                   <div class="input-group">
-                     <span class="input-group-addon">
-                       <i class="glyphicon glyphicon-usd"></i>
-                     </span>
-                     <input type="number" class="form-control" name="buying-price" placeholder="Buying Price">
-                     <span class="input-group-addon">.00</span>
-                  </div>
-                 </div>
-                  <div class="col-md-4">
-                    <div class="input-group">
-                      <span class="input-group-addon">
-                        <i class="glyphicon glyphicon-usd"></i>
-                      </span>
-                      <input type="number" class="form-control" name="saleing-price" placeholder="Selling Price">
-                      <span class="input-group-addon">.00</span>
-                   </div>
-                  </div>
-               </div>
-              </div>
-              <button type="submit" name="add_product" class="btn btn-danger">Add product</button>
-          </form>
-         </div>
-        </div>
-      </div>
+<div class="row">
+    <div class="col-md-12">
+        <?php echo display_msg($msg); ?>
     </div>
-  </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <strong><span class="glyphicon glyphicon-plus"></span> Add Product</strong>
+            </div>
+            <div class="panel-body">
+                <form method="post" action="add_product.php<?php echo isset($o_id) ? '?o_id='.$o_id : ''; ?>">
+                    <div class="form-group">
+                        <label for="p_id">Product ID</label>
+                        <input type="text" class="form-control" name="p_id" value="<?php echo $p_id; ?>" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="product_name">Product Name</label>
+                        <input type="text" class="form-control" name="product_name" value="<?php echo $product_name; ?>" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="category_name">Category</label>
+                        <input type="text" class="form-control" name="category_name" value="<?php echo $category_name; ?>" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="quantity">Quantity</label>
+                        <input type="number" class="form-control" name="quantity" value="<?php echo $quantity; ?>" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="buying_price">Buying Price (Rs)</label>
+                        <input type="number" step="0.01" class="form-control" name="buying_price" value="<?php echo $buying_price; ?>" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="selling_price">Selling Price (Rs)</label>
+                        <input type="number" step="0.01" class="form-control" name="selling_price" value="<?php echo $selling_price; ?>" min="<?php echo $buying_price; ?>" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="s_id">Supplier ID</label>
+                        <input type="text" class="form-control" name="s_id" value="<?php echo $s_id; ?>" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="expire_date">Expire Date</label>
+                        <input type="date" class="form-control" name="expire_date" value="<?php echo $expire_date ? date('Y-m-d', strtotime($expire_date)) : ''; ?>">
+                    </div>
+                    <div class="form-group">
+                         <label for="added_date">Add Date</label>
+                         <input type="text" class="form-control" name="added_date" value="<?php echo date('Y-m-d'); ?>" readonly>
+                    </div>
+
+                    <button type="submit" name="add_product" class="btn btn-primary">Add Product</button>
+                    <a href="purchase_orders.php" class="btn btn-default">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 <?php include_once('layouts/footer.php'); ?>

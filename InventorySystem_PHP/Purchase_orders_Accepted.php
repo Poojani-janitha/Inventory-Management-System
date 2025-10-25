@@ -23,7 +23,7 @@
           <span class="glyphicon glyphicon-th"></span>
           <span>All Purchase Orders</span>
         </strong>
-        <!-- <a href="add_purchase_order.php" class="btn btn-info pull-right">Add New</a> -->
+        <!-- <a href="add_product.php" class="btn btn-info pull-right">Add New</a> -->
       </div>
       <div class="panel-body">
         <table class="table table-bordered table-striped">
@@ -52,14 +52,18 @@
                 <td class="text-center"><?php echo read_date($order['order_date']); ?></td>
                 <td class="text-center"><?php echo remove_junk($order['status']); ?></td>
                 <td class="text-center">
-                  <!-- Add button -->
-                    <a href="add_purchase_order.php?id=<?php echo (int)$order['o_id']; ?>" class="btn btn-xs btn-success" data-toggle="tooltip" title="Add">
-                       <i class="glyphicon glyphicon-plus"></i> Add
-                    </a>
-                  <!-- Cancel button -->
-                    <a href="cancel_purchase_order.php?id=<?php echo (int)$order['o_id']; ?>" class="btn btn-xs btn-danger" data-toggle="tooltip" title="Cancel">
-                        <i class="glyphicon glyphicon-remove"></i> Cancel
-                    </a>
+                  <div class="btn-group">
+                    <?php if (strtolower($order['status']) == 'accepted'): ?>
+                         <a href="add_product.php" class="btn btn-info pull-right">Add New</a> 
+                    <?php else: ?>
+                      <!-- Show alert if status is Pending -->
+                      <button class="btn btn-xs btn-secondary" 
+                              onclick="alert('Cannot add — order is still pending.')" 
+                              data-toggle="tooltip" 
+                              title="Pending Order">
+                        <i class="glyphicon glyphicon-ban-circle"></i> Add
+                      </button>
+                    <?php endif; ?>
                   </div>
                 </td>
               </tr>
