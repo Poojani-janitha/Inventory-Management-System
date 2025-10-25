@@ -77,6 +77,22 @@
     </div>
 	</a>
 </div>
+
+<div class="row">
+	<a href="database_backup.php" style="color:black;">
+    <div class="col-md-3">
+       <div class="panel panel-box clearfix">
+         <div class="panel-icon pull-left bg-purple">
+          <i class="glyphicon glyphicon-download-alt"></i>
+        </div>
+        <div class="panel-value pull-right">
+          <h2 class="margin-top">Backup</h2>
+          <p class="text-muted">Database Backup</p>
+        </div>
+       </div>
+    </div>
+	</a>
+</div>
   
   <div class="row">
    <div class="col-md-4">
