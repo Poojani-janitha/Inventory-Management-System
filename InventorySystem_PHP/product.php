@@ -1,73 +1,72 @@
 <?php
-  $page_title = 'All Product';
+  $page_title = 'All Products';
   require_once('includes/load.php');
-  // Checkin What level user has permission to view this page
-   page_require_level(2);
-  $products = join_product_table();
+  page_require_level(2);
+  $products = find_all('product');
 ?>
 <?php include_once('layouts/header.php'); ?>
-  <div class="row">
-     <div class="col-md-12">
-       <?php echo display_msg($msg); ?>
-     </div>
-    <div class="col-md-12">
-      <div class="panel panel-default">
-        <div class="panel-heading clearfix">
-         <div class="pull-right">
-           <a href="add_product.php" class="btn btn-primary">Add New</a>
-         </div>
-        </div>
-        <div class="panel-body">
-          <table class="table table-bordered">
-            <thead>
-              <tr>
-                <th class="text-center" style="width: 50px;">Product ID</th>
-                <!-- <th> Photo</th> -->
-                <th> Product Name </th>
-                <th class="text-center" style="width: 10%;"> Categories </th>
-                <th class="text-center" style="width: 10%;"> Quntity</th>
-                <th class="text-center" style="width: 10%;"> Buying Price </th>
-                <th class="text-center" style="width: 10%;"> Selling Price </th>
-                <th class="text-center" style="width: 10%;"> Added date </th>
-                <th class="text-center" style="width: 10%;"> Expired date </th>
-                <th class="text-center" style="width: 100px;"> Actions </th>
-              </tr>
-            </thead>
-            <tbody>
-              <?php $count = 1; foreach ($products as $product):?>
-              <tr>
-                <td class="text-center"><?php echo count_id();?></td>
-                <!-- <td>
-                  <?php if($product['media_id'] === '0'): ?>
-                    <img class="img-avatar img-circle" src="uploads/products/no_image.png" alt="">
-                  <?php else: ?>
-                  <img class="img-avatar img-circle" src="uploads/products/<?php echo $product['image']; ?>" alt="">
-                <?php endif; ?>
-                </td> -->
-                <td> <?php echo remove_junk($product['name']); ?></td>
-                <td class="text-center"> <?php echo remove_junk($product['categorie']); ?></td>
-                <td class="text-center"> <?php echo remove_junk($product['quantity']); ?></td>
-                <td class="text-center"> <?php echo remove_junk($product['buy_price']); ?></td>
-                <td class="text-center"> <?php echo remove_junk($product['sale_price']); ?></td>
-                <td class="text-center"> <?php echo read_date($product['date']); ?></td>
-                <td class="text-center"> <?php echo read_date($product['date']); ?></td>
 
+<div class="row">
+  <div class="col-md-12">
+    <?php echo display_msg($msg); ?>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading clearfix">
+        <strong>
+          <span class="glyphicon glyphicon-th"></span>
+          <span>All  Available  Products</span>
+        </strong>
+        <!-- <a href="add_product.php" class="btn btn-info pull-right">Add New</a> -->
+      </div>
+      <div class="panel-body">
+        <table class="table table-bordered table-striped">
+          <thead>
+            <tr>
+              <th class="text-center">Product ID</th>
+              <th class="text-center">Product Name</th>
+              <th class="text-center">Category</th>
+              <th class="text-center">Quantity</th>
+              <th class="text-center">Buying Price (Rs)</th>
+              <th class="text-center">Selling Price (Rs)</th>
+              <th class="text-center">Added Date</th>
+              <th class="text-center">Expire Date</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php foreach ($products as $product): ?>
+              <tr>
+                <td class="text-center"><?php echo remove_junk($product['p_id']); ?></td>
+                <td><?php echo remove_junk($product['product_name']); ?></td>
+                <td class="text-center"><?php echo remove_junk($product['category_name']); ?></td>
+                <td class="text-center"><?php echo remove_junk($product['quantity']); ?></td>
+                <td class="text-center"><?php echo number_format($product['buying_price'], 2); ?></td>
+                <td class="text-center"><?php echo number_format($product['selling_price'], 2); ?></td>
+                <td class="text-center"><?php echo read_date($product['recorded_date']); ?></td>
+                <td class="text-center"><?php echo remove_junk($product['expire_date']); ?></td>
                 <td class="text-center">
                   <div class="btn-group">
-                    <a href="edit_product.php?id=<?php echo (int)$product['id'];?>" class="btn btn-info btn-xs"  title="Edit" data-toggle="tooltip">
-                      <span class="glyphicon glyphicon-edit"></span>
+                    <!-- <a href="edit_product.php?id=<?php echo (int)$product['p_id']; ?>" class="btn btn-xs btn-warning" data-toggle="tooltip" title="Edit"> -->
+                    <a href="edit_product.php?id=<?php echo urlencode($product['p_id']); ?>" class="btn btn-xs btn-warning" data-toggle="tooltip" title="Edit">
+  
+                    <i class="glyphicon glyphicon-edit"></i>
                     </a>
-                    <a href="delete_product.php?id=<?php echo (int)$product['id'];?>" class="btn btn-danger btn-xs"  title="Delete" data-toggle="tooltip">
-                      <span class="glyphicon glyphicon-trash"></span>
+                    <a href="delete_product.php?id=<?php echo (int)$product['p_id']; ?>" class="btn btn-xs btn-danger" data-toggle="tooltip" title="Delete">
+                      <i class="glyphicon glyphicon-trash"></i>
                     </a>
                   </div>
                 </td>
               </tr>
-             <?php endforeach; ?>
-            </tbody>
-          </tabel>
-        </div>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
-  <?php include_once('layouts/footer.php'); ?>
+</div>
+
+<?php include_once('layouts/footer.php'); ?>

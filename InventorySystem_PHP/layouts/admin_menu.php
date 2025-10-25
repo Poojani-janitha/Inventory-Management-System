@@ -43,6 +43,7 @@
       <span>Products</span>
     </a>
     <ul class="nav submenu">
+       <li><a href="Purchase_orders_Accepted.php">Purchase orders</a> </li>
        <li><a href="product.php">Manage Products</a> </li>
        <li><a href="add_product.php">Add Products</a> </li>
    </ul>
@@ -54,8 +55,8 @@
        <span>Sales</span>
       </a>
       <ul class="nav submenu">
-         <li><a href="sales.php">Manage Sales</a> </li>
-         <li><a href="add_sale.php">Add Sale</a> </li>
+         <li><a href="invoice_list.php">Manage Sales</a> </li>
+         <li><a href="add_sales.php">Add Sale</a> </li>
      </ul>
   </li>
   <li>
@@ -64,9 +65,15 @@
        <span>Sales Report</span>
       </a>
       <ul class="nav submenu">
-        <li><a href="sales_report.php">Sales by dates </a></li>
+        <!-- <li><a href="sales_report.php">Sales by dates </a></li> -->
         <li><a href="monthly_sales.php">Monthly sales</a></li>
         <li><a href="daily_sales.php">Daily sales</a> </li>
       </ul>
+  </li>
+  <li>
+    <a href="database_backup.php">
+      <i class="glyphicon glyphicon-download-alt"></i>
+      <span>Database Backup</span>
+    </a>
   </li>
 </ul>
