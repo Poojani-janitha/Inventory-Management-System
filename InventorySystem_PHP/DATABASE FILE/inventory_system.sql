@@ -258,7 +258,7 @@ ADD CONSTRAINT `FK_products` FOREIGN KEY (`categorie_id`) REFERENCES `categories
 -- Constraints for table `sales`
 --
 ALTER TABLE `sales`
-ADD CONSTRAINT `SK` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ADD CONSTRAINT  `SK` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `users`
