@@ -1,4 +1,4 @@
-<?php 
+<?php
 $page_title = 'Order Management';
 require_once('includes/load.php');
 page_require_level(1);
@@ -7,111 +7,154 @@ page_require_level(1);
 $all_categories = find_all('categories');
 
 // Get all orders
-$sql = "SELECT o.*, p.name as product_name, s.supplier_name, c.name as category_name
-        FROM orders o
-        LEFT JOIN products p ON o.product_id = p.id
-        LEFT JOIN suppliers s ON o.supplier_id = s.id
-        LEFT JOIN categories c ON p.categorie_id = c.id
-        ORDER BY o.date DESC";
+$sql = "SELECT po.*, si.s_name AS supplier_name
+        FROM purchase_order po
+        JOIN supplier_info si ON po.s_id = si.s_id
+        ORDER BY po.order_date DESC";
 $all_orders = find_by_sql($sql);
-?>
 
-<?php
-// ======================== PLACE NEW ORDER ========================
+/*======================== PLACE NEW ORDER ========================*/
 if (isset($_POST['place_order'])) {
-    $req_fields = array('category-id', 'product-id', 'supplier-id', 'order-quantity');
+    $req_fields = ['category_name', 'product_name', 'supplier_id', 'order_quantity'];
     validate_fields($req_fields);
-    
-    $category_id = (int)$db->escape($_POST['category-id']);
-    $product_id = (int)$db->escape($_POST['product-id']);
-    $supplier_id = (int)$db->escape($_POST['supplier-id']);
-    $order_qty = (int)$db->escape($_POST['order-quantity']);
-    
+
     if (empty($errors)) {
-        $product = find_by_id('products', $product_id);
-        $supplier = find_by_id('suppliers', $supplier_id);
+        $category_name = remove_junk($db->escape($_POST['category_name']));
+        $product_name  = remove_junk($db->escape($_POST['product_name']));
+        $supplier_id   = remove_junk($db->escape($_POST['supplier_id']));
+        $order_qty     = (int)$db->escape($_POST['order_quantity']);
 
-        $sql = "INSERT INTO orders (product_id, supplier_id, quantity, date, status)
-                VALUES ('{$product_id}', '{$supplier_id}', '{$order_qty}', NOW(), 'Pending')";
-        
-        if ($db->query($sql)) {
-            // Send email
-            $to = $supplier['email'];
-            $subject = "New Order Request - " . $product['name'];
-            $message = "Dear {$supplier['supplier_name']},\n\n".
-                       "We would like to place an order for the following:\n\n".
-                       "Product: {$product['name']}\n".
-                       "Quantity: {$order_qty} units\n".
-                       "Order Date: " . date('Y-m-d H:i:s') . "\n\n".
-                       "Please confirm the availability and expected delivery date.\n\n".
-                       "Best Regards,\nInventory Management Team";
-            $headers = "From: noreply@inventorysystem.com\r\nReply-To: admin@inventorysystem.com\r\n";
-            
-            if (mail($to, $subject, $message, $headers)) {
-                $session->msg("s", "Order placed successfully and email sent to supplier.");
-            } else {
-                $session->msg("s", "Order placed successfully! (Email could not be sent)");
-            }
-        } else {
-            $session->msg("d", "Failed to place order.");
+        // Validate supplier_id is not empty
+        if (empty($supplier_id)) {
+            $session->msg("d", "Please select a valid supplier.");
+            redirect('order.php', false);
         }
-        redirect('order.php', false);
-    } else {
-        $session->msg("d", $errors);
-        redirect('order.php', false);
-    }
-}
-?>
 
-<?php
-// ======================== EDIT ORDER ========================
-if (isset($_POST['edit_order'])) {
-    $order_id = (int)$db->escape($_POST['order-id']);
-    $new_product_id = (int)$db->escape($_POST['edit-product-id']);
-    $new_supplier_id = (int)$db->escape($_POST['edit-supplier-id']);
-    $new_quantity = (int)$db->escape($_POST['edit-quantity']);
-    $new_status = $db->escape($_POST['edit-status']);
-    
-    $old_order = find_by_id('orders', $order_id);
-
-    if ($old_order) {
-        $sql = "UPDATE orders 
-                SET product_id='{$new_product_id}', supplier_id='{$new_supplier_id}', 
-                    quantity='{$new_quantity}', status='{$new_status}' 
-                WHERE id='{$order_id}'";
+        // Get supplier details
+        $supplier_sql = "SELECT * FROM supplier_info WHERE s_id = '{$supplier_id}' LIMIT 1";
+        $supplier_result = $db->query($supplier_sql);
         
-        if ($db->query($sql)) {
-            $session->msg("s", "Order updated successfully.");
-            
-            // Send email if order details changed
-            if ($old_order['quantity'] != $new_quantity || 
-                $old_order['supplier_id'] != $new_supplier_id || 
-                $old_order['product_id'] != $new_product_id) {
-                    
-                $supplier = find_by_id('suppliers', $new_supplier_id);
-                $product = find_by_id('products', $new_product_id);
-                
+        if ($supplier_result && $supplier_result->num_rows > 0) {
+            $supplier = $supplier_result->fetch_assoc();
+        } else {
+            $session->msg("d", "Supplier not found. Please try again.");
+            redirect('order.php', false);
+        }
+
+        // Get product price from supplier_product table
+        $price_sql = "SELECT price FROM supplier_product 
+                      WHERE s_id = '{$supplier_id}' 
+                      AND product_name = '{$product_name}' 
+                      LIMIT 1";
+        $price_result = $db->query($price_sql);
+        
+        if ($price_result && $price_result->num_rows > 0) {
+            $price_data = $price_result->fetch_assoc();
+            $price = $price_data['price'];
+        } else {
+            $session->msg("d", "Price not found for this product and supplier combination.");
+            redirect('order.php', false);
+        }
+
+        // Insert order into purchase_order table
+        $insert_sql = "INSERT INTO purchase_order (s_id, product_name, category_name, quantity, price, order_date, status)
+                       VALUES ('{$supplier_id}', '{$product_name}', '{$category_name}', '{$order_qty}', '{$price}', NOW(), 'Pending')";
+
+        if ($db->query($insert_sql)) {
+            // Prepare and send email to supplier
+            if ($supplier && !empty($supplier['email'])) {
                 $to = $supplier['email'];
-                $subject = "Order Update Notification - " . $product['name'];
-                $message = "Dear {$supplier['supplier_name']},\n\n".
-                           "Please note that an existing order has been updated.\n\n".
-                           "Updated Details:\n".
-                           "Product: {$product['name']}\n".
-                           "Quantity: {$new_quantity} units\n".
-                           "Status: {$new_status}\n".
-                           "Updated Date: " . date('Y-m-d H:i:s') . "\n\n".
-                           "If you have already started processing the previous request, please confirm.\n\n".
-                           "Best Regards,\nInventory Management Team";
-                $headers = "From: noreply@inventorysystem.com\r\nReply-To: admin@inventorysystem.com\r\n";
+                $subject = "New Purchase Order - {$product_name}";
                 
-                mail($to, $subject, $message, $headers);
+                $total_amount = $price * $order_qty;
+                
+                $message = "
+                <html>
+                <head>
+                    <style>
+                        body { font-family: Arial, sans-serif; line-height: 1.6; }
+                        .container { padding: 20px; max-width: 600px; }
+                        .header { background: #4CAF50; color: white; padding: 15px; text-align: center; }
+                        .content { padding: 20px; background: #f9f9f9; }
+                        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+                        th { background: #4CAF50; color: white; }
+                        .footer { margin-top: 20px; padding: 15px; background: #333; color: white; text-align: center; }
+                    </style>
+                </head>
+                <body>
+                    <div class='container'>
+                        <div class='header'>
+                            <h2>New Purchase Order</h2>
+                        </div>
+                        <div class='content'>
+                            <p>Dear {$supplier['s_name']},</p>
+                            <p>We would like to place the following order:</p>
+                            
+                            <table>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Details</th>
+                                </tr>
+                                <tr>
+                                    <td><strong>Product Name</strong></td>
+                                    <td>{$product_name}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Category</strong></td>
+                                    <td>{$category_name}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Quantity</strong></td>
+                                    <td>{$order_qty} units</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Unit Price</strong></td>
+                                    <td>Rs. " . number_format($price, 2) . "</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Total Amount</strong></td>
+                                    <td><strong>Rs. " . number_format($total_amount, 2) . "</strong></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Order Date</strong></td>
+                                    <td>" . date('Y-m-d H:i:s') . "</td>
+                                </tr>
+                            </table>
+                            
+                            <p><strong>Delivery Instructions:</strong></p>
+                            <p>Please confirm availability and provide expected delivery date.</p>
+                            
+                            <p>For any queries, please contact us at:</p>
+                            <p>Email: admin@inventorysystem.lk<br>
+                            Phone: +94 11 234 5678</p>
+                        </div>
+                        <div class='footer'>
+                            <p>Thank you for your service!</p>
+                            <p><strong>Inventory Management System</strong></p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+                ";
+
+                // Send email
+                if (send_email($to, $subject, $message)) {
+                    $session->msg("s", "Order placed successfully! Email sent to {$supplier['s_name']} ({$to}).");
+                } else {
+                    $session->msg("w", "Order placed successfully, but email could not be sent. Please check email settings.");
+                }
+            } else {
+                $session->msg("w", "Order placed successfully, but supplier email not available.");
             }
+            
         } else {
-            $session->msg("d", "Failed to update order.");
+            $session->msg("d", "Failed to place order. Error: " . $db->error);
         }
     } else {
-        $session->msg("d", "Order not found.");
+        $session->msg("d", implode("<br>", $errors));
     }
+    
     redirect('order.php', false);
 }
 ?>
@@ -119,234 +162,190 @@ if (isset($_POST['edit_order'])) {
 <?php include_once('layouts/header.php'); ?>
 
 <div class="row">
-    <div class="col-md-12"><?php echo display_msg($msg); ?></div>
+  <div class="col-md-12"><?php echo display_msg($msg); ?></div>
 </div>
 
 <div class="row">
-    <!-- ======= PLACE NEW ORDER ======= -->
-    <div class="col-md-5">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <strong><span class="glyphicon glyphicon-shopping-cart"></span> Place New Order</strong>
-            </div>
-            <div class="panel-body">
-                <form method="post" action="order.php">
-                    <!-- CATEGORY -->
-                    <div class="form-group">
-                        <label>Select Category</label>
-                        <select class="form-control" name="category-id" id="category-select" required>
-                            <option value="">Select Category</option>
-                            <?php foreach ($all_categories as $cat): ?>
-                                <option value="<?php echo (int)$cat['id']; ?>">
-                                    <?php echo remove_junk(ucfirst($cat['name'])); ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-
-                    <!-- PRODUCT -->
-                    <div class="form-group">
-                        <label>Select Product</label>
-                        <select class="form-control" name="product-id" id="product-select" required>
-                            <option value="">Select category first</option>
-                        </select>
-                    </div>
-
-                    <!-- SUPPLIER -->
-                    <div class="form-group">
-                        <label>Select Supplier</label>
-                        <select class="form-control" name="supplier-id" id="supplier-select" required>
-                            <option value="">Select product first</option>
-                        </select>
-                    </div>
-
-                    <!-- QUANTITY -->
-                    <div class="form-group">
-                        <label>Order Quantity</label>
-                        <input type="number" class="form-control" name="order-quantity" min="1" required>
-                    </div>
-
-                    <button type="submit" name="place_order" class="btn btn-primary">
-                        <span class="glyphicon glyphicon-send"></span> Place Order
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- ======= ALL ORDERS ======= -->
-    <div class="col-md-7">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <strong><span class="glyphicon glyphicon-th"></span> All Orders</strong>
-            </div>
-            <div class="panel-body">
-                <table class="table table-bordered table-striped table-hover">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Category</th>
-                            <th>Product</th>
-                            <th>Supplier</th>
-                            <th>Quantity</th>
-                            <th>Date</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($all_orders as $order): ?>
-                        <tr>
-                            <td><?php echo count_id(); ?></td>
-                            <td><?php echo remove_junk($order['category_name']); ?></td>
-                            <td><?php echo remove_junk($order['product_name']); ?></td>
-                            <td><?php echo remove_junk($order['supplier_name']); ?></td>
-                            <td><?php echo $order['quantity']; ?></td>
-                            <td><?php echo date('Y-m-d', strtotime($order['date'])); ?></td>
-                            <td><span class="label label-warning"><?php echo $order['status']; ?></span></td>
-                            <td>
-                                <button class="btn btn-xs btn-info editBtn"
-                                    data-id="<?php echo $order['id']; ?>"
-                                    data-product="<?php echo $order['product_id']; ?>"
-                                    data-supplier="<?php echo $order['supplier_id']; ?>"
-                                    data-qty="<?php echo $order['quantity']; ?>"
-                                    data-status="<?php echo $order['status']; ?>">
-                                    <span class="glyphicon glyphicon-edit"></span> Edit
-                                </button>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- ======= EDIT ORDER MODAL ======= -->
-<div id="editModal" class="modal fade" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <form method="post" action="order.php">
-        <div class="modal-header">
-          <h4 class="modal-title">Edit Order</h4>
-        </div>
-        <div class="modal-body">
-          <input type="hidden" name="order-id" id="edit-order-id">
-          
+  <!-- ======= PLACE NEW ORDER ======= -->
+  <div class="col-md-5">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <strong><span class="glyphicon glyphicon-shopping-cart"></span> Place New Order</strong>
+      </div>
+      <div class="panel-body">
+        <form method="post" action="order.php" id="order-form">
+          <!-- Category -->
           <div class="form-group">
-            <label>Product</label>
-            <select class="form-control" name="edit-product-id" id="edit-product-id" required>
-              <?php foreach (find_all('products') as $p): ?>
-                <option value="<?php echo $p['id']; ?>"><?php echo $p['name']; ?></option>
+            <label>Select Category</label>
+            <select class="form-control" name="category_name" id="category-select" required>
+              <option value="">Select Category</option>
+              <?php foreach ($all_categories as $cat): ?>
+                <option value="<?php echo remove_junk($cat['category_name']); ?>">
+                  <?php echo remove_junk($cat['category_name']); ?>
+                </option>
               <?php endforeach; ?>
             </select>
           </div>
-          
+
+          <!-- Product -->
           <div class="form-group">
-            <label>Supplier</label>
-            <select class="form-control" name="edit-supplier-id" id="edit-supplier-id" required>
-              <?php foreach (find_all('suppliers') as $s): ?>
-                <option value="<?php echo $s['id']; ?>"><?php echo $s['supplier_name']; ?></option>
-              <?php endforeach; ?>
+            <label>Select Product</label>
+            <select class="form-control" name="product_name" id="product-select" required>
+              <option value="">Select category first</option>
             </select>
-          </div>
-          
-          <div class="form-group">
-            <label>Quantity</label>
-            <input type="number" class="form-control" name="edit-quantity" id="edit-quantity" min="1" required>
           </div>
 
+          <!-- Supplier -->
           <div class="form-group">
-            <label>Status</label>
-            <select class="form-control" name="edit-status" id="edit-status" required>
-              <option>Pending</option>
-              <option>Processing</option>
-              <option>Completed</option>
-              <option>Cancelled</option>
+            <label>Select Supplier</label>
+            <select class="form-control" name="supplier_id" id="supplier-select" required>
+              <option value="">Select product first</option>
             </select>
           </div>
+
+          <!-- Quantity -->
+          <div class="form-group">
+            <label>Order Quantity</label>
+            <input type="number" class="form-control" name="order_quantity" placeholder="Enter quantity" min="1" required>
+          </div>
+
+          <button type="submit" name="place_order" class="btn btn-primary btn-block">
+            <span class="glyphicon glyphicon-send"></span> Place Order
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======= ALL ORDERS ======= -->
+  <div class="col-md-7">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <strong><span class="glyphicon glyphicon-th"></span> Purchase Orders</strong>
+      </div>
+      <div class="panel-body">
+        <div style="max-height: 500px; overflow-y: auto;">
+          <table class="table table-bordered table-striped table-hover">
+            <thead>
+              <tr>
+                <th class="text-center" style="width: 40px;">#</th>
+                <th>Category</th>
+                <th>Product</th>
+                <th>Supplier</th>
+                <th class="text-center">Qty</th>
+                <th class="text-center">Price</th>
+                <th class="text-center">Total</th>
+                <th class="text-center">Date</th>
+                <th class="text-center">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php if (empty($all_orders)): ?>
+              <tr>
+                <td colspan="9" class="text-center">No orders placed yet</td>
+              </tr>
+              <?php else: ?>
+                <?php foreach ($all_orders as $order): ?>
+                <tr>
+                  <td class="text-center"><?php echo count_id(); ?></td>
+                  <td><?php echo remove_junk($order['category_name']); ?></td>
+                  <td><?php echo remove_junk($order['product_name']); ?></td>
+                  <td><?php echo remove_junk($order['supplier_name']); ?></td>
+                  <td class="text-center"><?php echo (int)$order['quantity']; ?></td>
+                  <td class="text-center">Rs. <?php echo number_format($order['price'], 2); ?></td>
+                  <td class="text-center">Rs. <?php echo number_format($order['price'] * $order['quantity'], 2); ?></td>
+                  <td class="text-center"><?php echo date('Y-m-d', strtotime($order['order_date'])); ?></td>
+                  <td class="text-center">
+                    <span class="label label-warning"><?php echo remove_junk($order['status']); ?></span>
+                  </td>
+                </tr>
+                <?php endforeach; ?>
+              <?php endif; ?>
+            </tbody>
+          </table>
         </div>
-        <div class="modal-footer">
-          <button type="submit" name="edit_order" class="btn btn-success">Save Changes</button>
-          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-        </div>
-      </form>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- ======= AJAX SCRIPTS ======= -->
+<!-- ======= AJAX LOGIC ======= -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    var categorySelect = document.getElementById('category-select');
-    var productSelect = document.getElementById('product-select');
-    var supplierSelect = document.getElementById('supplier-select');
+  const categorySelect = document.getElementById('category-select');
+  const productSelect = document.getElementById('product-select');
+  const supplierSelect = document.getElementById('supplier-select');
 
-    // Category -> Products
-    categorySelect.addEventListener('change', function() {
-        var categoryId = this.value;
-        productSelect.innerHTML = '<option value="">Loading products...</option>';
-        supplierSelect.innerHTML = '<option value="">Select product first</option>';
-        if (categoryId) {
-            var xhr = new XMLHttpRequest();
-            xhr.open('POST', 'get_products.php', true);
-            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-            xhr.onload = function() {
-                if (xhr.status === 200) {
-                    try {
-                        var products = JSON.parse(xhr.responseText);
-                        productSelect.innerHTML = '<option value="">Select Product</option>';
-                        products.forEach(function(p) {
-                            var option = document.createElement('option');
-                            option.value = p.id;
-                            option.text = p.name;
-                            productSelect.appendChild(option);
-                        });
-                    } catch (e) { productSelect.innerHTML = '<option>Error loading products</option>'; }
-                }
-            };
-            xhr.send('category_id=' + encodeURIComponent(categoryId));
+  // Category change - Load products
+  categorySelect.addEventListener('change', function() {
+    const category = this.value;
+    productSelect.innerHTML = '<option value="">Loading products...</option>';
+    supplierSelect.innerHTML = '<option value="">Select product first</option>';
+    
+    if (category) {
+      fetch('get_products.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: 'category_name=' + encodeURIComponent(category)
+      })
+      .then(res => res.json())
+      .then(data => {
+        console.log('Products received:', data);
+        productSelect.innerHTML = '<option value="">Select Product</option>';
+        if (data.length > 0) {
+          data.forEach(p => {
+            let opt = document.createElement('option');
+            opt.value = p.product_name;
+            opt.text = p.product_name;
+            productSelect.appendChild(opt);
+          });
+        } else {
+          productSelect.innerHTML = '<option value="">No products available</option>';
         }
-    });
+      })
+      .catch(err => {
+        console.error('Error loading products:', err);
+        productSelect.innerHTML = '<option value="">Error loading products</option>';
+      });
+    } else {
+      productSelect.innerHTML = '<option value="">Select category first</option>';
+    }
+  });
 
-    // Product -> Suppliers
-    productSelect.addEventListener('change', function() {
-        var productId = this.value;
-        supplierSelect.innerHTML = '<option value="">Loading suppliers...</option>';
-        if (productId) {
-            var xhr = new XMLHttpRequest();
-            xhr.open('POST', 'get_suppliers.php', true);
-            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-            xhr.onload = function() {
-                if (xhr.status === 200) {
-                    try {
-                        var suppliers = JSON.parse(xhr.responseText);
-                        supplierSelect.innerHTML = '<option value="">Select Supplier</option>';
-                        suppliers.forEach(function(s) {
-                            var option = document.createElement('option');
-                            option.value = s.id;
-                            option.text = s.supplier_name + ' (' + s.contact_number + ')';
-                            supplierSelect.appendChild(option);
-                        });
-                    } catch (e) { supplierSelect.innerHTML = '<option>Error loading suppliers</option>'; }
-                }
-            };
-            xhr.send('product_id=' + encodeURIComponent(productId));
+  // Product change - Load suppliers
+  productSelect.addEventListener('change', function() {
+    const product = this.value;
+    supplierSelect.innerHTML = '<option value="">Loading suppliers...</option>';
+    
+    if (product) {
+      fetch('get_suppliers.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: 'product_name=' + encodeURIComponent(product)
+      })
+      .then(res => res.json())
+      .then(data => {
+        console.log('Suppliers received:', data);
+        supplierSelect.innerHTML = '<option value="">Select Supplier</option>';
+        if (data.length > 0) {
+          data.forEach(s => {
+            let opt = document.createElement('option');
+            opt.value = s.s_id;
+            opt.text = s.s_name + ' - Rs. ' + parseFloat(s.price).toFixed(2) + ' (' + s.contact_number + ')';
+            supplierSelect.appendChild(opt);
+          });
+        } else {
+          supplierSelect.innerHTML = '<option value="">No suppliers available</option>';
         }
-    });
-
-    // Edit button modal
-    document.querySelectorAll('.editBtn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            document.getElementById('edit-order-id').value = this.dataset.id;
-            document.getElementById('edit-product-id').value = this.dataset.product;
-            document.getElementById('edit-supplier-id').value = this.dataset.supplier;
-            document.getElementById('edit-quantity').value = this.dataset.qty;
-            document.getElementById('edit-status').value = this.dataset.status;
-            $('#editModal').modal('show');
-        });
-    });
+      })
+      .catch(err => {
+        console.error('Error loading suppliers:', err);
+        supplierSelect.innerHTML = '<option value="">Error loading suppliers</option>';
+      });
+    } else {
+      supplierSelect.innerHTML = '<option value="">Select product first</option>';
+    }
+  });
 });
 </script>
 
