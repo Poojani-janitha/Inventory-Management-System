@@ -43,7 +43,7 @@
        <span>Sales</span>
       </a>
       <ul class="nav submenu">
-         <li><a href="manage_sales.php">Manage Sales</a> </li>
+         <li><a href="invoice_list.php">Manage Sales</a> </li>
          <li><a href="add_sales.php">Add Sale</a> </li>
      </ul>
   </li>
@@ -57,5 +57,11 @@
         <li><a href="monthly_sales.php">Monthly sales</a></li>
         <li><a href="daily_sales.php">Daily sales</a> </li>
       </ul>
+  </li>
+  <li>
+    <a href="database_backup.php">
+      <i class="glyphicon glyphicon-download-alt"></i>
+      <span>Database Backup</span>
+    </a>
   </li>
 </ul>
