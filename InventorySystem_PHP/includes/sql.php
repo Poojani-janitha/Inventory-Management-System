@@ -247,9 +247,10 @@ function tableExists($table){
  function join_product_table(){
     global $db;
     $sql  =" SELECT p.p_id AS id,p.product_name AS name,p.quantity,p.buying_price AS buy_price,p.selling_price AS sale_price,p.recorded_date AS date,c.category_name";
-   $sql  .=" AS categorie,m.file_name AS image";
+  //  $sql  .=" AS categorie,m.file_name AS image";
    $sql  .=" FROM product p";
    $sql  .=" LEFT JOIN categories c ON c.category_name = p.category_name";
+  //  $sql  .=" LEFT JOIN media m ON m.id = p.media_id";
    $sql  .=" ORDER BY p.p_id ASC";
    return find_by_sql($sql);
 
@@ -297,8 +298,9 @@ function tableExists($table){
  function find_recent_product_added($limit){
    global $db;
    $sql   = " SELECT p.p_id AS id,p.product_name AS name,p.selling_price AS sale_price,c.category_name AS categorie,";
-   $sql  .= "m.file_name AS image FROM product p";
+  //  $sql  .= "m.file_name AS image FROM product p";
    $sql  .= " LEFT JOIN categories c ON c.category_name = p.category_name";
+  //  $sql  .= " LEFT JOIN media m ON m.id = p.media_id";
    $sql  .= " ORDER BY p.p_id DESC LIMIT ".$db->escape((int)$limit);
    return find_by_sql($sql);
  }
