@@ -12,6 +12,7 @@ if (isset($_POST['category_name']) && !empty($_POST['category_name'])) {
     if ($result && $result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
             $products[] = $row;
+            
         }
     }
     
