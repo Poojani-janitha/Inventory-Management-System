@@ -478,4 +478,3 @@ CREATE TABLE sales (
    
     INDEX idx_invoice_number (invoice_number)
 );
-

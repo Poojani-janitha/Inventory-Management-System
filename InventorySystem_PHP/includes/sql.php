@@ -213,9 +213,12 @@ function tableExists($table){
   function find_by_groupLevel($level)
   {
     global $db;
-    $sql = "SELECT group_level FROM user_groups WHERE group_level = '{$db->escape($level)}' LIMIT 1 ";
+    $sql = "SELECT group_level, group_status FROM user_groups WHERE group_level = '{$db->escape($level)}' LIMIT 1 ";
     $result = $db->query($sql);
-    return($db->num_rows($result) === 0 ? true : false);
+    if($db->num_rows($result) > 0) {
+      return $db->fetch_assoc($result);
+    }
+    return false;
   }
   /*--------------------------------------------------------------*/
   /* Function for cheaking which user level has access to page
@@ -229,7 +232,7 @@ function tableExists($table){
             $session->msg('d','Please login...');
             redirect('index.php', false);
       //if Group status Deactive
-     elseif($login_level['group_status'] === '0'):
+     elseif($login_level && $login_level['group_status'] == 0):
            $session->msg('d','This level user has been band!');
            redirect('home.php',false);
       //cheackin log in User level and Require level is Less than or equal to
