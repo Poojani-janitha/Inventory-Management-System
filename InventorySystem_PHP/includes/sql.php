@@ -242,9 +242,8 @@ function tableExists($table){
 
      }
   /*--------------------------------------------------------------*/
-  /* Function for Finding all product name
-  /* JOIN with categorie  and media database table
-  /*--------------------------------------------------------------*/
+  /* Function for Finding all product name */
+
  function join_product_table(){
     global $db;
     $sql  =" SELECT p.p_id AS id,p.product_name AS name,p.quantity,p.buying_price AS buy_price,p.selling_price AS sale_price,p.recorded_date AS date,c.category_name";
