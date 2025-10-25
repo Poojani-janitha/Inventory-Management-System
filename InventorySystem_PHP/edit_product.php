@@ -26,7 +26,6 @@ if(!$product){
        $p_qty   = remove_junk($db->escape($_POST['product-quantity']));
        $p_buy   = remove_junk($db->escape($_POST['buying-price']));
        $p_sale  = remove_junk($db->escape($_POST['saleing-price']));
-<<<<<<< HEAD
        $p_expire = remove_junk($db->escape($_POST['expire-date']));
       //  if (is_null($_POST['product-photo']) || $_POST['product-photo'] === "") {
       //    $media_id = '0';
@@ -38,17 +37,6 @@ if(!$product){
        $query  .=" name ='{$p_name}', quantity ='{$p_qty}',";
        $query  .=" buy_price ='{$p_buy}', sale_price ='{$p_sale}', categorie_id ='{$p_cat}',expire_date ='{$p_expire}'";
        $query  .=" WHERE id ='{$product['id']}'";
-=======
-       if (is_null($_POST['product-photo']) || $_POST['product-photo'] === "") {
-         $media_id = '1';
-       } else {
-         $media_id = remove_junk($db->escape($_POST['product-photo']));
-       }
-       $query   = "UPDATE product SET";
-       $query  .=" product_name ='{$p_name}', quantity ='{$p_qty}',";
-       $query  .=" buying_price ='{$p_buy}', selling_price ='{$p_sale}', category_name ='{$p_cat}', s_id='{$p_supplier}', media_id='{$media_id}'";
-       $query  .=" WHERE p_id ='{$product['p_id']}'";
->>>>>>> d0d722e9e0d9be224cf00b85a3a8308ff9598136
        $result = $db->query($query);
                if($result && $db->affected_rows() === 1){
                  $session->msg('s',"Product updated ");
@@ -102,20 +90,7 @@ if(!$product){
                    <?php endforeach; ?>
                  </select>
                   </div>
-<<<<<<< HEAD
                   <!-- <div class="col-md-6">
-=======
-                  <div class="col-md-4">
-                    <select class="form-control" name="product-supplier">
-                      <option value=""> Select a supplier</option>
-                      <?php  foreach ($all_suppliers as $supplier): ?>
-                        <option value="<?php echo $supplier['s_id'];?>" <?php if($product['s_id'] === $supplier['s_id']): echo "selected"; endif; ?> >
-                          <?php echo $supplier['s_name'] ?></option>
-                      <?php endforeach; ?>
-                    </select>
-                  </div>
-                  <div class="col-md-4">
->>>>>>> d0d722e9e0d9be224cf00b85a3a8308ff9598136
                     <select class="form-control" name="product-photo">
                       <option value=""> No image</option>
                       <?php  foreach ($all_photo as $photo): ?>
