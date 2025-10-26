@@ -16,7 +16,8 @@ $existing_product=false;
 
 // Load details if called with ?o_id=
 if(isset($_GET['o_id'])){
-  // $o_id=(int)$_GET['3'];
+  // $o_id=(int)$_GET['o_id'];
+  $o_id=(int)$_GET['o_id'];
   
   // Query purchase order details directly
   $sql="SELECT * FROM purchase_order WHERE o_id={$o_id} LIMIT 1";
@@ -232,7 +233,7 @@ include_once('layouts/header.php');
               <span class="glyphicon glyphicon-save"></span> 
               <?php echo $existing_product?'Update Stock':'Add Product';?>
             </button>
-            <a href="<?php echo isset($o_id)?'purchase_orders.php':'product.php';?>" class="btn btn-default">
+            <a href="<?php echo isset($o_id)?'purchase_orders_Accepted.php':'product.php';?>" class="btn btn-default">
               <span class="glyphicon glyphicon-remove"></span> Cancel
             </a>
           </div>
