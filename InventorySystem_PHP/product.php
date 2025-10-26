@@ -72,6 +72,7 @@
         <li>
           <strong><?php echo remove_junk($product['product_name']); ?></strong> 
           (ID: <?php echo remove_junk($product['p_id']); ?>) 
+          - Original Stock: <span class="label label-info"><?php echo $product['original_quantity']; ?> units</span>
           - Current Stock: <span class="label label-danger"><?php echo $product['quantity']; ?> units</span>
         </li>
         <?php endforeach; ?>
