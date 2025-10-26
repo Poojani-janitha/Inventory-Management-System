@@ -130,10 +130,10 @@
                     <a href="edit_product.php?id=<?php echo urlencode($product['p_id']); ?>" class="btn btn-xs btn-warning" data-toggle="tooltip" title="Edit">
   
                     <i class="glyphicon glyphicon-edit"></i>
-                    </a>
-                    <a href="delete_product.php?id=<?php echo (int)$product['p_id']; ?>" class="btn btn-xs btn-danger" data-toggle="tooltip" title="Delete">
+                    <a href="delete_product.php?id=<?php echo urlencode($product['p_id']); ?>" class="btn btn-xs btn-danger" data-toggle="tooltip" title="Delete" onclick="return confirm('Are you sure you want to delete this product?\n\nProduct: <?php echo addslashes($product['product_name']); ?>\nID: <?php echo $product['p_id']; ?>');">
                       <i class="glyphicon glyphicon-trash"></i>
                     </a>
+                    
                   </div>
                 </td>
               </tr>
