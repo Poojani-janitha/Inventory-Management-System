@@ -26,7 +26,7 @@ if (isset($_POST['place_order'])) {
 
         if (empty($supplier_id)) {
             $session->msg("d", "Please select a valid supplier.");
-            redirect('order.php', false);
+            redirect('order.php');
         }
 
         $supplier_sql = "SELECT * FROM supplier_info WHERE s_id = '{$supplier_id}' LIMIT 1";
@@ -36,7 +36,7 @@ if (isset($_POST['place_order'])) {
             $supplier = $supplier_result->fetch_assoc();
         } else {
             $session->msg("d", "Supplier not found. Please try again.");
-            redirect('order.php', false);
+            redirect('order.php');
         }
 
         $price_sql = "SELECT price FROM supplier_product 
@@ -50,7 +50,7 @@ if (isset($_POST['place_order'])) {
             $price = $price_data['price'];
         } else {
             $session->msg("d", "Price not found for this product and supplier combination.");
-            redirect('order.php', false);
+            redirect('order.php');
         }
 
         $insert_sql = "INSERT INTO purchase_order (s_id, product_name, category_name, quantity, price, order_date, status)
@@ -62,44 +62,239 @@ if (isset($_POST['place_order'])) {
             $subject = "🛒 New Purchase Order - {$product_name}";
 
             $message = "
+            <!DOCTYPE html>
             <html>
             <head>
-              <title>New Purchase Order</title>
+              <meta charset='UTF-8'>
+              <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+              <title>New Purchase Order - Inventory Management System</title>
               <style>
-                body { font-family: Arial, sans-serif; background-color: #1e1e1e; color: #ffffff; }
-                .container { width: 100%; max-width: 600px; margin: 0 auto; padding: 20px; }
-                .header { background-color: #4CAF50; color: white; padding: 15px; text-align: center; font-size: 20px; font-weight: bold; }
-                .content { padding: 20px; background-color: #2c2c2c; border-radius: 8px; }
-                .order-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-                .order-table th, .order-table td { border: 1px solid #555; padding: 10px; text-align: left; }
-                .order-table th { background-color: #4CAF50; color: #fff; }
-                .footer { margin-top: 20px; font-size: 0.9em; color: #bbb; }
-                a { color: #4CAF50; text-decoration: none; }
+                body { 
+                  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+                  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                  margin: 0; 
+                  padding: 20px; 
+                  color: #333;
+                }
+                .email-container { 
+                  max-width: 600px; 
+                  margin: 0 auto; 
+                  background: #ffffff; 
+                  border-radius: 15px; 
+                  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+                  overflow: hidden;
+                }
+                .header { 
+                  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+                  color: white; 
+                  padding: 30px 20px; 
+                  text-align: center; 
+                  position: relative;
+                }
+                .header::before {
+                  content: '';
+                  position: absolute;
+                  top: 0;
+                  left: 0;
+                  right: 0;
+                  bottom: 0;
+                  background: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><defs><pattern id=\"grain\" width=\"100\" height=\"100\" patternUnits=\"userSpaceOnUse\"><circle cx=\"50\" cy=\"50\" r=\"1\" fill=\"white\" opacity=\"0.1\"/></pattern></defs><rect width=\"100\" height=\"100\" fill=\"url(%23grain)\"/></svg>') repeat;
+                  opacity: 0.3;
+                }
+                .header h1 { 
+                  margin: 0; 
+                  font-size: 28px; 
+                  font-weight: 600; 
+                  position: relative;
+                  z-index: 1;
+                }
+                .header .subtitle {
+                  margin: 8px 0 0 0;
+                  font-size: 16px;
+                  opacity: 0.9;
+                  position: relative;
+                  z-index: 1;
+                }
+                .content { 
+                  padding: 40px 30px; 
+                  background: #ffffff;
+                }
+                .greeting {
+                  font-size: 18px;
+                  color: #2c3e50;
+                  margin-bottom: 25px;
+                  line-height: 1.6;
+                }
+                .order-card {
+                  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                  border-radius: 12px;
+                  padding: 25px;
+                  margin: 25px 0;
+                  border-left: 5px solid #4CAF50;
+                  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+                }
+                .order-table { 
+                  width: 100%; 
+                  border-collapse: collapse; 
+                  margin-top: 15px;
+                  background: white;
+                  border-radius: 8px;
+                  overflow: hidden;
+                  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+                }
+                .order-table th { 
+                  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+                  color: #fff; 
+                  padding: 15px 12px; 
+                  text-align: left; 
+                  font-weight: 600;
+                  font-size: 14px;
+                  text-transform: uppercase;
+                  letter-spacing: 0.5px;
+                }
+                .order-table td { 
+                  padding: 15px 12px; 
+                  border-bottom: 1px solid #e9ecef;
+                  font-size: 15px;
+                }
+                .order-table tr:last-child td {
+                  border-bottom: none;
+                }
+                .order-table tr:nth-child(even) {
+                  background-color: #f8f9fa;
+                }
+                .highlight {
+                  background: linear-gradient(135deg, #4CAF50, #45a049);
+                  color: white;
+                  padding: 4px 8px;
+                  border-radius: 4px;
+                  font-weight: 600;
+                }
+                .total-amount {
+                  background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+                  color: white;
+                  padding: 8px 12px;
+                  border-radius: 6px;
+                  font-weight: 700;
+                  font-size: 16px;
+                }
+                .instructions {
+                  background: #e3f2fd;
+                  border-left: 4px solid #2196F3;
+                  padding: 20px;
+                  margin: 25px 0;
+                  border-radius: 0 8px 8px 0;
+                }
+                .contact-info {
+                  background: #f8f9fa;
+                  padding: 20px;
+                  border-radius: 8px;
+                  margin: 25px 0;
+                  text-align: center;
+                }
+                .contact-info h3 {
+                  color: #2c3e50;
+                  margin: 0 0 15px 0;
+                  font-size: 18px;
+                }
+                .contact-links {
+                  display: flex;
+                  justify-content: center;
+                  gap: 20px;
+                  flex-wrap: wrap;
+                }
+                .contact-links a {
+                  color: #4CAF50;
+                  text-decoration: none;
+                  font-weight: 600;
+                  padding: 8px 16px;
+                  border: 2px solid #4CAF50;
+                  border-radius: 25px;
+                  transition: all 0.3s ease;
+                }
+                .contact-links a:hover {
+                  background: #4CAF50;
+                  color: white;
+                }
+                .footer { 
+                  background: #2c3e50;
+                  color: #bdc3c7; 
+                  padding: 20px 30px; 
+                  text-align: center; 
+                  font-size: 14px;
+                  line-height: 1.5;
+                }
+                .footer p {
+                  margin: 5px 0;
+                }
+                .company-logo {
+                  width: 40px;
+                  height: 40px;
+                  background: white;
+                  border-radius: 50%;
+                  display: inline-flex;
+                  align-items: center;
+                  justify-content: center;
+                  margin-bottom: 10px;
+                  font-weight: bold;
+                  color: #4CAF50;
+                  font-size: 18px;
+                }
+                @media (max-width: 600px) {
+                  .email-container { margin: 10px; }
+                  .content { padding: 20px 15px; }
+                  .contact-links { flex-direction: column; align-items: center; }
+                }
               </style>
             </head>
             <body>
-              <div class='container'>
-                <div class='header'>New Purchase Order</div>
+              <div class='email-container'>
+                <div class='header'>
+                  <div class='company-logo'>IMS</div>
+                  <h1>🛒 New Purchase Order</h1>
+                  <p class='subtitle'>Inventory Management System</p>
+                </div>
                 <div class='content'>
-                  <p>Dear <strong>{$supplier['s_name']}</strong>,</p>
-                  <p>We would like to place the following order:</p>
-                  <table class='order-table'>
-                    <tr><th>Item</th><th>Details</th></tr>
-                    <tr><td>Product Name</td><td>{$product_name}</td></tr>
-                    <tr><td>Category</td><td>{$category_name}</td></tr>
-                    <tr><td>Quantity</td><td>{$order_qty} units</td></tr>
-                    <tr><td>Unit Price</td><td>Rs. {$price}</td></tr>
-                    <tr><td>Total Amount</td><td>Rs. {$total_amount}</td></tr>
-                    <tr><td>Order Date</td><td>" . date('Y-m-d H:i:s') . "</td></tr>
-                  </table>
-                  <p><strong>Delivery Instructions:</strong></p>
-                  <p>Please confirm availability and provide expected delivery date.</p>
-                  <p>For any queries, please contact us at:</p>
-                  <p>Email: <a href='mailto:admin@inventorysystem.lk'>admin@inventorysystem.lk</a><br>
-                  Phone: +94 11 234 5678</p>
+                  <div class='greeting'>
+                    Dear <strong>{$supplier['s_name']}</strong>,<br><br>
+                    We are pleased to place a new order with your company. Please find the order details below:
+                  </div>
+                  
+                  <div class='order-card'>
+                    <h3 style='margin: 0 0 20px 0; color: #2c3e50; font-size: 20px;'>📋 Order Details</h3>
+                    <table class='order-table'>
+                      <tr><th>Product Information</th><th>Details</th></tr>
+                      <tr><td><strong>Product Name</strong></td><td>{$product_name}</td></tr>
+                      <tr><td><strong>Category</strong></td><td>{$category_name}</td></tr>
+                      <tr><td><strong>Quantity</strong></td><td><span class='highlight'>{$order_qty} units</span></td></tr>
+                      <tr><td><strong>Unit Price</strong></td><td>Rs. " . number_format($price, 2) . "</td></tr>
+                      <tr><td><strong>Total Amount</strong></td><td><span class='total-amount'>Rs. " . number_format($total_amount, 2) . "</span></td></tr>
+                      <tr><td><strong>Order Date</strong></td><td>" . date('F j, Y \a\t g:i A') . "</td></tr>
+                      <tr><td><strong>Order ID</strong></td><td>#PO-" . str_pad($db->insert_id, 6, '0', STR_PAD_LEFT) . "</td></tr>
+                    </table>
+                  </div>
+
+                  <div class='instructions'>
+                    <h4 style='margin: 0 0 15px 0; color: #1976D2;'>📝 Delivery Instructions</h4>
+                    <p style='margin: 0; color: #424242; line-height: 1.6;'>
+                      Please confirm the availability of the requested items and provide us with the expected delivery date. 
+                      We appreciate your prompt response and look forward to a successful business relationship.
+                    </p>
+                  </div>
+
+                  <div class='contact-info'>
+                    <h3>📞 Need Assistance?</h3>
+                    <p style='margin: 0 0 15px 0; color: #666;'>For any queries or clarifications, please don't hesitate to contact us:</p>
+                    <div class='contact-links'>
+                      <a href='mailto:admin@inventorysystem.lk'>📧 Email Support</a>
+                      <a href='tel:+94112345678'>📞 Call Us</a>
+                    </div>
+                  </div>
                 </div>
                 <div class='footer'>
-                  This is an automated message. Please do not reply to this email.
+                  <p><strong>Inventory Management System</strong></p>
+                  <p>This is an automated message. Please do not reply to this email.</p>
+                  <p>© " . date('Y') . " All rights reserved.</p>
                 </div>
               </div>
             </body>
@@ -113,8 +308,12 @@ if (isset($_POST['place_order'])) {
 
             if(mail($to, $subject, $message, $headers)){
                 $session->msg("s", "Order placed successfully and email sent to supplier.");
+                // Debug: Check if message is set
+                error_log("DEBUG: Success message set - Session: " . print_r($_SESSION['msg'], true));
             } else {
                 $session->msg("w", "Order placed successfully, but email could not be sent.");
+                // Debug: Check if message is set
+                error_log("DEBUG: Warning message set - Session: " . print_r($_SESSION['msg'], true));
             }
 
         } else {
@@ -125,15 +324,26 @@ if (isset($_POST['place_order'])) {
         $session->msg("d", implode("<br>", $errors));
     }
 
-    redirect('order.php', false);
+    redirect('order.php');
 }
+
+// Get messages after form processing
+$msg = $session->msg();
 ?>
 
 <?php include_once('layouts/header.php'); ?>
 
 <div class="row">
   <div class="col-md-12">
-    <?php echo display_msg($msg); ?>
+    <?php 
+    // Debug session messages
+    echo "<!-- DEBUG: Session messages -->";
+    echo "<!-- Session msg: " . print_r($_SESSION['msg'] ?? 'No session msg', true) . " -->";
+    echo "<!-- Msg variable: " . print_r($msg, true) . " -->";
+    echo "<!-- Session object msg: " . print_r($session->msg, true) . " -->";
+    echo "<!-- DEBUG END -->";
+    echo display_msg($msg); 
+    ?>
 
     <!-- ======= PLACE NEW ORDER FORM ======= -->
     <div class="panel panel-default" style="width: 500px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-radius: 8px; margin-bottom: 20px;">
@@ -238,10 +448,10 @@ if (isset($_POST['place_order'])) {
 <!-- Edit Order Modal -->
 <div class="modal fade" id="editOrderModal" tabindex="-1" role="dialog" aria-labelledby="editOrderModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
-    <div class="modal-content" style="background-color: #2c2c2c; color: #fff;">
+    <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="editOrderModalLabel">Edit Order</h5>
-        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close" style="color:#fff;">
+        <h4 class="modal-title" id="editOrderModalLabel">Edit Order</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
@@ -268,7 +478,7 @@ if (isset($_POST['place_order'])) {
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
           <button type="submit" class="btn btn-success">Update Order</button>
         </div>
       </form>
@@ -280,55 +490,102 @@ if (isset($_POST['place_order'])) {
 <script>
 document.getElementById('category-select').addEventListener('change', function() {
     var category = this.value;
-    fetch('get_products.php?category=' + encodeURIComponent(category))
-      .then(response => response.json())
-      .then(data => {
-          var productSelect = document.getElementById('product-select');
-          productSelect.innerHTML = '<option value="">Select Product</option>';
-          data.forEach(function(product){
-              productSelect.innerHTML += '<option value="'+product+'">'+product+'</option>';
+    
+    // Reset product and supplier dropdowns
+    var productSelect = document.getElementById('product-select');
+    var supplierSelect = document.getElementById('supplier-select');
+    productSelect.innerHTML = '<option value="">Select Product</option>';
+    supplierSelect.innerHTML = '<option value="">Select product first</option>';
+    
+    if (category) {
+        fetch('get_products.php?category=' + encodeURIComponent(category))
+          .then(response => {
+              if (!response.ok) {
+                  throw new Error('Network response was not ok');
+              }
+              return response.json();
+          })
+          .then(data => {
+              productSelect.innerHTML = '<option value="">Select Product</option>';
+              if (data && data.length > 0) {
+                  data.forEach(function(product){
+                      productSelect.innerHTML += '<option value="'+product+'">'+product+'</option>';
+                  });
+              } else {
+                  productSelect.innerHTML += '<option value="" disabled>No products found for this category</option>';
+              }
+          })
+          .catch(error => {
+              console.error('Error fetching products:', error);
+              productSelect.innerHTML = '<option value="" disabled>Error loading products</option>';
           });
-      });
+    }
 });
 
 document.getElementById('product-select').addEventListener('change', function() {
     var product = this.value;
-    fetch('get_suppliers.php?product=' + encodeURIComponent(product))
-      .then(response => response.json())
-      .then(data => {
-          var supplierSelect = document.getElementById('supplier-select');
-          supplierSelect.innerHTML = '<option value="">Select Supplier</option>';
-          data.forEach(function(supplier){
-              supplierSelect.innerHTML += '<option value="'+supplier.id+'">'+supplier.name+'</option>';
+    
+    // Reset supplier dropdown
+    var supplierSelect = document.getElementById('supplier-select');
+    supplierSelect.innerHTML = '<option value="">Select Supplier</option>';
+    
+    if (product) {
+        fetch('get_suppliers.php?product=' + encodeURIComponent(product))
+          .then(response => {
+              if (!response.ok) {
+                  throw new Error('Network response was not ok');
+              }
+              return response.json();
+          })
+          .then(data => {
+              supplierSelect.innerHTML = '<option value="">Select Supplier</option>';
+              if (data && data.length > 0) {
+                  data.forEach(function(supplier){
+                      supplierSelect.innerHTML += '<option value="'+supplier.id+'">'+supplier.name+'</option>';
+                  });
+              } else {
+                  supplierSelect.innerHTML += '<option value="" disabled>No suppliers found for this product</option>';
+              }
+          })
+          .catch(error => {
+              console.error('Error fetching suppliers:', error);
+              supplierSelect.innerHTML = '<option value="" disabled>Error loading suppliers</option>';
           });
-      });
+    }
 });
 
-// Edit modal open
+// Edit modal functionality
 document.querySelectorAll('.edit-btn').forEach(btn => {
     btn.addEventListener('click', function(){
-        let id = btn.dataset.id;
-        let product = btn.dataset.product;
-        let quantity = btn.dataset.quantity;
-        let status = btn.dataset.status;
+        let id = this.dataset.id;
+        let product = this.dataset.product;
+        let quantity = this.dataset.quantity;
+        let status = this.dataset.status;
 
+        // Populate modal fields
         document.getElementById('edit-order-id').value = id;
         document.getElementById('edit-product-name').value = product;
         document.getElementById('edit-quantity').value = quantity;
         document.getElementById('edit-status').value = status;
 
-        let modal = new bootstrap.Modal(document.getElementById('editOrderModal'));
-        modal.show();
+        // Show modal (using jQuery for Bootstrap 3 compatibility)
+        $('#editOrderModal').modal('show');
     });
 });
 
-// AJAX update
+// Handle form submission
 document.getElementById('editOrderForm').addEventListener('submit', function(e){
     e.preventDefault();
 
     let o_id = document.getElementById('edit-order-id').value;
     let quantity = document.getElementById('edit-quantity').value;
     let status = document.getElementById('edit-status').value;
+
+    // Show loading state
+    let submitBtn = this.querySelector('button[type="submit"]');
+    let originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = 'Updating...';
+    submitBtn.disabled = true;
 
     fetch('update_order.php', {
         method: 'POST',
@@ -338,53 +595,15 @@ document.getElementById('editOrderForm').addEventListener('submit', function(e){
     .then(res => res.text())
     .then(data => {
         alert(data);
+        $('#editOrderModal').modal('hide');
         location.reload(); // reload page to see changes
     })
-    .catch(err => console.error(err));
-});
-
-// Open edit modal and populate data
-document.querySelectorAll('a.btn-info').forEach(function(btn){
-    btn.addEventListener('click', function(e){
-        e.preventDefault();
-        let row = btn.closest('tr');
-
-        // Get data from table row
-        let o_id = row.querySelector('td:first-child').textContent.trim();
-        let product_name = row.children[2].textContent.trim();
-        let quantity = row.children[4].textContent.trim();
-        let status = row.children[6].textContent.trim();
-
-        // Fill modal inputs
-        document.getElementById('edit-order-id').value = o_id;
-        document.getElementById('edit-product-name').value = product_name;
-        document.getElementById('edit-quantity').value = quantity;
-        document.getElementById('edit-status').value = status;
-
-        // Show modal (Bootstrap 5)
-        var editModal = new bootstrap.Modal(document.getElementById('editOrderModal'));
-        editModal.show();
+    .catch(err => {
+        console.error(err);
+        alert('Error updating order. Please try again.');
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
     });
-});
-
-document.getElementById('editOrderForm').addEventListener('submit', function(e){
-    e.preventDefault();
-
-    let o_id = document.getElementById('edit-order-id').value;
-    let quantity = document.getElementById('edit-quantity').value;
-    let status = document.getElementById('edit-status').value;
-
-    fetch('update_order.php', {
-        method: 'POST',
-        headers: {'Content-Type':'application/x-www-form-urlencoded'},
-        body: `o_id=${o_id}&quantity=${quantity}&status=${status}`
-    })
-    .then(res => res.text())
-    .then(data => {
-        alert(data); // you can replace with nicer toast notifications
-        location.reload(); // reload page to reflect changes
-    })
-    .catch(err => console.error(err));
 });
 
 
