@@ -2,8 +2,8 @@
 require_once('includes/load.php');
 header('Content-Type: application/json');
 
-if (isset($_POST['product_name']) && !empty($_POST['product_name'])) {
-    $product = remove_junk($db->escape($_POST['product_name']));
+if (isset($_GET['product']) && !empty($_GET['product'])) {
+    $product = remove_junk($db->escape($_GET['product']));
     
     // Get suppliers who supply this product with their prices
     $sql = "SELECT si.s_id, si.s_name, si.contact_number, si.email, sp.price
@@ -17,7 +17,13 @@ if (isset($_POST['product_name']) && !empty($_POST['product_name'])) {
     $suppliers = [];
     if ($result && $result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
-            $suppliers[] = $row;
+            $suppliers[] = [
+                'id' => $row['s_id'],
+                'name' => $row['s_name'] . ' (Rs. ' . number_format($row['price'], 2) . ')',
+                'contact' => $row['contact_number'],
+                'email' => $row['email'],
+                'price' => $row['price']
+            ];
         }
     }
     
