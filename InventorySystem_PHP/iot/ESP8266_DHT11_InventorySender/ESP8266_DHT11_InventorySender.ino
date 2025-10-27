@@ -7,9 +7,9 @@ const char* ssid     = "FOT_WiFi";   // open network (no password)
 const char* password = "";           // empty for open network
 
 // Server
-const char* host = "192.168.3.32";   // your computer running XAMPP
-const int   port = 80;                // default HTTP
-const char* ingestPath = "http://192.168.3.32/Inventory-Management-System/InventorySystem_PHP/iot/latest.php";
+const char* host = "10.50.52.47";   // your computer running XAMPP
+const int   port = 80;                // default HTTP localhost
+const char* ingestPath = "http://10.50.52.47/Inventory-Management-System/InventorySystem_PHP/iot/latest.php";
 
 // DHT11
 #define DHTPIN 2           // GPIO2 (D4 on many NodeMCU boards)
@@ -61,14 +61,14 @@ if (http.begin(client, url)) {
 
         int httpCode = http.GET();
         Serial.print("HTTP code: ");
-        Serial.println(httpCode);
+        Serial.println(httpCode);   // Prints: "HTTP code: 404" connection okey but wrong ingest path
         if (httpCode > 0) {
           String payload = http.getString();
           Serial.println(payload);
         }
         http.end();
       } else {
-        Serial.println("HTTP begin failed");
+        Serial.println("HTTP begin failed"); // Shows this message when wifi connection fail
       }
     }
   }
