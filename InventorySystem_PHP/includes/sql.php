@@ -41,6 +41,9 @@ function find_by_id($table,$id)
   if($table === 'product') {
     $primary_key = 'p_id';
     $id = $db->escape($id); // Don't cast to int for p_id
+  } elseif($table === 'return_details') {
+    $primary_key = 'return_id';
+    $id = (int)$id;
   } else {
     $id = (int)$id;
   }
@@ -95,10 +98,19 @@ function count_by_id($table){
   
   if(tableExists($table))
   {
-    $sql    = "SELECT COUNT({$primary_key}) AS total FROM ".$db->escape($table);
+    // Use COUNT(*) to avoid depending on a specific primary key name
+    $sql    = "SELECT COUNT(*) AS total FROM ". $db->escape($table);
     $result = $db->query($sql);
-     return($db->fetch_assoc($result));
+    $row = $db->fetch_assoc($result);
+    // Ensure we always return an array with a 'total' key to avoid warnings when
+    // calling code attempts to access ['total']
+    if ($row && isset($row['total'])) {
+        return $row;
+    }
+    return array('total' => 0);
   }
+  // If table doesn't exist or something went wrong, return zero safely
+  return array('total' => 0);
 }
 /*--------------------------------------------------------------*/
 /* Determine if database table exists
