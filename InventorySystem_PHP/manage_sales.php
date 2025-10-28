@@ -27,7 +27,7 @@ $page_title = 'Sale Report';
                 </div>
             </div>
             <div class="form-group">
-                 <button type="submit" name="submit" class="btn btn-primary">Generate Report</button>
+                 <!-- <button type="submit" name="submit" class="btn btn-primary">Generate Report</button> -->
                  <a href="invoice_list.php" class="btn btn-info">
                    <span class="glyphicon glyphicon-file"></span> View Invoices
                  </a>

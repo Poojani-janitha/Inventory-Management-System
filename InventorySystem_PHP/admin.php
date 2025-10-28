@@ -5,16 +5,16 @@
    page_require_level(1);
 ?>
 <?php
- $c_categorie     = count_by_id('categories');
- $c_product       = count_by_id('products');
- $c_sale          = count_by_id('sales');
- $c_user          = count_by_id('users');
- $products_sold   = find_higest_saleing_product('10');
- $recent_products = find_recent_product_added('5');
- $recent_sales    = find_recent_sale_added('5')
+//  $c_categorie     = count_by_id('categories');
+//  $c_product       = count_by_id('products');
+//  $c_sale          = count_by_id('sales');
+//  $c_user          = count_by_id('users');
+//  $products_sold   = find_higest_saleing_product('10');
+//  $recent_products = find_recent_product_added('5');
+//  $recent_sales    = find_recent_sale_added('5')
 ?>
 <?php include_once('layouts/header.php'); ?>
-
+<!-- 
 <div class="row">
    <div class="col-md-6">
      <?php echo display_msg($msg); ?>
@@ -72,6 +72,22 @@
         <div class="panel-value pull-right">
           <h2 class="margin-top"> <?php  echo $c_sale['total']; ?></h2>
           <p class="text-muted">Sales</p>
+        </div>
+       </div>
+    </div>
+	</a>
+</div>
+
+<div class="row">
+	<a href="database_backup.php" style="color:black;">
+    <div class="col-md-3">
+       <div class="panel panel-box clearfix">
+         <div class="panel-icon pull-left bg-purple">
+          <i class="glyphicon glyphicon-download-alt"></i>
+        </div>
+        <div class="panel-value pull-right">
+          <h2 class="margin-top">Backup</h2>
+          <p class="text-muted">Database Backup</p>
         </div>
        </div>
     </div>
@@ -184,7 +200,7 @@
 
   </div>
 
-<!-- Chatbot Interface -->
+
 <div class="row">
   <div class="col-md-12">
     <div class="panel panel-default">
@@ -228,8 +244,8 @@
       </div>
     </div>
   </div>
-</div>
-
+</div> -->
+<!-- 
 <style>
 .chat-container {
   height: 400px;
@@ -339,7 +355,8 @@
   font-weight: bold;
 }
 </style>
-
+ -->
+<!-- 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   const chatbotPanel = document.getElementById('chatbotPanel');
@@ -360,8 +377,8 @@ document.addEventListener('DOMContentLoaded', function() {
       chatbotPanel.style.display = 'none';
       chatbotToggleIcon.className = 'glyphicon glyphicon-chevron-down';
     }
-  });
-  
+  }); -->
+<!--   
   // Send message function
   function sendMessage() {
     const message = chatInput.value.trim();
@@ -496,6 +513,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 });
-</script>
+</script> -->
 
 <?php include_once('layouts/footer.php'); ?>
