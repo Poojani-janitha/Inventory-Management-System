@@ -1,5 +1,5 @@
 <?php
-  require_once('includes/load.php');
+  //require_once('includes/load.php');
 
 /*--------------------------------------------------------------*/
 /* Function for find all database table rows by table name
@@ -31,28 +31,34 @@ function find_by_sql($sql)
 /*--------------------------------------------------------------*/
 /*  Function for Find data from table by id
 /*--------------------------------------------------------------*/
-function find_by_id($table,$id)
-{
-  $table = _normalize_table($table);
-  global $db;
-  
-  // Handle different primary key names for different tables
-  $primary_key = 'id';
-  if($table === 'product') {
-    $primary_key = 'p_id';
-    $id = $db->escape($id); // Don't cast to int for p_id
-  } else {
-    $id = (int)$id;
-  }
-  
-    if(tableExists($table)){
-          $sql = $db->query("SELECT * FROM {$db->escape($table)} WHERE {$primary_key}='{$db->escape($id)}' LIMIT 1");
-          if($result = $db->fetch_assoc($sql))
-            return $result;
-          else
-            return null;
-     }
+function find_by_id($table, $id, $primary_key = null) {
+    $table = _normalize_table($table);
+    global $db;
+
+    // Set default primary key
+    if ($primary_key === null) {
+        if ($table === 'product') {
+            $primary_key = 'p_id';
+        } elseif ($table === 'purchase_order') {
+            $primary_key = 'o_id';  // <- fix for purchase_order
+        } else {
+            $primary_key = 'id';
+        }
+    }
+
+    // Cast id to int unless it's product (string possible)
+    $id = ($table === 'product') ? $db->escape($id) : (int)$id;
+
+    if (tableExists($table)) {
+        $sql = $db->query("SELECT * FROM {$db->escape($table)} WHERE {$primary_key}='{$db->escape($id)}' LIMIT 1");
+        if ($sql && $db->num_rows($sql) > 0) {
+            return $db->fetch_assoc($sql);
+        }
+    }
+
+    return null;
 }
+
 /*--------------------------------------------------------------*/
 /* Function for Delete data from table by id
 /*--------------------------------------------------------------*/
@@ -213,9 +219,12 @@ function tableExists($table){
   function find_by_groupLevel($level)
   {
     global $db;
-    $sql = "SELECT group_level FROM user_groups WHERE group_level = '{$db->escape($level)}' LIMIT 1 ";
+    $sql = "SELECT group_level, group_status FROM user_groups WHERE group_level = '{$db->escape($level)}' LIMIT 1 ";
     $result = $db->query($sql);
-    return($db->num_rows($result) === 0 ? true : false);
+    if($db->num_rows($result) > 0) {
+      return $db->fetch_assoc($result);
+    }
+    return false;
   }
   /*--------------------------------------------------------------*/
   /* Function for cheaking which user level has access to page
@@ -229,7 +238,7 @@ function tableExists($table){
             $session->msg('d','Please login...');
             redirect('index.php', false);
       //if Group status Deactive
-     elseif($login_level['group_status'] === '0'):
+     elseif($login_level && $login_level['group_status'] == 0):
            $session->msg('d','This level user has been band!');
            redirect('home.php',false);
       //cheackin log in User level and Require level is Less than or equal to

@@ -23,6 +23,17 @@
       </div>
       <div class="pull-right clearfix">
         <ul class="info-menu list-inline list-unstyled">
+          <!-- Temperature Widget in Header - Moved First -->
+          <li class="temperature-widget">
+            <div id="header-iot-widget" style="display:flex; align-items:center; gap:8px; padding:8px 12px; background:#6f79ff; color:#fff; border-radius:6px; box-shadow:0 2px 5px rgba(0,0,0,0.2); min-width:100px;">
+              <span class="glyphicon glyphicon-tint" style="font-size:16px;"></span>
+              <div style="line-height:1.2;">
+                <div id="header-temp" style="font-weight:600; font-size:12px;">--°C</div>
+                <div id="header-hum" style="font-size:10px; opacity:0.9;">--% RH</div>
+              </div>
+            </div>
+          </li>
+          <!-- Profile Button -->
           <li class="profile">
             <a href="#" data-toggle="dropdown" class="toggle" aria-expanded="false">
               <img src="uploads/users/<?php echo $user['image'];?>" alt="user-image" class="img-circle img-inline">
@@ -53,71 +64,132 @@
       </div>
      </div>
     </header>
-    <!-- Global floating IOT widget placed under profile area -->
-    <div id="iot-floating" style="position:fixed; top:60px; right:16px; z-index:9999; min-width:170px; background:#6f79ff; color:#fff; border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,0.15);">
-      <div style="display:flex; align-items:center;">
-        <div style="width:68px; height:68px; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.15); border-top-left-radius:8px; border-bottom-left-radius:8px;">
-          <span class="glyphicon glyphicon-tint" style="font-size:28px;"></span>
-        </div>
-        <div style="padding:10px 12px;">
-          <div id="iot-temp" style="font-weight:600; font-size:16px; line-height:1.2;">-- °C</div>
-          <div id="iot-hum" style="opacity:0.9; font-size:12px;">-- % RH</div>
-        </div>
-      </div>
-      <div id="iot-alert" style="display:none; padding:6px 10px; font-size:12px; background:#e53935; color:#fff; border-bottom-left-radius:8px; border-bottom-right-radius:8px;">High temperature!</div>
-    </div>
+
     <script>
-    // Global refresher for the floating IoT widget
+    // Header temperature widget - simple version without alerts
     (function(){
-      function refreshIotBox(){
+      function refreshHeaderIot(){
         fetch('iot/latest.php')
           .then(function(r){return r.json();})
           .then(function(d){
             if(d && d.success && d.row){
-              var tEl=document.getElementById('iot-temp');
-              var hEl=document.getElementById('iot-hum');
-              var box=document.getElementById('iot-floating');
-              var alertEl=document.getElementById('iot-alert');
-              if(!tEl||!hEl||!box||!alertEl) return;
-              var tempNum=(d.row.temperature!=null)?parseFloat(d.row.temperature):NaN;
-              var humNum=(d.row.humidity!=null)?parseFloat(d.row.humidity):NaN;
-              tEl.textContent=(isNaN(tempNum)?'--':tempNum.toFixed(1))+' °C';
-              hEl.textContent=(isNaN(humNum)?'--':humNum.toFixed(1))+' % RH';
-              if(!isNaN(tempNum) && tempNum>=40){
-                box.style.background='#e53935';
-                alertEl.style.display='block';
-                beepOnce();
-              }else{
-                box.style.background='#6f79ff';
-                alertEl.style.display='none';
+              var tempEl = document.getElementById('header-temp');
+              var humEl = document.getElementById('header-hum');
+              var widget = document.getElementById('header-iot-widget');
+              
+              if(!tempEl || !humEl || !widget) return;
+              
+              var tempNum = (d.row.temperature != null) ? parseFloat(d.row.temperature) : NaN;
+              var humNum = (d.row.humidity != null) ? parseFloat(d.row.humidity) : NaN;
+              
+              tempEl.textContent = (isNaN(tempNum) ? '--' : tempNum.toFixed(1)) + '°C';
+              humEl.textContent = (isNaN(humNum) ? '--' : humNum.toFixed(1)) + '% RH';
+              
+              // Simple color change for high temperature (no alert message)
+              if(!isNaN(tempNum) && tempNum >= 40){
+                widget.style.background = '#e53935';
+              } else {
+                widget.style.background = '#6f79ff';
               }
             }
           })
           .catch(function(err){
-            // keep silent in header to avoid breaking page
-            console && console.debug && console.debug('iot widget', err);
+            console.debug('Header iot widget', err);
           });
       }
-      var cooldown=false;
-      function beepOnce(){
-        if(cooldown) return; cooldown=true;
-        try{
-          var ctx=new (window.AudioContext||window.webkitAudioContext)();
-          var o=ctx.createOscillator(); var g=ctx.createGain();
-          o.type='sine'; o.frequency.value=700; o.connect(g); g.connect(ctx.destination);
-          g.gain.setValueAtTime(0.001, ctx.currentTime);
-          g.gain.exponentialRampToValueAtTime(0.2, ctx.currentTime+0.02);
-          o.start();
-          setTimeout(function(){g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime+0.02);o.stop();ctx.close();}, 350);
-        }catch(e){}
-        setTimeout(function(){cooldown=false;},5000);
-      }
+      
       document.addEventListener('DOMContentLoaded', function(){
-        refreshIotBox();
-        setInterval(refreshIotBox, 15000);
+        refreshHeaderIot();
+        setInterval(refreshHeaderIot, 15000);
       });
     })();
+
+
+   // Header temperature widget with repeated sound alert
+(function(){
+  var highTempAlertActive = false;
+  var soundCooldown = false;
+  
+  function beepOnce(){
+    if(soundCooldown) return; 
+    soundCooldown = true;
+    try{
+      var ctx = new (window.AudioContext || window.webkitAudioContext)();
+      var oscillator = ctx.createOscillator();
+      var gainNode = ctx.createGain();
+      
+      oscillator.type = 'sine';
+      oscillator.frequency.value = 800;
+      oscillator.connect(gainNode);
+      gainNode.connect(ctx.destination);
+      
+      // Fade in quickly
+      gainNode.gain.setValueAtTime(0.001, ctx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.3, ctx.currentTime + 0.1);
+      
+      oscillator.start(ctx.currentTime);
+      
+      // Fade out and stop after 500ms
+      setTimeout(function(){
+        gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+        setTimeout(function(){ 
+          oscillator.stop();
+          ctx.close();
+        }, 100);
+      }, 400);
+      
+    }catch(e){
+      console.log('Audio not supported:', e);
+    }
+    setTimeout(function(){ soundCooldown = false; }, 1000);
+  }
+  
+  function refreshHeaderIot(){
+    fetch('iot/latest.php')
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if(d && d.success && d.row){
+          var tempEl = document.getElementById('header-temp');
+          var humEl = document.getElementById('header-hum');
+          var widget = document.getElementById('header-iot-widget');
+          
+          if(!tempEl || !humEl || !widget) return;
+          
+          var tempNum = (d.row.temperature != null) ? parseFloat(d.row.temperature) : NaN;
+          var humNum = (d.row.humidity != null) ? parseFloat(d.row.humidity) : NaN;
+          
+          tempEl.textContent = (isNaN(tempNum) ? '--' : tempNum.toFixed(1)) + '°C';
+          humEl.textContent = (isNaN(humNum) ? '--' : humNum.toFixed(1)) + '% RH';
+          
+          // Check for high temperature
+          if(!isNaN(tempNum) && tempNum >= 40){
+            widget.style.background = '#e53935';
+            
+            // Play sound every time when temperature is high
+            if(!highTempAlertActive) {
+              highTempAlertActive = true;
+              beepOnce(); // Play immediately when first detected
+            } else {
+              beepOnce(); // Play on every refresh while high
+            }
+          } else {
+            widget.style.background = '#6f79ff';
+            highTempAlertActive = false;
+          }
+        }
+      })
+      .catch(function(err){
+        console.debug('Header iot widget error:', err);
+      });
+  }
+  
+  document.addEventListener('DOMContentLoaded', function(){
+    refreshHeaderIot();
+    setInterval(refreshHeaderIot, 15000);
+  });
+})();
     </script>
+
     <div class="sidebar">
       <?php if($user['user_level'] === '1'): ?>
         <!-- admin menu -->
@@ -132,7 +204,6 @@
       <?php include_once('user_menu.php');?>
 
       <?php endif;?>
-
    </div>
 <?php endif;?>
 

@@ -2,16 +2,19 @@
 require_once('includes/load.php');
 header('Content-Type: application/json');
 
-if (isset($_POST['category_id']) && !empty($_POST['category_id'])) {
-    $category_id = (int)$_POST['category_id'];
-    $sql = "SELECT id, name FROM products WHERE categorie_id = '{$category_id}'";
+if (isset($_GET['category']) && !empty($_GET['category'])) {
+    $category = remove_junk($db->escape($_GET['category']));
+    
+    $sql = "SELECT DISTINCT product_name FROM supplier_product WHERE category_name = '{$category}'";
     $result = $db->query($sql);
+
     $products = [];
-    if ($result) {
+    if ($result && $result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
-            $products[] = $row;
+            $products[] = $row['product_name'];
         }
     }
+    
     echo json_encode($products);
 } else {
     echo json_encode([]);
