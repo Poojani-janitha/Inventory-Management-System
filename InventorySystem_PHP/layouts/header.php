@@ -11,7 +11,16 @@
     </title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/css/datepicker3.min.css" />
-    <link rel="stylesheet" href="libs/css/main.css" />
+    <?php 
+      // Handle CSS path for subdirectories
+      $current_path = isset($_SERVER['PHP_SELF']) ? $_SERVER['PHP_SELF'] : '';
+      if(empty($current_path) && isset($_SERVER['REQUEST_URI'])) {
+        $current_path = $_SERVER['REQUEST_URI'];
+      }
+      $is_reports = (strpos($current_path, '/reports/') !== false);
+      $css_path = $is_reports ? '../libs/css/main.css' : 'libs/css/main.css';
+    ?>
+    <link rel="stylesheet" href="<?php echo $css_path; ?>" />
   </head>
   <body>
   <?php  if ($session->isUserLoggedIn(true)): ?>

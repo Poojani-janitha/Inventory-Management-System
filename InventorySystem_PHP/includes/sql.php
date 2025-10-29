@@ -396,4 +396,185 @@ function  monthlySales($year){
   return find_by_sql($sql);
 }
 
+/*--------------------------------------------------------------*/
+/* Function for Get all purchase orders for report
+/*--------------------------------------------------------------*/
+function find_all_purchase_orders($start_date = null, $end_date = null){
+  global $db;
+  $sql = "SELECT po.o_id, po.s_id, si.s_name AS supplier_name, po.product_name, po.category_name, ";
+  $sql .= "po.quantity, po.price, (po.quantity * po.price) AS total_amount, ";
+  $sql .= "po.order_date, po.status ";
+  $sql .= "FROM purchase_order po ";
+  $sql .= "LEFT JOIN supplier_info si ON po.s_id = si.s_id ";
+  
+  if($start_date && $end_date){
+    $start_date = date("Y-m-d", strtotime($start_date));
+    $end_date = date("Y-m-d", strtotime($end_date));
+    $sql .= "WHERE DATE(po.order_date) BETWEEN '{$start_date}' AND '{$end_date}' ";
+  }
+  
+  $sql .= "ORDER BY po.order_date DESC";
+  return find_by_sql($sql);
+}
+
+/*--------------------------------------------------------------*/
+/* Function for Get all sales for report
+/*--------------------------------------------------------------*/
+function find_all_sales_report($start_date = null, $end_date = null){
+  global $db;
+  $sql = "SELECT s.sales_id, s.sale_product_id, s.invoice_number, p.product_name, ";
+  $sql .= "c.category_name, s.quantity, s.sale_selling_price, s.total, s.discount, ";
+  $sql .= "s.name AS customer_name, s.pNumber, s.created_at ";
+  $sql .= "FROM sales s ";
+  $sql .= "LEFT JOIN product p ON s.sale_product_id = p.p_id ";
+  $sql .= "LEFT JOIN categories c ON s.category_name = c.category_name ";
+  
+  if($start_date && $end_date){
+    $start_date = date("Y-m-d", strtotime($start_date));
+    $end_date = date("Y-m-d", strtotime($end_date));
+    $sql .= "WHERE DATE(s.created_at) BETWEEN '{$start_date}' AND '{$end_date}' ";
+  }
+  
+  $sql .= "ORDER BY s.created_at DESC";
+  return find_by_sql($sql);
+}
+
+/*--------------------------------------------------------------*/
+/* Function for Get all return details for report
+/*--------------------------------------------------------------*/
+function find_all_return_details($start_date = null, $end_date = null){
+  global $db;
+  $sql = "SELECT rd.return_id, rd.p_id, rd.s_id, si.s_name AS supplier_name, ";
+  $sql .= "rd.product_name, rd.buying_price, rd.return_quantity, ";
+  $sql .= "(rd.buying_price * rd.return_quantity) AS total_return_amount, ";
+  $sql .= "rd.return_date ";
+  $sql .= "FROM return_details rd ";
+  $sql .= "LEFT JOIN supplier_info si ON rd.s_id = si.s_id ";
+  
+  if($start_date && $end_date){
+    $start_date = date("Y-m-d", strtotime($start_date));
+    $end_date = date("Y-m-d", strtotime($end_date));
+    $sql .= "WHERE DATE(rd.return_date) BETWEEN '{$start_date}' AND '{$end_date}' ";
+  }
+  
+  $sql .= "ORDER BY rd.return_date DESC";
+  return find_by_sql($sql);
+}
+
+/*--------------------------------------------------------------*/
+/* Function for Get stock summary report
+/*--------------------------------------------------------------*/
+function find_stock_summary(){
+  global $db;
+  $sql = "SELECT p.p_id, p.product_name, p.quantity, p.buying_price, p.selling_price, ";
+  $sql .= "c.category_name, si.s_name AS supplier_name, p.expire_date, p.recorded_date ";
+  $sql .= "FROM product p ";
+  $sql .= "LEFT JOIN categories c ON p.category_name = c.category_name ";
+  $sql .= "LEFT JOIN supplier_info si ON p.s_id = si.s_id ";
+  $sql .= "ORDER BY p.product_name ASC";
+  return find_by_sql($sql);
+}
+
+/*--------------------------------------------------------------*/
+/* Function for Get inventory valuation report
+/*--------------------------------------------------------------*/
+function find_inventory_valuation(){
+  global $db;
+  $sql = "SELECT p.p_id, p.product_name, p.quantity, p.buying_price, p.selling_price, ";
+  $sql .= "(p.quantity * p.buying_price) AS stock_value, ";
+  $sql .= "(p.quantity * p.selling_price) AS potential_sales_value, ";
+  $sql .= "((p.quantity * p.selling_price) - (p.quantity * p.buying_price)) AS potential_profit, ";
+  $sql .= "c.category_name, si.s_name AS supplier_name, p.expire_date ";
+  $sql .= "FROM product p ";
+  $sql .= "LEFT JOIN categories c ON p.category_name = c.category_name ";
+  $sql .= "LEFT JOIN supplier_info si ON p.s_id = si.s_id ";
+  $sql .= "ORDER BY stock_value DESC";
+  return find_by_sql($sql);
+}
+
+/*--------------------------------------------------------------*/
+/* Function for Get profit report from product and sales tables
+/*--------------------------------------------------------------*/
+function find_profit_report(){
+  global $db;
+  
+  // Get total sales revenue and cost from sales table joined with product table
+  $sales_sql = "SELECT ";
+  $sales_sql .= "COALESCE(SUM(s.total), 0) AS total_sales_revenue, ";
+  $sales_sql .= "COALESCE(SUM(s.discount), 0) AS total_discounts, ";
+  $sales_sql .= "COALESCE(SUM(p.buying_price * s.quantity), 0) AS total_cost_of_sales, ";
+  $sales_sql .= "COALESCE(SUM(p.selling_price * s.quantity), 0) AS total_potential_revenue ";
+  $sales_sql .= "FROM sales s ";
+  $sales_sql .= "LEFT JOIN product p ON s.sale_product_id = p.p_id ";
+  
+  $sales_result = find_by_sql($sales_sql);
+  
+  $sales_data = isset($sales_result[0]) ? $sales_result[0] : array(
+    'total_sales_revenue' => 0, 
+    'total_discounts' => 0, 
+    'total_cost_of_sales' => 0,
+    'total_potential_revenue' => 0
+  );
+  
+  // Calculate gross profit (Revenue - Cost - Discounts)
+  $gross_profit = $sales_data['total_sales_revenue'] - $sales_data['total_cost_of_sales'] - $sales_data['total_discounts'];
+  
+  // Calculate profit margin percentage
+  $profit_margin = 0;
+  if($sales_data['total_sales_revenue'] > 0){
+    $profit_margin = ($gross_profit / $sales_data['total_sales_revenue']) * 100;
+  }
+  
+  return array(
+    'sales_revenue' => $sales_data['total_sales_revenue'],
+    'cost_of_sales' => $sales_data['total_cost_of_sales'],
+    'discounts' => $sales_data['total_discounts'],
+    'gross_profit' => $gross_profit,
+    'profit_margin' => $profit_margin,
+    'potential_revenue' => $sales_data['total_potential_revenue']
+  );
+}
+
+/*--------------------------------------------------------------*/
+/* Function for Get profit report for a given year and month    */
+/*--------------------------------------------------------------*/
+function find_profit_report_month($year, $month){
+  global $db;
+  $year = (int)$year;
+  $month = sprintf('%02d', (int)$month);
+
+  // Restrict to selected month using created_at on sales
+  $sales_sql = "SELECT ";
+  $sales_sql .= "COALESCE(SUM(s.total), 0) AS total_sales_revenue, ";
+  $sales_sql .= "COALESCE(SUM(s.discount), 0) AS total_discounts, ";
+  $sales_sql .= "COALESCE(SUM(p.buying_price * s.quantity), 0) AS total_cost_of_sales, ";
+  $sales_sql .= "COALESCE(SUM(p.selling_price * s.quantity), 0) AS total_potential_revenue ";
+  $sales_sql .= "FROM sales s ";
+  $sales_sql .= "LEFT JOIN product p ON s.sale_product_id = p.p_id ";
+  $sales_sql .= "WHERE DATE_FORMAT(s.created_at, '%Y-%m') = '{$year}-{$month}'";
+
+  $sales_result = find_by_sql($sales_sql);
+  $sales_data = isset($sales_result[0]) ? $sales_result[0] : array(
+    'total_sales_revenue' => 0,
+    'total_discounts' => 0,
+    'total_cost_of_sales' => 0,
+    'total_potential_revenue' => 0
+  );
+
+  $gross_profit = $sales_data['total_sales_revenue'] - $sales_data['total_cost_of_sales'] - $sales_data['total_discounts'];
+  $profit_margin = 0;
+  if($sales_data['total_sales_revenue'] > 0){
+    $profit_margin = ($gross_profit / $sales_data['total_sales_revenue']) * 100;
+  }
+
+  return array(
+    'sales_revenue' => $sales_data['total_sales_revenue'],
+    'cost_of_sales' => $sales_data['total_cost_of_sales'],
+    'discounts' => $sales_data['total_discounts'],
+    'gross_profit' => $gross_profit,
+    'profit_margin' => $profit_margin,
+    'potential_revenue' => $sales_data['total_potential_revenue']
+  );
+}
+
 ?>
