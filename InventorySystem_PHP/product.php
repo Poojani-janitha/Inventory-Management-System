@@ -25,7 +25,7 @@
     
     // If quantity is very low (less than 50), consider it low stock
     // You can adjust this threshold as needed
-    if($current_quantity < 50) {
+    if($current_quantity <= 30) {
       $low_stock_products[] = $product;
     }
   }
@@ -66,13 +66,12 @@
         <span aria-hidden="true">&times;</span>
       </button>
       <h4><i class="glyphicon glyphicon-exclamation-sign"></i> Low Stock Alert!</h4>
-      <p><strong>The following products are running low on stock (below 50% of original):</strong></p>
+      <p><strong>The following products have 30 units or less in stock:</strong></p>
       <ul>
         <?php foreach($low_stock_products as $product): ?>
         <li>
           <strong><?php echo remove_junk($product['product_name']); ?></strong> 
           (ID: <?php echo remove_junk($product['p_id']); ?>) 
-          - Original Stock: <span class="label label-info"><?php echo $product['original_quantity']; ?> units</span>
           - Current Stock: <span class="label label-danger"><?php echo $product['quantity']; ?> units</span>
         </li>
         <?php endforeach; ?>
