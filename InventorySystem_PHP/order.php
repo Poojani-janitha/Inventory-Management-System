@@ -91,16 +91,6 @@ if (isset($_POST['place_order'])) {
                   text-align: center; 
                   position: relative;
                 }
-                .header::before {
-                  content: '';
-                  position: absolute;
-                  top: 0;
-                  left: 0;
-                  right: 0;
-                  bottom: 0;
-                  background: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><defs><pattern id=\"grain\" width=\"100\" height=\"100\" patternUnits=\"userSpaceOnUse\"><circle cx=\"50\" cy=\"50\" r=\"1\" fill=\"white\" opacity=\"0.1\"/></pattern></defs><rect width=\"100\" height=\"100\" fill=\"url(%23grain)\"/></svg>') repeat;
-                  opacity: 0.3;
-                }
                 .header h1 { 
                   margin: 0; 
                   font-size: 28px; 
@@ -108,31 +98,7 @@ if (isset($_POST['place_order'])) {
                   position: relative;
                   z-index: 1;
                 }
-                .header .subtitle {
-                  margin: 8px 0 0 0;
-                  font-size: 16px;
-                  opacity: 0.9;
-                  position: relative;
-                  z-index: 1;
-                }
-                .content { 
-                  padding: 40px 30px; 
-                  background: #ffffff;
-                }
-                .greeting {
-                  font-size: 18px;
-                  color: #2c3e50;
-                  margin-bottom: 25px;
-                  line-height: 1.6;
-                }
-                .order-card {
-                  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-                  border-radius: 12px;
-                  padding: 25px;
-                  margin: 25px 0;
-                  border-left: 5px solid #4CAF50;
-                  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-                }
+                .content { padding: 40px 30px; background: #ffffff; }
                 .order-table { 
                   width: 100%; 
                   border-collapse: collapse; 
@@ -140,160 +106,41 @@ if (isset($_POST['place_order'])) {
                   background: white;
                   border-radius: 8px;
                   overflow: hidden;
-                  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
                 }
                 .order-table th { 
                   background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
                   color: #fff; 
                   padding: 15px 12px; 
                   text-align: left; 
-                  font-weight: 600;
-                  font-size: 14px;
-                  text-transform: uppercase;
-                  letter-spacing: 0.5px;
                 }
-                .order-table td { 
-                  padding: 15px 12px; 
-                  border-bottom: 1px solid #e9ecef;
-                  font-size: 15px;
-                }
-                .order-table tr:last-child td {
-                  border-bottom: none;
-                }
-                .order-table tr:nth-child(even) {
-                  background-color: #f8f9fa;
-                }
-                .highlight {
-                  background: linear-gradient(135deg, #4CAF50, #45a049);
-                  color: white;
-                  padding: 4px 8px;
-                  border-radius: 4px;
-                  font-weight: 600;
-                }
-                .total-amount {
-                  background: linear-gradient(135deg, #ff6b6b, #ee5a52);
-                  color: white;
-                  padding: 8px 12px;
-                  border-radius: 6px;
-                  font-weight: 700;
-                  font-size: 16px;
-                }
-                .instructions {
-                  background: #e3f2fd;
-                  border-left: 4px solid #2196F3;
-                  padding: 20px;
-                  margin: 25px 0;
-                  border-radius: 0 8px 8px 0;
-                }
-                .contact-info {
-                  background: #f8f9fa;
-                  padding: 20px;
-                  border-radius: 8px;
-                  margin: 25px 0;
-                  text-align: center;
-                }
-                .contact-info h3 {
-                  color: #2c3e50;
-                  margin: 0 0 15px 0;
-                  font-size: 18px;
-                }
-                .contact-links {
-                  display: flex;
-                  justify-content: center;
-                  gap: 20px;
-                  flex-wrap: wrap;
-                }
-                .contact-links a {
-                  color: #4CAF50;
-                  text-decoration: none;
-                  font-weight: 600;
-                  padding: 8px 16px;
-                  border: 2px solid #4CAF50;
-                  border-radius: 25px;
-                  transition: all 0.3s ease;
-                }
-                .contact-links a:hover {
-                  background: #4CAF50;
-                  color: white;
-                }
+                .order-table td { padding: 15px 12px; border-bottom: 1px solid #e9ecef; }
                 .footer { 
                   background: #2c3e50;
                   color: #bdc3c7; 
                   padding: 20px 30px; 
                   text-align: center; 
-                  font-size: 14px;
-                  line-height: 1.5;
-                }
-                .footer p {
-                  margin: 5px 0;
-                }
-                .company-logo {
-                  width: 40px;
-                  height: 40px;
-                  background: white;
-                  border-radius: 50%;
-                  display: inline-flex;
-                  align-items: center;
-                  justify-content: center;
-                  margin-bottom: 10px;
-                  font-weight: bold;
-                  color: #4CAF50;
-                  font-size: 18px;
-                }
-                @media (max-width: 600px) {
-                  .email-container { margin: 10px; }
-                  .content { padding: 20px 15px; }
-                  .contact-links { flex-direction: column; align-items: center; }
                 }
               </style>
             </head>
             <body>
               <div class='email-container'>
                 <div class='header'>
-                  <div class='company-logo'>IMS</div>
                   <h1>🛒 New Purchase Order</h1>
-                  <p class='subtitle'>Inventory Management System</p>
                 </div>
                 <div class='content'>
-                  <div class='greeting'>
-                    Dear <strong>{$supplier['s_name']}</strong>,<br><br>
-                    We are pleased to place a new order with your company. Please find the order details below:
-                  </div>
-                  
-                  <div class='order-card'>
-                    <h3 style='margin: 0 0 20px 0; color: #2c3e50; font-size: 20px;'>📋 Order Details</h3>
-                    <table class='order-table'>
-                      <tr><th>Product Information</th><th>Details</th></tr>
-                      <tr><td><strong>Product Name</strong></td><td>{$product_name}</td></tr>
-                      <tr><td><strong>Category</strong></td><td>{$category_name}</td></tr>
-                      <tr><td><strong>Quantity</strong></td><td><span class='highlight'>{$order_qty} units</span></td></tr>
-                      <tr><td><strong>Unit Price</strong></td><td>Rs. " . number_format($price, 2) . "</td></tr>
-                      <tr><td><strong>Total Amount</strong></td><td><span class='total-amount'>Rs. " . number_format($total_amount, 2) . "</span></td></tr>
-                      <tr><td><strong>Order Date</strong></td><td>" . date('F j, Y \a\t g:i A') . "</td></tr>
-                      <tr><td><strong>Order ID</strong></td><td>#PO-" . str_pad($db->insert_id, 6, '0', STR_PAD_LEFT) . "</td></tr>
-                    </table>
-                  </div>
-
-                  <div class='instructions'>
-                    <h4 style='margin: 0 0 15px 0; color: #1976D2;'>📝 Delivery Instructions</h4>
-                    <p style='margin: 0; color: #424242; line-height: 1.6;'>
-                      Please confirm the availability of the requested items and provide us with the expected delivery date. 
-                      We appreciate your prompt response and look forward to a successful business relationship.
-                    </p>
-                  </div>
-
-                  <div class='contact-info'>
-                    <h3>📞 Need Assistance?</h3>
-                    <p style='margin: 0 0 15px 0; color: #666;'>For any queries or clarifications, please don't hesitate to contact us:</p>
-                    <div class='contact-links'>
-                      <a href='mailto:admin@inventorysystem.lk'>📧 Email Support</a>
-                      <a href='tel:+94112345678'>📞 Call Us</a>
-                    </div>
-                  </div>
+                  <p>Dear <strong>{$supplier['s_name']}</strong>,</p>
+                  <p>We are pleased to place a new order with your company.</p>
+                  <table class='order-table'>
+                    <tr><th>Product Name</th><td>{$product_name}</td></tr>
+                    <tr><th>Category</th><td>{$category_name}</td></tr>
+                    <tr><th>Quantity</th><td>{$order_qty} units</td></tr>
+                    <tr><th>Unit Price</th><td>Rs. " . number_format($price, 2) . "</td></tr>
+                    <tr><th>Total Amount</th><td>Rs. " . number_format($total_amount, 2) . "</td></tr>
+                    <tr><th>Order Date</th><td>" . date('F j, Y') . "</td></tr>
+                  </table>
                 </div>
                 <div class='footer'>
                   <p><strong>Inventory Management System</strong></p>
-                  <p>This is an automated message. Please do not reply to this email.</p>
                   <p>© " . date('Y') . " All rights reserved.</p>
                 </div>
               </div>
@@ -304,16 +151,11 @@ if (isset($_POST['place_order'])) {
             $headers = "MIME-Version: 1.0\r\n";
             $headers .= "Content-type:text/html;charset=UTF-8\r\n";
             $headers .= "From: Inventory System <noreply@inventorysystem.com>\r\n";
-            $headers .= "Reply-To: admin@inventorysystem.com\r\n";
 
             if(mail($to, $subject, $message, $headers)){
                 $session->msg("s", "Order placed successfully and email sent to supplier.");
-                // Debug: Check if message is set
-                error_log("DEBUG: Success message set - Session: " . print_r($_SESSION['msg'], true));
             } else {
                 $session->msg("w", "Order placed successfully, but email could not be sent.");
-                // Debug: Check if message is set
-                error_log("DEBUG: Warning message set - Session: " . print_r($_SESSION['msg'], true));
             }
 
         } else {
@@ -327,7 +169,6 @@ if (isset($_POST['place_order'])) {
     redirect('order.php');
 }
 
-// Get messages after form processing
 $msg = $session->msg();
 ?>
 
@@ -335,15 +176,7 @@ $msg = $session->msg();
 
 <div class="row">
   <div class="col-md-12">
-    <?php 
-    // Debug session messages
-    echo "<!-- DEBUG: Session messages -->";
-    echo "<!-- Session msg: " . print_r($_SESSION['msg'] ?? 'No session msg', true) . " -->";
-    echo "<!-- Msg variable: " . print_r($msg, true) . " -->";
-    echo "<!-- Session object msg: " . print_r($session->msg, true) . " -->";
-    echo "<!-- DEBUG END -->";
-    echo display_msg($msg); 
-    ?>
+    <?php echo display_msg($msg); ?>
 
     <!-- ======= PLACE NEW ORDER FORM ======= -->
     <div class="panel panel-default" style="width: 500px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-radius: 8px; margin-bottom: 20px;">
@@ -486,6 +319,143 @@ $msg = $session->msg();
   </div>
 </div>
 
+<!-- Professional CSS Styling -->
+<style>
+/* Panel Heading Gradient - Like your friend's page */
+.panel-heading {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: white !important;
+  border: none !important;
+  padding: 15px 20px;
+}
+
+.panel-heading strong {
+  font-size: 18px;
+}
+
+/* Table Header Gradient */
+.table thead tr {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.table thead th {
+  color: white !important;
+  border-bottom: 2px solid #dee2e6;
+  vertical-align: middle;
+  font-size: 13px;
+  padding: 12px 8px;
+}
+
+/* Table Hover Effect */
+.table-hover tbody tr:hover {
+  background-color: #f1f8ff;
+  cursor: pointer;
+}
+
+/* Button Styling with Gradients */
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+.btn-info {
+  background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+  border: none;
+}
+
+.btn-info:hover {
+  background: linear-gradient(135deg, #44a08d 0%, #4ecdc4 100%);
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+  border: none;
+}
+
+.btn-danger:hover {
+  background: linear-gradient(135deg, #ee5a52 0%, #ff6b6b 100%);
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+  border: none;
+}
+
+.btn-success:hover {
+  background: linear-gradient(135deg, #a8e063 0%, #56ab2f 100%);
+}
+
+.btn-warning {
+  background: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%);
+  border: none;
+}
+
+/* Form Control Focus */
+.form-control:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+/* Label Styling */
+label {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+/* Panel Shadow */
+.panel {
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  border-radius: 8px;
+}
+
+/* Modal Header Gradient */
+.modal-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.modal-header .close {
+  color: white;
+  opacity: 0.8;
+}
+
+.modal-header h4 {
+  color: white;
+}
+
+/* Label Badges */
+.label {
+  font-size: 12px;
+  padding: 5px 10px;
+  border-radius: 3px;
+  font-weight: 600;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #667eea;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #764ba2;
+}
+</style>
 
 <script>
 document.getElementById('category-select').addEventListener('change', function() {
@@ -605,8 +575,6 @@ document.getElementById('editOrderForm').addEventListener('submit', function(e){
         submitBtn.disabled = false;
     });
 });
-
-
 </script>
 
 <?php include_once('layouts/footer.php'); ?>
