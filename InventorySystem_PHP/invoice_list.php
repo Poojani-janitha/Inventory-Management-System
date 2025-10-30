@@ -34,6 +34,14 @@
   $to_ft    = isset($_GET['to_date']) ? $db->escape($_GET['to_date']) : '';
 ?>
 <?php include_once('layouts/header.php'); ?>
+<link rel="stylesheet" href="assets/css/professional-styles.css">
+
+<!-- Page Header -->
+<div class="page-header">
+  <div class="container-fluid">
+    <h1><span class="glyphicon glyphicon-file"></span> Invoice Management</h1>
+  </div>
+</div>
 
 <div class="row">
   <div class="col-md-12">
@@ -41,7 +49,7 @@
     <div class="panel panel-default">
       <div class="panel-heading clearfix">
         <strong>
-          <span class="glyphicon glyphicon-file"></span>
+          <span class="glyphicon glyphicon-list-alt"></span>
           <span>Invoice List</span>
         </strong>
         <div class="pull-right">
@@ -53,31 +61,46 @@
       <div class="panel-body">
 
         <!-- Filters / Search -->
-        <form class="form-inline" method="get" style="margin-bottom:15px;">
-          <div class="form-group">
-            <input type="text" name="search" class="form-control" placeholder="Search by Invoice # or Customer" value="<?php echo htmlspecialchars($search); ?>">
-          </div>
-          <div class="form-group">
-            <label for="from_date" style="margin-left:8px;margin-right:4px;">From</label>
-            <input type="date" id="from_date" name="from_date" class="form-control" value="<?php echo htmlspecialchars($from_ft); ?>">
-          </div>
-          <div class="form-group">
-            <label for="to_date" style="margin-left:8px;margin-right:4px;">To</label>
-            <input type="date" id="to_date" name="to_date" class="form-control" value="<?php echo htmlspecialchars($to_ft); ?>">
-          </div>
-          <button type="submit" class="btn btn-info" style="margin-left:8px;">Filter</button>
-          <a href="invoice_list.php" class="btn btn-default" style="margin-left:6px;">Clear</a>
-        </form>
+        <div class="filter-section">
+          <h4><span class="glyphicon glyphicon-filter"></span> Search & Filter</h4>
+          <form class="form-inline" method="get">
+            <div class="form-group">
+              <label for="search">Search:</label>
+              <input type="text" name="search" class="form-control" placeholder="Invoice # or Customer Name" value="<?php echo htmlspecialchars($search); ?>">
+            </div>
+            <div class="form-group">
+              <label for="from_date">From Date:</label>
+              <input type="date" id="from_date" name="from_date" class="form-control" value="<?php echo htmlspecialchars($from_ft); ?>">
+            </div>
+            <div class="form-group">
+              <label for="to_date">To Date:</label>
+              <input type="date" id="to_date" name="to_date" class="form-control" value="<?php echo htmlspecialchars($to_ft); ?>">
+            </div>
+            <div class="form-group">
+              <button type="submit" class="btn btn-info">
+                <span class="glyphicon glyphicon-search"></span> Filter
+              </button>
+              <a href="invoice_list.php" class="btn btn-warning">
+                <span class="glyphicon glyphicon-refresh"></span> Clear
+              </a>
+            </div>
+          </form>
+        </div>
 
         <!-- Bulk delete form (by date range) -->
-        <form method="post" id="deleteRangeForm" onsubmit="return confirmDeleteRange();" style="margin-bottom:15px;">
-          <input type="hidden" name="from_date" value="<?php echo htmlspecialchars($from_ft); ?>">
-          <input type="hidden" name="to_date" value="<?php echo htmlspecialchars($to_ft); ?>">
-          <button type="submit" name="delete_range" class="btn btn-danger" <?php echo ($from_ft && $to_ft) ? '' : 'disabled'; ?>>
-            <span class="glyphicon glyphicon-trash"></span> Delete Invoices in Date Range
-          </button>
-          <small class="text-muted" style="margin-left:10px;">(Deletes all invoices where invoice date is between From and To)</small>
-        </form>
+        <div class="bulk-delete-section">
+          <div class="card-header">
+            <span class="glyphicon glyphicon-warning-sign"></span> Bulk Delete Operations
+          </div>
+          <form method="post" id="deleteRangeForm" onsubmit="return confirmDeleteRange();">
+            <input type="hidden" name="from_date" value="<?php echo htmlspecialchars($from_ft); ?>">
+            <input type="hidden" name="to_date" value="<?php echo htmlspecialchars($to_ft); ?>">
+            <button type="submit" name="delete_range" class="btn btn-danger" <?php echo ($from_ft && $to_ft) ? '' : 'disabled'; ?>>
+              <span class="glyphicon glyphicon-trash"></span> Delete Invoices in Date Range
+            </button>
+            <small class="help-block">Deletes all invoices where invoice date is between the selected From and To dates. This action cannot be undone.</small>
+          </form>
+        </div>
 
         <table class="table table-bordered table-striped">
           <thead>
@@ -88,7 +111,7 @@
               <th>Phone Number</th>
               <th>Total Amount</th>
               <th>Date</th>
-              <th class="text-center" style="width: 180px;">Actions</th>
+              <th style="width: 180px;">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -132,23 +155,25 @@
                     echo "<td>" . htmlspecialchars($invoice['pNumber']) . "</td>";
                     echo "<td>LKR " . number_format($invoice['total_amount'], 2) . "</td>";
                     echo "<td>" . date('Y-m-d H:i', strtotime($invoice['created_at'])) . "</td>";
-                    echo "<td class='text-center'>";
+                    echo "<td>";
+                    echo "<div class='action-buttons'>";
 
                     // View/download invoice
                     echo "<a href='generate_invoice.php?invoice_number=" . urlencode($invoice['invoice_number']) . "' class='btn btn-info btn-xs' title='View/Download Invoice'>";
-                    echo "<span class='glyphicon glyphicon-download'></span> Invoice";
-                    echo "</a> ";
+                    echo "<span class='glyphicon glyphicon-eye-open'></span> View";
+                    echo "</a>";
 
                     // Edit invoice - points to edit_invoice.php (implement that file to allow editing)
-                    echo "<a href='edit_invoice.php?invoice_number=" . urlencode($invoice['invoice_number']) . "' class='btn btn-warning btn-xs' title='Edit Invoice' style='margin-left:6px;'>";
-                    echo "<span class='glyphicon glyphicon-pencil'></span> Edit";
-                    echo "</a> ";
+                    echo "<a href='edit_invoice.php?invoice_number=" . urlencode($invoice['invoice_number']) . "' class='btn btn-warning btn-xs' title='Edit Invoice'>";
+                    echo "<span class='glyphicon glyphicon-edit'></span> Edit";
+                    echo "</a>";
 
                     // Delete single invoice (with confirmation)
-                    echo "<a href='delete_invoice.php?invoice_number=" . urlencode($invoice['invoice_number']) . "' class='btn btn-danger btn-xs' title='Delete Invoice' onclick=\"return confirm('Delete invoice " . htmlspecialchars($invoice['invoice_number']) . "? This cannot be undone.');\" style='margin-left:6px;'>";
+                    echo "<a href='delete_invoice.php?invoice_number=" . urlencode($invoice['invoice_number']) . "' class='btn btn-danger btn-xs' title='Delete Invoice' onclick=\"return confirm('Delete invoice " . htmlspecialchars($invoice['invoice_number']) . "? This cannot be undone.');\">";
                     echo "<span class='glyphicon glyphicon-trash'></span> Delete";
                     echo "</a>";
 
+                    echo "</div>";
                     echo "</td>";
                     echo "</tr>";
                     $counter++;

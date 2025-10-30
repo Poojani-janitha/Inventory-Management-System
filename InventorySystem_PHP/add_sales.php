@@ -59,6 +59,10 @@ function generateInvoiceNumber() {
     $pNumber = $_POST['pNumber'];
     $email = $_POST['email'];
     $name = $_POST['name'];
+    // Validate customer name (only letters and spaces)
+    if (!preg_match('/^[a-zA-Z ]+$/', $name)) {
+        $errors[] = "Customer name should contain only letters and spaces.";
+    }
     
     // Validate phone number format (10 digits)
     if (!preg_match('/^[0-9]{10}$/', $pNumber)) {
@@ -210,6 +214,14 @@ function generateInvoiceNumber() {
 
 ?>
 <?php include_once('layouts/header.php'); ?>
+<link rel="stylesheet" href="assets/css/professional-styles.css">
+
+<!-- Page Header -->
+<div class="page-header">
+  <div class="container-fluid">
+    <h1><span class="glyphicon glyphicon-plus"></span> Add New Sale</h1>
+  </div>
+</div>
 
 <div class="row">
   <div class="col-md-12">
@@ -217,8 +229,8 @@ function generateInvoiceNumber() {
     <div class="panel panel-default">
       <div class="panel-heading clearfix">
         <strong>
-          <span class="glyphicon glyphicon-plus"></span>
-          <span>Add New Sale</span>
+          <span class="glyphicon glyphicon-shopping-cart"></span>
+          <span>Sales Transaction</span>
        </strong>
       </div>
       <div class="panel-body">
@@ -240,55 +252,50 @@ function generateInvoiceNumber() {
           </div>
           
           <!-- Customer Information -->
-          <div class="row">
-            <div class="col-md-12">
-              <h4>Customer Information</h4>
-            </div>
-          </div>
-          
-          <div class="row">
-            <div class="col-md-4">
-              <div class="form-group">
-                <label for="name" class="control-label">Customer Name</label>
-                <input type="text" class="form-control" name="name" id="name" required>
+          <div class="customer-info">
+            <h4><span class="glyphicon glyphicon-user"></span> Customer Information</h4>
+            
+            <div class="row">
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label for="name" class="control-label">Customer Name</label>
+                  <input type="text" class="form-control" name="name" id="name" required pattern="[a-zA-Z ]+" title="Only letters and spaces are allowed">
+                </div>
               </div>
-            </div>
-            <div class="col-md-4">
-              <div class="form-group">
-                <label for="pNumber" class="control-label">Phone Number</label>
-                <input type="text" class="form-control" name="pNumber" id="pNumber" pattern="[0-9]{10}" title="Please enter a valid 10-digit phone number" required>
-                <small class="text-muted">Enter 10 digits (e.g., 0712345678)</small>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label for="pNumber" class="control-label">Phone Number</label>
+                  <input type="text" class="form-control" name="pNumber" id="pNumber" pattern="[0-9]{10}" title="Please enter a valid 10-digit phone number" required>
+                  <small class="text-muted">Enter 10 digits (e.g., 0712345678)</small>
+                </div>
               </div>
-            </div>
-            <div class="col-md-4">
-              <div class="form-group">
-                <label for="email" class="control-label">Email</label>
-                <input type="email" class="form-control" name="email" id="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Please enter a valid email address">
-                <small class="text-muted">Optional - Enter valid email address</small>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label for="email" class="control-label">Email</label>
+                  <input type="email" class="form-control" name="email" id="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Please enter a valid email address">
+                  <small class="text-muted">Optional - Enter valid email address</small>
+                </div>
               </div>
             </div>
           </div>
           
           <!-- Products Section -->
-          <div class="row">
-            <div class="col-md-12">
-              <h4>Products</h4>
-              <button type="button" class="btn btn-success btn-sm" id="addProductBtn">
+          <div class="card">
+            <div class="card-header">
+              <span class="glyphicon glyphicon-list"></span> Products & Services
+              <button type="button" class="btn btn-success btn-sm pull-right" id="addProductBtn">
                 <span class="glyphicon glyphicon-plus"></span> Add Product
               </button>
             </div>
-          </div>
-          
-          <div id="productsContainer">
-            <!-- Product rows will be added here dynamically -->
+            
+            <div id="productsContainer">
+              <!-- Product rows will be added here dynamically -->
+            </div>
           </div>
           
           <!-- Order Summary -->
-          <div class="row">
-            <div class="col-md-12">
-              <h4>Order Summary</h4>
-            </div>
-          </div>
+          <div class="order-summary">
+            <h4><span class="glyphicon glyphicon-calculator"></span> Order Summary</h4>
           
           <div class="row">
             <div class="col-md-6">
@@ -300,7 +307,7 @@ function generateInvoiceNumber() {
             <div class="col-md-6">
               <div class="form-group">
                 <label for="grand_total" class="control-label">Grand Total (LKR)</label>
-                <input type="number" class="form-control" name="grand_total" id="grand_total" step="0.01" readonly style="background-color: #f5f5f5; font-weight: bold; color: #d9534f;">
+                <input type="number" class="form-control grand-total" name="grand_total" id="grand_total" step="0.01" readonly>
               </div>
             </div>
           </div>
@@ -824,6 +831,39 @@ document.getElementById('email').addEventListener('input', function() {
         emailInput.classList.add('is-invalid');
     }
 });
+
+// Prevent numbers from being entered in the customer name field
+const nameInput = document.getElementById('name');
+if (nameInput) {
+  // Block numbers on keypress
+  nameInput.addEventListener('keypress', function(e) {
+    if (e.key.match(/[0-9]/)) {
+      e.preventDefault();
+    }
+  });
+  // Block numbers on paste
+  nameInput.addEventListener('paste', function(e) {
+    const paste = (e.clipboardData || window.clipboardData).getData('text');
+    if (/[^a-zA-Z ]/.test(paste)) {
+      e.preventDefault();
+    }
+  });
+  // Remove numbers on input (for autofill, drag, etc.)
+  nameInput.addEventListener('input', function(e) {
+    this.value = this.value.replace(/[^a-zA-Z ]/g, '');
+  });
+}
+const saleForm = nameInput ? nameInput.form : null;
+if (saleForm) {
+  saleForm.addEventListener('submit', function(e) {
+    const value = nameInput.value;
+    if (!/^[a-zA-Z ]+$/.test(value)) {
+      alert('Customer name should contain only letters and spaces.');
+      nameInput.focus();
+      e.preventDefault();
+    }
+  });
+}
 
 // Form submission validation
 document.querySelector('form').addEventListener('submit', function(e) {
