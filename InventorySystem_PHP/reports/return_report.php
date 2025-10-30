@@ -1,6 +1,6 @@
 <?php
   $page_title = 'Purchase Return Report';
-  require_once('../includes/load.php');
+  require_once('includes/load.php');
   // Checkin What level user has permission to view this page
    page_require_level(1);
 ?>
@@ -124,5 +124,5 @@
   </div>
 </div>
 
-<?php include_once('../layouts/footer.php'); ?>
+<?php include_once('layouts/footer.php'); ?>
 

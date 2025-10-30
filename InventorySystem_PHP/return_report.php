@@ -1,336 +1,128 @@
 <?php
-  $page_title = 'Return Reports';
+  $page_title = 'Purchase Return Report';
   require_once('includes/load.php');
-  page_require_level(1);
+  // Checkin What level user has permission to view this page
+   page_require_level(1);
 ?>
-<?php include_once('layouts/header.php'); ?>
-
 <?php
-  // Get all returns
-  $all_returns = find_all_returns();
+  if(!isset($msg)) $msg = $session->msg();
+  $start_date = isset($_GET['start_date']) ? $_GET['start_date'] : null;
+  $end_date = isset($_GET['end_date']) ? $_GET['end_date'] : null;
   
-  // Calculate statistics
-  $total_returns = count($all_returns);
-  $total_quantity = 0;
-  $total_return_value = 0;
-  $product_counts = [];
-  $supplier_counts = [];
-  $category_counts = [];
-  
-  foreach($all_returns as $return) {
-    $total_quantity += (int)$return['return_quantity'];
-    $return_price = $return['return_quantity'] * $return['buying_price'];
-    $total_return_value += $return_price;
-    
-    // Count by product
-    if(!isset($product_counts[$return['p_id']])) {
-      $product_counts[$return['p_id']] = [
-        'name' => $return['product_name'],
-        'count' => 0,
-        'quantity' => 0,
-        'total_value' => 0
-      ];
-    }
-    $product_counts[$return['p_id']]['count']++;
-    $product_counts[$return['p_id']]['quantity'] += (int)$return['return_quantity'];
-    $product_counts[$return['p_id']]['total_value'] += $return_price;
-    
-    // Count by supplier
-    if(!isset($supplier_counts[$return['s_id']])) {
-      $supplier_counts[$return['s_id']] = [
-        'name' => $return['supplier_name'] ?? $return['s_id'],
-        'count' => 0,
-        'quantity' => 0,
-        'total_value' => 0
-      ];
-    }
-    $supplier_counts[$return['s_id']]['count']++;
-    $supplier_counts[$return['s_id']]['quantity'] += (int)$return['return_quantity'];
-    $supplier_counts[$return['s_id']]['total_value'] += $return_price;
-    
-    // Count by category
-    if(!empty($return['category_name'])) {
-      if(!isset($category_counts[$return['category_name']])) {
-        $category_counts[$return['category_name']] = [
-          'count' => 0,
-          'quantity' => 0,
-          'total_value' => 0
-        ];
-      }
-      $category_counts[$return['category_name']]['count']++;
-      $category_counts[$return['category_name']]['quantity'] += (int)$return['return_quantity'];
-      $category_counts[$return['category_name']]['total_value'] += $return_price;
-    }
+  // Handle year/month filtering
+  if(isset($_GET['year']) && !empty($_GET['year']) && isset($_GET['month']) && !empty($_GET['month'])){
+    $start_date = $_GET['year'] . '-' . $_GET['month'] . '-01';
+    $end_date = date('Y-m-t', strtotime($start_date)); // Last day of the month
   }
   
-  // Sort arrays
-  arsort($product_counts);
-  arsort($supplier_counts);
-  arsort($category_counts);
+  $returns = find_all_return_details($start_date, $end_date);
+  
+  // Calculate totals
+  $total_amount = 0;
+  $total_quantity = 0;
+  foreach($returns as $return){
+    $total_amount += isset($return['total_return_amount']) ? $return['total_return_amount'] : ($return['buying_price'] * $return['return_quantity']);
+    $total_quantity += $return['return_quantity'];
+  }
 ?>
-
+<?php include_once('../layouts/header.php'); ?>
 <div class="row">
   <div class="col-md-12">
     <?php echo display_msg($msg); ?>
   </div>
 </div>
-
 <div class="row">
   <div class="col-md-12">
     <div class="panel panel-default">
       <div class="panel-heading clearfix">
         <strong>
-          <span class="glyphicon glyphicon-stats"></span>
-          <span>Return Management Report</span>
+          <span class="glyphicon glyphicon-arrow-left"></span>
+          <span>Purchase Return Report</span>
         </strong>
         <div class="pull-right">
-          <button onclick="window.print()" class="btn btn-primary btn-sm">
-            <span class="glyphicon glyphicon-print"></span> Print Report
-          </button>
-          <a href="returns.php" class="btn btn-default btn-sm">
-            <span class="glyphicon glyphicon-arrow-left"></span> Back to Returns
-          </a>
+          <form method="get" action="return_report.php" class="form-inline">
+            <div class="form-group">
+              <select name="year" class="form-control" style="width: 100px;">
+                <option value="">Select Year</option>
+                <?php 
+                  $current_year = date('Y');
+                  for($i = $current_year; $i >= $current_year - 5; $i--): 
+                    $selected = (isset($_GET['year']) && $_GET['year'] == $i) ? 'selected' : '';
+                ?>
+                  <option value="<?php echo $i; ?>" <?php echo $selected; ?>><?php echo $i; ?></option>
+                <?php endfor; ?>
+              </select>
+            </div>
+            <div class="form-group">
+              <select name="month" class="form-control" style="width: 120px;">
+                <option value="">Select Month</option>
+                <?php 
+                  $months = ['01' => 'January', '02' => 'February', '03' => 'March', '04' => 'April', 
+                            '05' => 'May', '06' => 'June', '07' => 'July', '08' => 'August', 
+                            '09' => 'September', '10' => 'October', '11' => 'November', '12' => 'December'];
+                  foreach($months as $num => $name): 
+                    $selected = (isset($_GET['month']) && $_GET['month'] == $num) ? 'selected' : '';
+                ?>
+                  <option value="<?php echo $num; ?>" <?php echo $selected; ?>><?php echo $name; ?></option>
+                <?php endforeach; ?>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Filter</button>
+            <a href="return_report.php" class="btn btn-default">Reset</a>
+          </form>
         </div>
       </div>
       <div class="panel-body">
-        
-        <!-- Summary Statistics -->
-        <div class="row">
-          <div class="col-md-3">
-            <div class="panel panel-primary text-center" style="padding: 20px;">
-              <h2 style="margin: 0; color: #337ab7;"><?php echo $total_returns; ?></h2>
-              <p style="margin: 5px 0 0 0; color: #777;">Total Returns</p>
-            </div>
+        <?php if(empty($returns)): ?>
+          <div class="alert alert-info">
+            <p>No return records found<?php if(isset($_GET['year']) && isset($_GET['month']) && $_GET['year'] !== '' && $_GET['month'] !== ''): ?> for the selected month<?php endif; ?>.</p>
           </div>
-          <div class="col-md-3">
-            <div class="panel panel-success text-center" style="padding: 20px;">
-              <h2 style="margin: 0; color: #5cb85c;"><?php echo number_format($total_quantity); ?></h2>
-              <p style="margin: 5px 0 0 0; color: #777;">Total Quantity</p>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="panel panel-info text-center" style="padding: 20px;">
-              <h2 style="margin: 0; color: #5bc0de;">Rs. <?php echo number_format($total_return_value, 2); ?></h2>
-              <p style="margin: 5px 0 0 0; color: #777;">Total Return Value</p>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="panel panel-warning text-center" style="padding: 20px;">
-              <h2 style="margin: 0; color: #f0ad4e;"><?php echo number_format($total_returns > 0 ? $total_return_value / $total_returns : 0, 2); ?></h2>
-              <p style="margin: 5px 0 0 0; color: #777;">Average Return Value</p>
-            </div>
-          </div>
-        </div>
-        
-        <hr>
-        
-        <!-- Returns by Product -->
-        <div class="row">
-          <div class="col-md-12">
-            <h3><i class="glyphicon glyphicon-list"></i> Returns by Product</h3>
-            <table class="table table-bordered table-striped">
-              <thead>
-                <tr>
-                  <th>Product ID</th>
-                  <th>Product Name</th>
-                  <th class="text-center">Number of Returns</th>
-                  <th class="text-center">Total Quantity</th>
-                  <th class="text-center">Total Return Value</th>
-                </tr>
-              </thead>
-              <tbody>
-                <?php if(!empty($product_counts)): ?>
-                  <?php foreach(array_slice($product_counts, 0, 10) as $p_id => $data): ?>
-                  <tr>
-                    <td><?php echo htmlspecialchars($p_id); ?></td>
-                    <td><?php echo htmlspecialchars($data['name']); ?></td>
-                    <td class="text-center"><span class="label label-primary"><?php echo $data['count']; ?></span></td>
-                    <td class="text-center"><span class="label label-warning"><?php echo number_format($data['quantity']); ?> units</span></td>
-                    <td class="text-center"><strong>Rs. <?php echo number_format($data['total_value'], 2); ?></strong></td>
-                  </tr>
-                  <?php endforeach; ?>
-                <?php else: ?>
-                  <tr>
-                    <td colspan="5" class="text-center">No data available</td>
-                  </tr>
-                <?php endif; ?>
-              </tbody>
-            </table>
-          </div>
-        </div>
-        
-        <hr>
-        
-        <!-- Returns by Supplier -->
-        <div class="row">
-          <div class="col-md-6">
-            <h3><i class="glyphicon glyphicon-user"></i> Returns by Supplier</h3>
-            <table class="table table-bordered table-striped">
-              <thead>
-                <tr>
-                  <th>Supplier</th>
-                  <th class="text-center">Count</th>
-                  <th class="text-center">Total Value</th>
-                </tr>
-              </thead>
-              <tbody>
-                <?php if(!empty($supplier_counts)): ?>
-                  <?php foreach(array_slice($supplier_counts, 0, 10) as $s_id => $data): ?>
-                  <tr>
-                    <td><?php echo htmlspecialchars($data['name']); ?></td>
-                    <td class="text-center"><span class="label label-info"><?php echo $data['count']; ?></span></td>
-                    <td class="text-center"><strong>Rs. <?php echo number_format($data['total_value'], 2); ?></strong></td>
-                  </tr>
-                  <?php endforeach; ?>
-                <?php else: ?>
-                  <tr>
-                    <td colspan="3" class="text-center">No data available</td>
-                  </tr>
-                <?php endif; ?>
-              </tbody>
-            </table>
-          </div>
-          
-          <!-- Returns by Category -->
-          <div class="col-md-6">
-            <h3><i class="glyphicon glyphicon-folder-open"></i> Returns by Category</h3>
-            <table class="table table-bordered table-striped">
-              <thead>
-                <tr>
-                  <th>Category</th>
-                  <th class="text-center">Count</th>
-                  <th class="text-center">Total Value</th>
-                </tr>
-              </thead>
-              <tbody>
-                <?php if(!empty($category_counts)): ?>
-                  <?php foreach(array_slice($category_counts, 0, 10) as $category => $data): ?>
-                  <tr>
-                    <td><?php echo htmlspecialchars($category); ?></td>
-                    <td class="text-center"><span class="label label-default"><?php echo $data['count']; ?></span></td>
-                    <td class="text-center"><strong>Rs. <?php echo number_format($data['total_value'], 2); ?></strong></td>
-                  </tr>
-                  <?php endforeach; ?>
-                <?php else: ?>
-                  <tr>
-                    <td colspan="3" class="text-center">No data available</td>
-                  </tr>
-                <?php endif; ?>
-              </tbody>
-            </table>
-          </div>
-        </div>
-        
-        <hr>
-        
-        <!-- Detailed Returns List -->
-        <div class="row">
-          <div class="col-md-12">
-            <h3><i class="glyphicon glyphicon-list-alt"></i> Detailed Returns List</h3>
-            <table class="table table-bordered table-striped" id="detailedTable">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Return ID</th>
-                  <th>Product</th>
-                  <th class="text-center">Qty</th>
-                  <th class="text-center">Buying Price</th>
-                  <th class="text-center">Return Price</th>
-                  <th>Supplier</th>
-                  <th>Category</th>
-                  <th class="text-center">Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                <?php $counter = 1; ?>
-                <?php if($all_returns): ?>
-                  <?php foreach($all_returns as $return): ?>
-                  <tr>
-                    <td><?php echo $counter++; ?></td>
-                    <td><?php echo (int)$return['return_id']; ?></td>
-                    <td>
-                      <strong><?php echo htmlspecialchars($return['product_name']); ?></strong>
-                      <br><small class="text-muted"><?php echo htmlspecialchars($return['p_id']); ?></small>
-                    </td>
-                    <td class="text-center"><?php echo (int)$return['return_quantity']; ?></td>
-                    <td class="text-center">Rs. <?php echo number_format($return['buying_price'], 2); ?></td>
-                    <td class="text-center"><strong>Rs. <?php echo number_format($return['return_quantity'] * $return['buying_price'], 2); ?></strong></td>
-                    <td><?php echo htmlspecialchars($return['supplier_name'] ?? $return['s_id']); ?></td>
-                    <td><?php echo htmlspecialchars($return['category_name'] ?? 'N/A'); ?></td>
-                    <td class="text-center"><?php echo date('d-M-Y', strtotime($return['return_date'])); ?></td>
-                  </tr>
-                  <?php endforeach; ?>
-                <?php else: ?>
-                  <tr>
-                    <td colspan="9" class="text-center">No returns found</td>
-                  </tr>
-                <?php endif; ?>
-              </tbody>
-            </table>
-          </div>
-        </div>
-        
+        <?php else: ?>
+          <table class="table table-bordered table-striped">
+          <thead>
+            <tr>
+              <th class="text-center" style="width: 50px;">#</th>
+              <th>Return ID</th>
+              <th>Product ID</th>
+              <th>Product Name</th>
+              <th>Supplier</th>
+              <th class="text-center" style="width: 10%;">Quantity</th>
+              <th class="text-center" style="width: 10%;">Buying Price</th>
+              <th class="text-center" style="width: 10%;">Total Amount</th>
+              <th class="text-center" style="width: 15%;">Return Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php $count = 1; ?>
+            <?php foreach ($returns as $return):?>
+            <tr>
+              <td class="text-center"><?php echo $count++; ?></td>
+              <td><?php echo remove_junk($return['return_id']); ?></td>
+              <td><?php echo remove_junk($return['p_id']); ?></td>
+              <td><?php echo remove_junk($return['product_name']); ?></td>
+              <td><?php echo remove_junk($return['supplier_name']); ?> (<?php echo remove_junk($return['s_id']); ?>)</td>
+              <td class="text-center"><?php echo (int)$return['return_quantity']; ?></td>
+              <td class="text-center">Rs. <?php echo number_format($return['buying_price'], 2); ?></td>
+              <td class="text-center">Rs. <?php echo number_format(isset($return['total_return_amount']) ? $return['total_return_amount'] : ($return['buying_price'] * $return['return_quantity']), 2); ?></td>
+              <td class="text-center"><?php echo date("Y-m-d H:i", strtotime($return['return_date'])); ?></td>
+            </tr>
+            <?php endforeach;?>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="5" class="text-right"><strong>Total:</strong></td>
+              <td class="text-center"><strong><?php echo $total_quantity; ?></strong></td>
+              <td></td>
+              <td class="text-center"><strong>Rs. <?php echo number_format($total_amount, 2); ?></strong></td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+        <?php endif; ?>
       </div>
     </div>
   </div>
 </div>
-
-<style>
-@media print {
-  .panel-heading button,
-  .panel-heading a {
-    display: none !important;
-  }
-}
-
-.panel-primary {
-  border-color: #337ab7;
-}
-
-.panel-success {
-  border-color: #5cb85c;
-}
-
-.panel-info {
-  border-color: #5bc0de;
-}
-
-.panel-warning {
-  border-color: #f0ad4e;
-}
-
-table th {
-  background-color: #f8f9fa;
-  font-weight: 600;
-}
-
-.label {
-  font-size: 0.85em;
-  padding: 0.3em 0.6em;
-}
-
-h3 {
-  color: #667eea;
-  margin-bottom: 20px;
-}
-
-hr {
-  margin: 30px 0;
-  border-color: #e0e0e0;
-}
-</style>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  // Print functionality
-  document.addEventListener('keydown', function(e) {
-    if(e.ctrlKey && e.key === 'p') {
-      e.preventDefault();
-      window.print();
-    }
-  });
-});
-</script>
 
 <?php include_once('layouts/footer.php'); ?>
 

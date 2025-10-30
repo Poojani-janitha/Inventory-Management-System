@@ -79,7 +79,7 @@
 
 
   <li>
-    <a href="reports/reportdashboard.php" class="submenu-toggle">
+    <a href="reportdashboard.php" class="submenu-toggle">
       <i class="glyphicon glyphicon-duplicate"></i>
        <span>Reports</span>
       </a>
