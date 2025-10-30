@@ -6,6 +6,8 @@
 
   // Fetch all purchase orders from database
   $purchase_orders = find_all('purchase_order');
+  //extra add prabashi 
+  $msg = $session->msg();
 ?>
 <?php include_once('layouts/header.php'); ?>
 

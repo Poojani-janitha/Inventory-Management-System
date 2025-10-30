@@ -3,6 +3,7 @@
   require_once('includes/load.php');
   page_require_level(2);
   $products = find_all('product');
+
 //extra add prabashi 
   $msg = $session->msg();
   

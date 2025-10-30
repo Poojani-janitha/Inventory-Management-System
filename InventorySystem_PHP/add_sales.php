@@ -3,6 +3,8 @@
   require_once('includes/load.php');
   //Checkin What level user has permission to view this page
    page_require_level(3);
+   //extra add prabashi 
+  $msg = $session->msg();
    
 // Function to generate unique invoice number
 function generateInvoiceNumber() {

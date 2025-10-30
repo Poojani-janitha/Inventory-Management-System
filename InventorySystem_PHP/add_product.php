@@ -2,6 +2,8 @@
 $page_title='Add Product';
 require_once('includes/load.php');
 page_require_level(2);
+//extra add prabashi 
+  $msg = $session->msg();
 
 $p_id='';
 $product_name='';

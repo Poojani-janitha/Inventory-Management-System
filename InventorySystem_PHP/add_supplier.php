@@ -23,21 +23,37 @@ $message = "";
 // Handle form submission
 if (isset($_POST['add_supplier'])) {
   $s_id = remove_junk($db->escape($_POST['s_id']));
-  $s_name = remove_junk($db->escape($_POST['s_name']));
-  $address = remove_junk($db->escape($_POST['address']));
-  $contact_number = remove_junk($db->escape($_POST['contact_number']));
-  $email = remove_junk($db->escape($_POST['email']));
+  $s_name = trim(remove_junk($db->escape($_POST['s_name'])));
+  $address = trim(remove_junk($db->escape($_POST['address'])));
+  $contact_number = trim(remove_junk($db->escape($_POST['contact_number'])));
+  $email = trim(remove_junk($db->escape($_POST['email'])));
 
+  // Validation
   if (empty($s_name) || empty($address) || empty($contact_number) || empty($email)) {
     $message = "<div class='alert alert-danger'>Please fill all fields.</div>";
+  } elseif (!preg_match("/^[a-zA-Z\s]{2,50}$/", $s_name)) {
+    $message = "<div class='alert alert-danger'>Supplier name must be 2-50 letters only.</div>";
+  } elseif (strlen($address) > 255) {
+    $message = "<div class='alert alert-danger'>Address is too long (max 255 characters).</div>";
+  } elseif (!preg_match("/^\+94\d{9}$/", $contact_number)) { // <-- +94 format
+    $message = "<div class='alert alert-danger'>Contact number must start with +94 followed by 9 digits (e.g., +94771234567).</div>";
+  } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    $message = "<div class='alert alert-danger'>Enter a valid email address.</div>";
   } else {
-    $query = "INSERT INTO supplier_info (s_id, s_name, address, contact_number, email)
-              VALUES ('{$s_id}', '{$s_name}', '{$address}', '{$contact_number}', '{$email}')";
-    if ($db->query($query)) {
-      $message = "<div class='alert alert-success' id='auto-hide'>Supplier added successfully!</div>";
-      $next_id = get_next_supplier_id(); // update ID after adding
+    // Check if email already exists
+    $check_email = $db->query("SELECT * FROM supplier_info WHERE email='{$email}' LIMIT 1");
+    if ($db->num_rows($check_email) > 0) {
+      $message = "<div class='alert alert-danger'>Email already exists.</div>";
     } else {
-      $message = "<div class='alert alert-danger'>Failed to add supplier.</div>";
+      // Insert into database
+      $query = "INSERT INTO supplier_info (s_id, s_name, address, contact_number, email)
+                VALUES ('{$s_id}', '{$s_name}', '{$address}', '{$contact_number}', '{$email}')";
+      if ($db->query($query)) {
+        $message = "<div class='alert alert-success' id='auto-hide'>Supplier added successfully!</div>";
+        $next_id = get_next_supplier_id(); // update ID after adding
+      } else {
+        $message = "<div class='alert alert-danger'>Failed to add supplier.</div>";
+      }
     }
   }
 }
@@ -56,7 +72,7 @@ $suppliers = find_all('supplier_info');
       </div>
       <div class="panel-body">
         <?php echo $message; ?>
-        <form method="POST" action="add_supplier.php">
+        <form method="POST" action="add_supplier.php" id="supplierForm">
           <div class="row">
             <div class="col-md-6">
               <div class="form-group">
@@ -75,11 +91,11 @@ $suppliers = find_all('supplier_info');
             <div class="col-md-6">
               <div class="form-group">
                 <label>Contact Number</label>
-                <input type="text" name="contact_number" class="form-control" required>
+                <input type="text" name="contact_number" id="contact_number" class="form-control" placeholder="+94771234567" required>
               </div>
               <div class="form-group">
                 <label>Email</label>
-                <input type="email" name="email" class="form-control" required>
+                <input type="email" name="email" class="form-control" placeholder="example@example.com" required>
               </div>
             </div>
           </div>
@@ -90,7 +106,7 @@ $suppliers = find_all('supplier_info');
   </div>
 </div>
 
-<!-- ✅ Supplier table below form -->
+<!-- Supplier table below form -->
 <div class="row">
   <div class="col-md-12">
     <div class="panel panel-default">
@@ -125,9 +141,22 @@ $suppliers = find_all('supplier_info');
   </div>
 </div>
 
-<!-- 🔹 Auto-hide success message -->
+<!-- Client-side validation and auto-hide message -->
 <script>
 document.addEventListener("DOMContentLoaded", function() {
+  const form = document.getElementById("supplierForm");
+  const contactInput = document.getElementById("contact_number");
+
+  form.addEventListener("submit", function(e) {
+    const contactValue = contactInput.value.trim();
+    if (!/^\+94\d{9}$/.test(contactValue)) {
+      e.preventDefault();
+      alert("Contact number must start with +94 followed by 9 digits (e.g., +94771234567).");
+      contactInput.focus();
+    }
+  });
+
+  // Auto-hide success message
   const alertBox = document.getElementById('auto-hide');
   if (alertBox && alertBox.classList.contains('alert-success')) {
     setTimeout(() => {
