@@ -59,25 +59,8 @@
          <li><a href="add_sales.php">Add Sale</a> </li>
      </ul>
   </li>
-  <li>
-    <a href="#" class="submenu-toggle">
-      <i class="glyphicon glyphicon-duplicate"></i>
-       <span>Sales Report</span>
-      </a>
-      <ul class="nav submenu">
-        <!-- <li><a href="sales_report.php">Sales by dates </a></li> -->
-        <li><a href="monthly_sales.php">Monthly sales</a></li>
-        <li><a href="daily_sales.php">Daily sales</a> </li>
-      </ul>
-  </li>
-
-  <li>
-    <a href="database_backup.php">
-      <i class="glyphicon glyphicon-download-alt"></i>
-      <span>Database Backup</span>
-    </a>
-  </li>
-
+  
+ 
 
 
   <li>
@@ -91,4 +74,28 @@
         <li><a href="auto_expiry_checker.php">Expiry Checker</a></li>
       </ul>
   </li>
+
+
+
+
+  <li>
+    <a href="reports/reportdashboard.php" class="submenu-toggle">
+      <i class="glyphicon glyphicon-duplicate"></i>
+       <span>Reports</span>
+      </a>
+      
+  </li>
+
+
+
+   <li>
+    <a href="database_backup.php">
+      <i class="glyphicon glyphicon-download-alt"></i>
+      <span>Database Backup</span>
+    </a>
+  </li>
+
+
+
+  
 </ul>
