@@ -7,6 +7,8 @@
  page_require_level(1);
 //pull out all user form database
  $all_users = find_all_user();
+ //extra add prabashi 
+  $msg = $session->msg();
 ?>
 <?php include_once('layouts/header.php'); ?>
 <div class="row">

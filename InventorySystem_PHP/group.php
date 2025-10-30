@@ -4,6 +4,8 @@
   // Checkin What level user has permission to view this page
    page_require_level(1);
   $all_groups = find_all('user_groups');
+  //extra add prabashi 
+  $msg = $session->msg();
 ?>
 <?php include_once('layouts/header.php'); ?>
 <div class="row">
