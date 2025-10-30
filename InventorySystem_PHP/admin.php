@@ -76,6 +76,20 @@
        </div>
     </div>
 	</a>
+	
+	<a href="returns.php" style="color:black;">
+    <div class="col-md-3">
+       <div class="panel panel-box clearfix">
+         <div class="panel-icon pull-left bg-orange">
+          <i class="glyphicon glyphicon-arrow-left"></i>
+        </div>
+        <div class="panel-value pull-right">
+          <h2 class="margin-top"><?php echo count_by_id('returns')['total']; ?></h2>
+          <p class="text-muted">Returns</p>
+        </div>
+       </div>
+    </div>
+	</a>
 </div>
 
 <div class="row">
