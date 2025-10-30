@@ -45,26 +45,39 @@
        $password   = remove_junk($db->escape($_POST['password']));
        $user_level = (int)$db->escape($_POST['level']);
        $password = sha1($password);
+
+    // Get the group name for the selected user level
+    $user_group = find_by_groupLevel($user_level);
+    if (!$user_group) {
+      $session->msg('d', 'Invalid user role selected.');
+      redirect($self, false);
+      return;
+    }
+    $group_name = ucwords($user_group['group_name']);
+
         $query = "INSERT INTO users (";
         $query .="name,username,password,user_level,status";
         $query .=") VALUES (";
-  $query .=" '{$name}', '{$username}', '{$password}', '{$user_level}','1'";
+        $query .=" '{$name}', '{$username}', '{$password}', '{$user_level}','1'";
         $query .=")";
         if($db->query($query)){
-          // success
-          $session->msg('s',"User account has been creted! ");
+          // Simple success flash message
+          $session->msg('s', 'User added successfully');
           redirect($self, false);
         } else {
-          // failed
-          $session->msg('d',' Sorry failed to create account!');
+          // Simple error flash message
+          $session->msg('d', 'Failed to create user account.');
           redirect($self, false);
         }
    } else {
-     $session->msg("d", $errors);
-      redirect($self,false);
+     // Set session flash for validation errors and redirect
+     $session->msg('d', 'Validation error: please check the form fields.');
+     redirect($self,false);
    }
  }
 ?>
+
+  
 
   <div class="row">
     <div class="panel panel-default">
