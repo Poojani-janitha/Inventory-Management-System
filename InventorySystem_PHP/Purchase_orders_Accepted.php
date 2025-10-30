@@ -53,7 +53,7 @@
                 <td class="text-center"><?php echo remove_junk($order['status']); ?></td>
                 <td class="text-center">
                   <div class="btn-group">
-                    <?php if (strtolower($order['status']) == 'accepted'): ?>
+                  <?php if (strtolower(trim($order['status'])) == 'approved'): ?>
                          <a href="add_product.php?o_id=<?php echo $order['o_id'];?>" class="btn btn-info btn-xs" data-toggle="tooltip" title="Add Product to Inventory">
                            <i class="glyphicon glyphicon-plus"></i> Add
                          </a>  
@@ -77,4 +77,4 @@
   </div>
 </div>
 
-<?php include_once('layouts/footer.php'); ?>
+<?php include_once 'layouts/footer.php'; ?>
