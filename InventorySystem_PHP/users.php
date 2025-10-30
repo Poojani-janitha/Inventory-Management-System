@@ -14,6 +14,8 @@
      <?php echo display_msg($msg); ?>
    </div>
 </div>
+<!-- include add user form at top of the users page -->
+<?php include_once('add_user_form.php'); ?>
 <div class="row">
   <div class="col-md-12">
     <div class="panel panel-default">
@@ -22,7 +24,6 @@
           <span class="glyphicon glyphicon-th"></span>
           <span>Users</span>
        </strong>
-         <a href="add_user.php" class="btn btn-info pull-right">Add New User</a>
       </div>
      <div class="panel-body">
       <table class="table table-bordered table-striped">

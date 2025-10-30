@@ -6,14 +6,11 @@
     </a>
   </li>
   <li>
-    <a href="#" class="submenu-toggle">
+    <a href="users.php" class="submenu-toggle">
       <i class="glyphicon glyphicon-user"></i>
       <span>User Management</span>
     </a>
-    <ul class="nav submenu">
-      <li><a href="group.php">Manage Groups</a> </li>
-      <li><a href="users.php">Manage Users</a> </li>
-   </ul>
+  
   </li>
   <li>
     <a href="categorie.php" >
