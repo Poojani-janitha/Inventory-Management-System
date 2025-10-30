@@ -61,6 +61,11 @@
           <span class="glyphicon glyphicon-usd"></span>
           <span>Inventory Valuation Report</span>
         </strong>
+        <div class="pull-right">
+          <button type="button" class="btn btn-default" onclick="window.print()">
+            <span class="glyphicon glyphicon-print"></span> Print
+          </button>
+        </div>
       </div>
       <div class="panel-body">
         <?php if(empty($products)): ?>
@@ -118,4 +123,50 @@
 </div>
 
 <?php include_once('../layouts/footer.php'); ?>
+
+<style>
+@media print {
+  body { 
+    margin: 0; 
+    padding: 0; 
+    font-size: 11pt;
+  }
+  .sidebar, .header, .panel-heading .pull-right, .btn, .alert {
+    display: none !important;
+  }
+  .page {
+    margin: 0;
+    padding: 10px;
+  }
+  .panel {
+    border: none;
+    box-shadow: none;
+    margin-bottom: 0;
+  }
+  .panel-body {
+    padding: 10px 0;
+  }
+  .panel-heading {
+    border-bottom: 2px solid #333 !important;
+    page-break-after: avoid;
+  }
+  table {
+    font-size: 10pt;
+  }
+  table thead {
+    display: table-header-group;
+  }
+  table tr {
+    page-break-inside: avoid;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .row .col-md-4 {
+    width: 32%;
+    float: left;
+    margin-right: 1%;
+  }
+}
+</style>
 

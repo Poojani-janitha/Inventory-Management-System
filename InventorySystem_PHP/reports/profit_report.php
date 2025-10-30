@@ -63,6 +63,9 @@
               </select>
             </div>
             <button type="submit" class="btn btn-primary">Apply</button>
+            <button type="button" class="btn btn-default" onclick="window.print()">
+              <span class="glyphicon glyphicon-print"></span> Print
+            </button>
           </form>
         </div>
         <div class="row">
@@ -174,3 +177,51 @@
 </div>
 
 <?php include_once('../layouts/footer.php'); ?>
+
+<style>
+@media print {
+  body { 
+    margin: 0; 
+    padding: 0; 
+    font-size: 11pt;
+  }
+  .sidebar, .header, .panel-heading .pull-right, .panel-body .pull-right, .btn, .alert {
+    display: none !important;
+  }
+  .page {
+    margin: 0;
+    padding: 10px;
+  }
+  .panel {
+    border: none;
+    box-shadow: none;
+    margin-bottom: 0;
+  }
+  .panel-body {
+    padding: 10px 0;
+  }
+  .panel-heading {
+    border-bottom: 2px solid #333 !important;
+    page-break-after: avoid;
+  }
+  table {
+    font-size: 10pt;
+  }
+  table thead {
+    display: table-header-group;
+  }
+  table tr {
+    page-break-inside: avoid;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .row .col-md-4, .row .col-md-6 {
+    width: 48%;
+    float: left;
+    margin-right: 2%;
+    margin-bottom: 10px;
+  }
+}
+</style>
+
