@@ -3,6 +3,8 @@
   require_once('includes/load.php');
   page_require_level(2);
   $products = find_all('product');
+//extra add prabashi 
+  $msg = $session->msg();
   
   // Check for expiring products (within 1 month)
   $expiring_products = array();
