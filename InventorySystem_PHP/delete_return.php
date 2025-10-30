@@ -1,39 +1,33 @@
 <?php
-  $page_title = 'Delete Return';
   require_once('includes/load.php');
+  // Checkin What level user has permission to view this page
   page_require_level(1);
 ?>
 <?php
-  // Check if return ID is provided
-  if(isset($_GET['id'])){
-    $return_id = (int)$_GET['id'];
-    
-    // First, get the return details to restore stock
-    $return = find_by_id('return_details', $return_id);
-    
-    if(!$return){
-      $session->msg('d', "Return not found.");
-      redirect('returns.php', false);
-    }
-    
-    // Delete from return_details table
-    $query = "DELETE FROM return_details WHERE return_id='{$return_id}'";
-    
-    if($db->query($query)){
-      
-      // Restore the stock back to products table
-      $restore_stock_query = "UPDATE product SET quantity = quantity + '{$return['return_quantity']}' WHERE p_id = '{$return['p_id']}'";
-      $db->query($restore_stock_query);
-      
-      $session->msg('s', "Return deleted successfully. Stock has been restored.");
-      redirect('returns.php', false);
-    } else {
-      $session->msg('d', 'Sorry failed to delete!');
-      redirect('returns.php', false);
-    }
-  } else {
-    $session->msg('d', "Missing return ID.");
-    redirect('returns.php', false);
+  $return = find_return_by_id((int)$_GET['id']);
+  if(!$return){
+    $session->msg("d","Missing Return ID.");
+    redirect('returns.php');
   }
 ?>
-
+<?php
+  // Get the product details to restore quantity
+  $product = find_by_id('product', $return['p_id']);
+  
+  if($product) {
+    // Restore the quantity back to product
+    $restored_qty = $product['quantity'] + $return['return_quantity'];
+    $update_query = "UPDATE product SET quantity = '{$restored_qty}' WHERE p_id = '{$return['p_id']}'";
+    $db->query($update_query);
+  }
+  
+  // Delete the return record
+  $delete_id = delete_by_id('return_details', (int)$return['return_id']);
+  if($delete_id){
+      $session->msg("s","Return deleted successfully. Stock quantity has been restored.");
+      redirect('returns.php');
+  } else {
+      $session->msg("d","Return deletion failed.");
+      redirect('returns.php');
+  }
+?>

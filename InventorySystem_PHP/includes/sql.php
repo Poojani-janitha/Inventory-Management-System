@@ -79,6 +79,9 @@ function delete_by_id($table,$id)
   if($table === 'product') {
     $primary_key = 'p_id';
     $id = $db->escape($id); // Don't cast to int for p_id
+  } elseif($table === 'return_details') {
+    $primary_key = 'return_id';
+    $id = (int)$id;
   } else {
     $id = (int)$id;
   }
@@ -410,6 +413,112 @@ function  monthlySales($year){
   $sql .= " GROUP BY DATE_FORMAT( s.date,  '%c' ),s.p_id";
   $sql .= " ORDER BY date_format(s.date, '%c' ) ASC";
   return find_by_sql($sql);
+}
+
+/*--------------------------------------------------------------*/
+/* Function for Finding all returns with complete details
+/* Joins return_details, product, categories, and supplier_info tables
+/*--------------------------------------------------------------*/
+function find_all_returns(){
+  global $db;
+  $sql  = "SELECT ";
+  $sql .= "r.return_id, ";
+  $sql .= "r.p_id, ";
+  $sql .= "r.s_id, ";
+  $sql .= "r.product_name, ";
+  $sql .= "r.buying_price, ";
+  $sql .= "r.return_quantity, ";
+  $sql .= "r.return_date, ";
+  $sql .= "p.quantity AS current_stock, ";
+  $sql .= "p.selling_price, ";
+  $sql .= "p.category_name, ";
+  $sql .= "c.category_name AS category_name, ";
+  $sql .= "s.s_name AS supplier_name, ";
+  $sql .= "s.contact_number, ";
+  $sql .= "s.email AS supplier_email, ";
+  $sql .= "s.address AS supplier_address ";
+  $sql .= "FROM return_details r ";
+  $sql .= "LEFT JOIN product p ON r.p_id = p.p_id ";
+  $sql .= "LEFT JOIN categories c ON p.category_name = c.category_name ";
+  $sql .= "LEFT JOIN supplier_info s ON r.s_id = s.s_id ";
+  $sql .= "ORDER BY r.return_date DESC";
+  return find_by_sql($sql);
+}
+
+/*--------------------------------------------------------------*/
+/* Function for Finding return by ID with complete details
+/*--------------------------------------------------------------*/
+function find_return_by_id($return_id){
+  global $db;
+  $id = (int)$return_id;
+  $sql  = "SELECT ";
+  $sql .= "r.return_id, ";
+  $sql .= "r.p_id, ";
+  $sql .= "r.s_id, ";
+  $sql .= "r.product_name, ";
+  $sql .= "r.buying_price, ";
+  $sql .= "r.return_quantity, ";
+  $sql .= "r.return_date, ";
+  $sql .= "p.quantity AS current_stock, ";
+  $sql .= "p.selling_price, ";
+  $sql .= "p.category_name, ";
+  $sql .= "c.category_name AS category_name, ";
+  $sql .= "s.s_name AS supplier_name, ";
+  $sql .= "s.contact_number, ";
+  $sql .= "s.email AS supplier_email, ";
+  $sql .= "s.address AS supplier_address ";
+  $sql .= "FROM return_details r ";
+  $sql .= "LEFT JOIN product p ON r.p_id = p.p_id ";
+  $sql .= "LEFT JOIN categories c ON p.category_name = c.category_name ";
+  $sql .= "LEFT JOIN supplier_info s ON r.s_id = s.s_id ";
+  $sql .= "WHERE r.return_id = '{$id}' ";
+  $sql .= "LIMIT 1";
+  $result = find_by_sql($sql);
+  return !empty($result) ? $result[0] : null;
+}
+
+/*--------------------------------------------------------------*/
+/* Function for Finding returns by date range
+/*--------------------------------------------------------------*/
+function find_returns_by_date_range($start_date, $end_date){
+  global $db;
+  $start = $db->escape($start_date);
+  $end = $db->escape($end_date);
+  $sql  = "SELECT ";
+  $sql .= "r.return_id, ";
+  $sql .= "r.p_id, ";
+  $sql .= "r.s_id, ";
+  $sql .= "r.product_name, ";
+  $sql .= "r.buying_price, ";
+  $sql .= "r.return_quantity, ";
+  $sql .= "r.return_date, ";
+  $sql .= "p.quantity AS current_stock, ";
+  $sql .= "p.selling_price, ";
+  $sql .= "p.category_name, ";
+  $sql .= "c.category_name AS category_name, ";
+  $sql .= "s.s_name AS supplier_name, ";
+  $sql .= "s.contact_number, ";
+  $sql .= "s.email AS supplier_email ";
+  $sql .= "FROM return_details r ";
+  $sql .= "LEFT JOIN product p ON r.p_id = p.p_id ";
+  $sql .= "LEFT JOIN categories c ON p.category_name = c.category_name ";
+  $sql .= "LEFT JOIN supplier_info s ON r.s_id = s.s_id ";
+  $sql .= "WHERE DATE(r.return_date) BETWEEN '{$start}' AND '{$end}' ";
+  $sql .= "ORDER BY r.return_date DESC";
+  return find_by_sql($sql);
+}
+
+/*--------------------------------------------------------------*/
+/* Function for Calculating total return amount
+/*--------------------------------------------------------------*/
+function calculate_total_returns(){
+  global $db;
+  $sql  = "SELECT ";
+  $sql .= "COUNT(*) AS total_returns, ";
+  $sql .= "SUM(return_quantity * buying_price) AS total_amount ";
+  $sql .= "FROM return_details";
+  $result = $db->query($sql);
+  return $db->fetch_assoc($result);
 }
 
 ?>
