@@ -66,7 +66,6 @@ function count_id(){
     return $count++;
 }
 
-/*--------------------------------------------------------------*/
 /* Create readable date */
 function read_date($str){
     if($str)

@@ -3,6 +3,8 @@
   require_once('includes/load.php');
   //Checkin What level user has permission to view this page
    page_require_level(3);
+   //extra add prabashi 
+  $msg = $session->msg();
    
 // Function to generate unique invoice number
 function generateInvoiceNumber() {
@@ -445,14 +447,7 @@ function addProductRow() {
                             <input type="number" class="form-control final-total" data-row="${productRowCount}" step="0.01" readonly style="background-color: #f5f5f5;">
                         </div>
                     </div>
-                    <div class="col-md-1">
-                        <div class="form-group">
-                            <label class="control-label">Action</label>
-                            <button type="button" class="btn btn-info btn-block calculate-product" data-row="${productRowCount}">
-                                <span class="glyphicon glyphicon-calculator"></span>
-                            </button>
-                        </div>
-                    </div>
+                  
                 </div>
             </div>
         </div>
