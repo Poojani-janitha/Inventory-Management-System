@@ -55,8 +55,10 @@
                 <td class="text-center"><?php echo remove_junk($order['status']); ?></td>
                 <td class="text-center">
                   <div class="btn-group">
-                    <?php if (strtolower($order['status']) == 'accepted'): ?>
-                         <a href="add_product.php" class="btn btn-info pull-right">Add New</a> 
+                  <?php if (strtolower(trim($order['status'])) == 'approved'): ?>
+                         <a href="add_product.php?o_id=<?php echo $order['o_id'];?>" class="btn btn-info btn-xs" data-toggle="tooltip" title="Add Product to Inventory">
+                           <i class="glyphicon glyphicon-plus"></i> Add
+                         </a>  
                     <?php else: ?>
                       <!-- Show alert if status is Pending -->
                       <button class="btn btn-xs btn-secondary" 
@@ -77,4 +79,4 @@
   </div>
 </div>
 
-<?php include_once('layouts/footer.php'); ?>
+<?php include_once 'layouts/footer.php'; ?>

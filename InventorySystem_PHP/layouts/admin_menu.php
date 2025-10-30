@@ -70,10 +70,25 @@
         <li><a href="daily_sales.php">Daily sales</a> </li>
       </ul>
   </li>
+
   <li>
     <a href="database_backup.php">
       <i class="glyphicon glyphicon-download-alt"></i>
       <span>Database Backup</span>
     </a>
+  </li>
+
+
+
+  <li>
+    <a href="#" class="submenu-toggle">
+      <i class="glyphicon glyphicon-arrow-left"></i>
+       <span>Return Management</span>
+      </a>
+      <ul class="nav submenu">
+        <li><a href="returns.php">Manage Returns</a></li>
+        <li><a href="add_return.php">Add Return</a></li>
+        <li><a href="auto_expiry_checker.php">Expiry Checker</a></li>
+      </ul>
   </li>
 </ul>
