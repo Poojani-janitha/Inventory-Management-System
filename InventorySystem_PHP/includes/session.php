@@ -7,7 +7,6 @@ class Session {
  private $user_is_logged_in = false;
 
  function __construct(){
-   $this->flash_msg();
    $this->userLoginSetup();
  }
 
@@ -38,6 +37,8 @@ class Session {
        }
        $_SESSION['msg'][$type] = $msg;
     } else {
+      // Flash the message when retrieving it
+      $this->flash_msg();
       return $this->msg;
     }
   }
@@ -48,12 +49,11 @@ class Session {
       $this->msg = $_SESSION['msg'];
       unset($_SESSION['msg']);
     } else {
-      $this->msg;
+      $this->msg = array();
     }
   }
 }
 
 $session = new Session();
-$msg = $session->msg();
 
 ?>

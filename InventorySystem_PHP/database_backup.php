@@ -4,6 +4,8 @@
   require_once('includes/backup_config.php');
   // Checkin What level user has permission to view this page
    page_require_level(1);
+   //extra add prabashi 
+  $msg = $session->msg();
 ?>
 
 <?php

@@ -1,5 +1,5 @@
 -- Database Backup
--- Generated on: 2025-10-25 10:42:58
+-- Generated on: 2025-10-30 08:07:15
 -- Database: inventory_system
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -37,6 +37,17 @@ INSERT INTO `categories` VALUES ('17','17','Topical Steroid','Topical Steroid');
 INSERT INTO `categories` VALUES ('3','3','Vitamin','Vitamin');
 
 
+-- Table structure for table `dht11_readings`
+DROP TABLE IF EXISTS `dht11_readings`;
+CREATE TABLE `dht11_readings` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `temperature` float DEFAULT NULL,
+  `humidity` float DEFAULT NULL,
+  `datetime` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+
 -- Table structure for table `product`
 DROP TABLE IF EXISTS `product`;
 CREATE TABLE `product` (
@@ -60,56 +71,57 @@ CREATE TABLE `product` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Dumping data for table `product`
-INSERT INTO `product` VALUES ('p001','p001','Amoxicillin 500mg','Amoxicillin 500mg','120','120','45.00','45.00','65.00','65.00','Antibiotic','Antibiotic','s01','s01','2025-11-15','2025-11-15','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p002','p002','Azithromycin 250mg','Azithromycin 250mg','90','90','65.00','65.00','85.00','85.00','Antibiotic','Antibiotic','s01','s01','2026-09-20','2026-09-20','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p003','p003','Paracetamol 500mg','Paracetamol 500mg','180','180','22.00','22.00','35.00','35.00','Painkiller','Painkiller','s01','s01','2027-02-18','2027-02-18','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p004','p004','Ibuprofen 200mg','Ibuprofen 200mg','150','150','35.00','35.00','50.00','50.00','Painkiller','Painkiller','s01','s01','2027-04-12','2027-04-12','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p005','p005','Vitamin C 1000mg','Vitamin C 1000mg','100','100','55.00','55.00','75.00','75.00','Vitamin','Vitamin','s01','s01','2027-01-30','2027-01-30','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p006','p006','Cefuroxime 250mg','Cefuroxime 250mg','70','70','80.00','80.00','105.00','105.00','Antibiotic','Antibiotic','s02','s02','2026-07-10','2026-07-10','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p007','p007','Ciprofloxacin 500mg','Ciprofloxacin 500mg','85','85','75.00','75.00','98.00','98.00','Antibiotic','Antibiotic','s02','s02','2026-11-05','2026-11-05','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p008','p008','Aspirin 100mg','Aspirin 100mg','160','160','28.00','28.00','42.00','42.00','Painkiller','Painkiller','s02','s02','2027-03-15','2027-03-15','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p009','p009','Multivitamin Tablet','Multivitamin Tablet','90','90','95.00','95.00','125.00','125.00','Vitamin','Vitamin','s02','s02','2027-11-20','2027-11-20','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p010','p010','Gaviscon 150ml','Gaviscon 150ml','75','75','125.00','125.00','165.00','165.00','Antacid','Antacid','s02','s02','2026-12-15','2026-12-15','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p011','p011','Benadryl 100ml','Benadryl 100ml','60','60','115.00','115.00','150.00','150.00','Cough Syrup','Cough Syrup','s03','s03','2026-09-15','2026-09-15','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p012','p012','Corex 100ml','Corex 100ml','55','55','110.00','110.00','145.00','145.00','Cough Syrup','Cough Syrup','s03','s03','2026-11-08','2026-11-08','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p013','p013','Dettol 100ml','Dettol 100ml','100','100','70.00','70.00','95.00','95.00','Antiseptic','Antiseptic','s03','s03','2027-06-20','2027-06-20','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p014','p014','Savlon 200ml','Savlon 200ml','85','85','90.00','90.00','120.00','120.00','Antiseptic','Antiseptic','s03','s03','2027-07-15','2027-07-15','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p015','p015','Panadol Extra','Panadol Extra','140','140','32.00','32.00','45.00','45.00','Painkiller','Painkiller','s03','s03','2026-11-25','2026-11-25','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p016','p016','Vitamin D3 1000IU','Vitamin D3 1000IU','80','80','70.00','70.00','95.00','95.00','Vitamin','Vitamin','s04','s04','2028-01-15','2028-01-15','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p017','p017','Zinc Tablet 50mg','Zinc Tablet 50mg','100','100','60.00','60.00','82.00','82.00','Vitamin','Vitamin','s04','s04','2027-10-30','2027-10-30','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p018','p018','Eno Sachet','Eno Sachet','150','150','25.00','25.00','35.00','35.00','Antacid','Antacid','s04','s04','2027-08-20','2027-08-20','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p019','p019','Digene Tablet','Digene Tablet','90','90','40.00','40.00','58.00','58.00','Antacid','Antacid','s04','s04','2027-09-10','2027-09-10','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p020','p020','Erythromycin 500mg','Erythromycin 500mg','70','70','85.00','85.00','110.00','110.00','Antibiotic','Antibiotic','s04','s04','2026-11-22','2026-11-22','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p021','p021','Amoxicillin 500mg','Amoxicillin 500mg','100','100','46.00','46.00','66.00','66.00','Antibiotic','Antibiotic','s05','s05','2026-08-15','2026-08-15','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p022','p022','Ibuprofen 200mg','Ibuprofen 200mg','130','130','33.00','33.00','48.00','48.00','Painkiller','Painkiller','s05','s05','2027-04-20','2027-04-20','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p023','p023','Diclofenac 50mg','Diclofenac 50mg','90','90','40.00','40.00','58.00','58.00','Painkiller','Painkiller','s05','s05','2027-03-25','2027-03-25','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p024','p024','Multivitamin Tablet','Multivitamin Tablet','100','100','90.00','90.00','120.00','120.00','Vitamin','Vitamin','s05','s05','2027-11-20','2027-11-20','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p025','p025','Tixylix 100ml','Tixylix 100ml','50','50','118.00','118.00','155.00','155.00','Cough Syrup','Cough Syrup','s05','s05','2026-09-30','2026-09-30','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p026','p026','Azithromycin 500mg','Azithromycin 500mg','80','80','70.00','70.00','92.00','92.00','Antibiotic','Antibiotic','s06','s06','2025-10-03','2025-10-03','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p027','p027','Dettol 200ml','Dettol 200ml','70','70','130.00','130.00','170.00','170.00','Antiseptic','Antiseptic','s06','s06','2027-05-25','2027-05-25','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p028','p028','Gaviscon 150ml','Gaviscon 150ml','60','60','120.00','120.00','160.00','160.00','Antacid','Antacid','s06','s06','2026-12-15','2026-12-15','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p029','p029','Aspirin 100mg','Aspirin 100mg','120','120','30.00','30.00','45.00','45.00','Painkiller','Painkiller','s06','s06','2026-12-01','2026-12-01','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p030','p030','Vitamin C 1000mg','Vitamin C 1000mg','90','90','54.00','54.00','75.00','75.00','Vitamin','Vitamin','s06','s06','2027-01-30','2027-01-30','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p031','p031','Ciprofloxacin 500mg','Ciprofloxacin 500mg','75','75','74.00','74.00','95.00','95.00','Antibiotic','Antibiotic','s07','s07','2026-11-05','2026-11-05','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p032','p032','Paracetamol 500mg','Paracetamol 500mg','150','150','21.50','21.50','35.00','35.00','Painkiller','Painkiller','s07','s07','2027-03-15','2027-03-15','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p033','p033','Ibuprofen 400mg','Ibuprofen 400mg','100','100','45.00','45.00','65.00','65.00','Painkiller','Painkiller','s07','s07','2027-06-18','2027-06-18','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p034','p034','Digene Tablet','Digene Tablet','73','73','38.00','38.00','55.00','55.00','Antacid','Antacid','s07','s07','2027-09-10','2027-09-10','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p035','p035','Vitamin D3 1000IU','Vitamin D3 1000IU','75','75','68.00','68.00','90.00','90.00','Vitamin','Vitamin','s07','s07','2028-01-15','2028-01-15','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p036','p036','Benadryl 100ml','Benadryl 100ml','55','55','117.00','117.00','155.00','155.00','Cough Syrup','Cough Syrup','s08','s08','2026-10-15','2026-10-15','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p037','p037','Corex 100ml','Corex 100ml','50','50','108.00','108.00','148.00','148.00','Cough Syrup','Cough Syrup','s08','s08','2026-11-08','2026-11-08','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p038','p038','Savlon 200ml','Savlon 200ml','85','85','89.00','89.00','120.00','120.00','Antiseptic','Antiseptic','s08','s08','2027-07-15','2027-07-15','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p039','p039','Panadol Extra','Panadol Extra','130','130','30.00','30.00','45.00','45.00','Painkiller','Painkiller','s08','s08','2026-11-25','2026-11-25','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p040','p040','Zinc Tablet 50mg','Zinc Tablet 50mg','90','90','58.00','58.00','80.00','80.00','Vitamin','Vitamin','s08','s08','2027-10-30','2027-10-30','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p041','p041','Cefuroxime 500mg','Cefuroxime 500mg','60','60','88.00','88.00','115.00','115.00','Antibiotic','Antibiotic','s09','s09','2026-08-25','2026-08-25','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p042','p042','Erythromycin 500mg','Erythromycin 500mg','70','70','84.00','84.00','110.00','110.00','Antibiotic','Antibiotic','s09','s09','2025-11-22','2025-11-22','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p043','p043','Eno Sachet','Eno Sachet','200','200','24.50','24.50','35.00','35.00','Antacid','Antacid','s09','s09','2027-08-20','2027-08-20','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p044','p044','Diclofenac 50mg','Diclofenac 50mg','90','90','39.00','39.00','58.00','58.00','Painkiller','Painkiller','s09','s09','2027-03-25','2027-03-25','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p045','p045','Multivitamin Tablet','Multivitamin Tablet','95','95','92.00','92.00','120.00','120.00','Vitamin','Vitamin','s09','s09','2027-11-20','2027-11-20','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p046','p046','Amoxicillin 500mg','Amoxicillin 500mg','120','120','47.00','47.00','68.00','68.00','Antibiotic','Antibiotic','s10','s10','2026-08-15','2026-08-15','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p047','p047','Cefuroxime 250mg','Cefuroxime 250mg','70','70','82.00','82.00','105.00','105.00','Antibiotic','Antibiotic','s10','s10','2026-07-10','2026-07-10','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p048','p048','Aspirin 100mg','Aspirin 100mg','140','140','29.00','29.00','42.00','42.00','Painkiller','Painkiller','s10','s10','2027-03-15','2027-03-15','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p049','p049','Dettol 100ml','Dettol 100ml','100','100','72.00','72.00','95.00','95.00','Antiseptic','Antiseptic','s10','s10','2027-06-20','2027-06-20','2025-10-24 15:32:49','2025-10-24 15:32:49');
-INSERT INTO `product` VALUES ('p050','p050','Vitamin C 1000mg','Vitamin C 1000mg','95','95','56.00','56.00','75.00','75.00','Vitamin','Vitamin','s10','s10','2027-01-30','2027-01-30','2025-10-24 15:32:49','2025-10-24 15:32:49');
+INSERT INTO `product` VALUES ('p001','p001','Amoxicillin 500mg','Amoxicillin 500mg','120','120','45.00','45.00','65.00','65.00','Antibiotic','Antibiotic','s01','s01','2026-08-15','2026-08-15','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p002','p002','Azithromycin 250mg','Azithromycin 250mg','90','90','65.00','65.00','85.00','85.00','Antibiotic','Antibiotic','s01','s01','2026-09-20','2026-09-20','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p003','p003','Paracetamol 500mg','Paracetamol 500mg','180','180','22.00','22.00','35.00','35.00','Painkiller','Painkiller','s01','s01','2027-02-18','2027-02-18','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p004','p004','Ibuprofen 200mg','Ibuprofen 200mg','150','150','35.00','35.00','50.00','50.00','Painkiller','Painkiller','s01','s01','2027-04-12','2027-04-12','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p005','p005','Vitamin C 1000mg','Vitamin C 1000mg','100','100','55.00','55.00','75.00','75.00','Vitamin','Vitamin','s01','s01','2027-01-30','2027-01-30','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p006','p006','Cefuroxime 250mg','Cefuroxime 250mg','70','70','80.00','80.00','105.00','105.00','Antibiotic','Antibiotic','s02','s02','2026-07-10','2026-07-10','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p007','p007','Ciprofloxacin 500mg','Ciprofloxacin 500mg','85','85','75.00','75.00','98.00','98.00','Antibiotic','Antibiotic','s02','s02','2026-11-05','2026-11-05','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p008','p008','Aspirin 100mg','Aspirin 100mg','160','160','28.00','28.00','42.00','42.00','Painkiller','Painkiller','s02','s02','2027-03-15','2027-03-15','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p009','p009','Multivitamin Tablet','Multivitamin Tablet','90','90','95.00','95.00','125.00','125.00','Vitamin','Vitamin','s02','s02','2027-11-20','2027-11-20','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p010','p010','Gaviscon 150ml','Gaviscon 150ml','75','75','125.00','125.00','165.00','165.00','Antacid','Antacid','s02','s02','2026-12-15','2026-12-15','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p011','p011','Benadryl 100ml','Benadryl 100ml','60','60','115.00','115.00','150.00','150.00','Cough Syrup','Cough Syrup','s03','s03','2026-09-15','2026-09-15','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p012','p012','Corex 100ml','Corex 100ml','55','55','110.00','110.00','145.00','145.00','Cough Syrup','Cough Syrup','s03','s03','2026-11-08','2026-11-08','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p013','p013','Dettol 100ml','Dettol 100ml','100','100','70.00','70.00','95.00','95.00','Antiseptic','Antiseptic','s03','s03','2027-06-20','2027-06-20','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p014','p014','Savlon 200ml','Savlon 200ml','85','85','90.00','90.00','120.00','120.00','Antiseptic','Antiseptic','s03','s03','2027-07-15','2027-07-15','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p015','p015','Panadol Extra','Panadol Extra','140','140','32.00','32.00','45.00','45.00','Painkiller','Painkiller','s03','s03','2026-11-25','2026-11-25','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p016','p016','Vitamin D3 1000IU','Vitamin D3 1000IU','80','80','70.00','70.00','95.00','95.00','Vitamin','Vitamin','s04','s04','2028-01-15','2028-01-15','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p017','p017','Zinc Tablet 50mg','Zinc Tablet 50mg','100','100','60.00','60.00','82.00','82.00','Vitamin','Vitamin','s04','s04','2027-10-30','2027-10-30','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p018','p018','Eno Sachet','Eno Sachet','150','150','25.00','25.00','35.00','35.00','Antacid','Antacid','s04','s04','2027-08-20','2027-08-20','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p019','p019','Digene Tablet','Digene Tablet','90','90','40.00','40.00','58.00','58.00','Antacid','Antacid','s04','s04','2027-09-10','2027-09-10','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p020','p020','Erythromycin 500mg','Erythromycin 500mg','70','70','85.00','85.00','110.00','110.00','Antibiotic','Antibiotic','s04','s04','2026-11-22','2026-11-22','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p021','p021','Amoxicillin 500mg','Amoxicillin 500mg','100','100','46.00','46.00','66.00','66.00','Antibiotic','Antibiotic','s05','s05','2026-08-15','2026-08-15','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p022','p022','Ibuprofen 200mg','Ibuprofen 200mg','130','130','33.00','33.00','48.00','48.00','Painkiller','Painkiller','s05','s05','2027-04-20','2027-04-20','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p023','p023','Diclofenac 50mg','Diclofenac 50mg','90','90','40.00','40.00','58.00','58.00','Painkiller','Painkiller','s05','s05','2027-03-25','2027-03-25','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p024','p024','Multivitamin Tablet','Multivitamin Tablet','100','100','90.00','90.00','120.00','120.00','Vitamin','Vitamin','s05','s05','2027-11-20','2027-11-20','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p025','p025','Tixylix 100ml','Tixylix 100ml','50','50','118.00','118.00','155.00','155.00','Cough Syrup','Cough Syrup','s05','s05','2026-09-30','2026-09-30','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p026','p026','Azithromycin 500mg','Azithromycin 500mg','80','80','70.00','70.00','92.00','92.00','Antibiotic','Antibiotic','s06','s06','2025-10-03','2025-10-03','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p027','p027','Dettol 200ml','Dettol 200ml','70','70','130.00','130.00','170.00','170.00','Antiseptic','Antiseptic','s06','s06','2027-05-25','2027-05-25','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p028','p028','Gaviscon 150ml','Gaviscon 150ml','60','60','120.00','120.00','160.00','160.00','Antacid','Antacid','s06','s06','2026-12-15','2026-12-15','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p029','p029','Aspirin 100mg','Aspirin 100mg','120','120','30.00','30.00','45.00','45.00','Painkiller','Painkiller','s06','s06','2026-12-01','2026-12-01','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p030','p030','Vitamin C 1000mg','Vitamin C 1000mg','90','90','54.00','54.00','75.00','75.00','Vitamin','Vitamin','s06','s06','2027-01-30','2027-01-30','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p031','p031','Ciprofloxacin 500mg','Ciprofloxacin 500mg','75','75','74.00','74.00','95.00','95.00','Antibiotic','Antibiotic','s07','s07','2026-11-05','2026-11-05','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p032','p032','Paracetamol 500mg','Paracetamol 500mg','150','150','21.50','21.50','35.00','35.00','Painkiller','Painkiller','s07','s07','2027-03-15','2027-03-15','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p033','p033','Ibuprofen 400mg','Ibuprofen 400mg','100','100','45.00','45.00','65.00','65.00','Painkiller','Painkiller','s07','s07','2027-06-18','2027-06-18','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p034','p034','Digene Tablet','Digene Tablet','80','80','38.00','38.00','55.00','55.00','Antacid','Antacid','s07','s07','2027-09-10','2027-09-10','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p035','p035','Vitamin D3 1000IU','Vitamin D3 1000IU','75','75','68.00','68.00','90.00','90.00','Vitamin','Vitamin','s07','s07','2028-01-15','2028-01-15','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p036','p036','Benadryl 100ml','Benadryl 100ml','55','55','117.00','117.00','155.00','155.00','Cough Syrup','Cough Syrup','s08','s08','2026-10-15','2026-10-15','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p037','p037','Corex 100ml','Corex 100ml','60','60','108.00','108.00','148.00','148.00','Cough Syrup','Cough Syrup','s08','s08','2026-11-08','2026-11-08','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p038','p038','Savlon 200ml','Savlon 200ml','85','85','89.00','89.00','120.00','120.00','Antiseptic','Antiseptic','s08','s08','2027-07-15','2027-07-15','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p039','p039','Panadol Extra','Panadol Extra','130','130','30.00','30.00','45.00','45.00','Painkiller','Painkiller','s08','s08','2026-11-25','2026-11-25','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p040','p040','Zinc Tablet 50mg','Zinc Tablet 50mg','90','90','58.00','58.00','80.00','80.00','Vitamin','Vitamin','s08','s08','2027-10-30','2027-10-30','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p041','p041','Cefuroxime 500mg','Cefuroxime 500mg','60','60','88.00','88.00','115.00','115.00','Antibiotic','Antibiotic','s09','s09','2026-08-25','2026-08-25','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p042','p042','Erythromycin 500mg','Erythromycin 500mg','70','70','84.00','84.00','110.00','110.00','Antibiotic','Antibiotic','s09','s09','2025-11-22','2025-11-22','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p043','p043','Eno Sachet','Eno Sachet','200','200','24.50','24.50','35.00','35.00','Antacid','Antacid','s09','s09','2027-08-20','2027-08-20','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p044','p044','Diclofenac 50mg','Diclofenac 50mg','90','90','39.00','39.00','58.00','58.00','Painkiller','Painkiller','s09','s09','2027-03-25','2027-03-25','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p045','p045','Multivitamin Tablet','Multivitamin Tablet','95','95','92.00','92.00','120.00','120.00','Vitamin','Vitamin','s09','s09','2027-11-20','2027-11-20','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p046','p046','Amoxicillin 500mg','Amoxicillin 500mg','120','120','47.00','47.00','68.00','68.00','Antibiotic','Antibiotic','s10','s10','2026-08-15','2026-08-15','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p047','p047','Cefuroxime 250mg','Cefuroxime 250mg','70','70','82.00','82.00','105.00','105.00','Antibiotic','Antibiotic','s10','s10','2026-07-10','2026-07-10','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p048','p048','Aspirin 100mg','Aspirin 100mg','140','140','29.00','29.00','42.00','42.00','Painkiller','Painkiller','s10','s10','2027-03-15','2027-03-15','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p049','p049','Dettol 100ml','Dettol 100ml','100','100','72.00','72.00','95.00','95.00','Antiseptic','Antiseptic','s10','s10','2027-06-20','2027-06-20','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p050','p050','Vitamin C 1000mg','Vitamin C 1000mg','95','95','56.00','56.00','75.00','75.00','Vitamin','Vitamin','s10','s10','2027-01-30','2027-01-30','2025-10-23 22:50:27','2025-10-23 22:50:27');
+INSERT INTO `product` VALUES ('p051','p051','Paresitamol','Paresitamol','10','10','25.00','25.00','30.00','30.00','Painkiller','Painkiller','s57','s57','2029-10-30','2029-10-30','2025-10-30 12:34:48','2025-10-30 12:34:48');
 
 
 -- Table structure for table `purchase_order`
@@ -128,7 +140,38 @@ CREATE TABLE `purchase_order` (
   KEY `category_name` (`category_name`),
   CONSTRAINT `purchase_order_ibfk_1` FOREIGN KEY (`s_id`) REFERENCES `supplier_info` (`s_id`) ON UPDATE CASCADE,
   CONSTRAINT `purchase_order_ibfk_2` FOREIGN KEY (`category_name`) REFERENCES `categories` (`category_name`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Dumping data for table `purchase_order`
+INSERT INTO `purchase_order` VALUES ('1','1','s02','s02','Gaviscon 150ml','Gaviscon 150ml','Antacid','Antacid','50','50','125.00','125.00','2025-10-23 23:00:36','2025-10-23 23:00:36','Pending','Pending');
+INSERT INTO `purchase_order` VALUES ('3','3','s01','s01','Amoxicillin 500mg','Amoxicillin 500mg','Antibiotic','Antibiotic','50','50','45.00','45.00','2025-10-23 23:47:40','2025-10-23 23:47:40','Pending','Pending');
+INSERT INTO `purchase_order` VALUES ('4','4','s01','s01','Amoxicillin 500mg','Amoxicillin 500mg','Antibiotic','Antibiotic','100','100','45.00','45.00','2025-10-23 23:48:46','2025-10-23 23:48:46','Pending','Pending');
+INSERT INTO `purchase_order` VALUES ('5','5','s01','s01','Amoxicillin 500mg','Amoxicillin 500mg','Antibiotic','Antibiotic','3','3','45.00','45.00','2025-10-23 23:49:39','2025-10-23 23:49:39','Pending','Pending');
+INSERT INTO `purchase_order` VALUES ('6','6','s01','s01','Amoxicillin 500mg','Amoxicillin 500mg','Antibiotic','Antibiotic','6','6','45.00','45.00','2025-10-23 23:50:19','2025-10-23 23:50:19','Pending','Pending');
+INSERT INTO `purchase_order` VALUES ('7','7','s01','s01','Amoxicillin 500mg','Amoxicillin 500mg','Antibiotic','Antibiotic','89','89','45.00','45.00','2025-10-23 23:50:49','2025-10-23 23:50:49','Pending','Pending');
+INSERT INTO `purchase_order` VALUES ('8','8','s02','s02','Gaviscon 150ml','Gaviscon 150ml','Antacid','Antacid','9','9','125.00','125.00','2025-10-23 23:51:06','2025-10-23 23:51:06','Pending','Pending');
+INSERT INTO `purchase_order` VALUES ('9','9','s01','s01','Amoxicillin 500mg','Amoxicillin 500mg','Antibiotic','Antibiotic','3','3','45.00','45.00','2025-10-23 23:51:28','2025-10-23 23:51:28','Pending','Pending');
+INSERT INTO `purchase_order` VALUES ('12','12','s01','s01','Amoxicillin 500mg','Amoxicillin 500mg','Antibiotic','Antibiotic','5','5','45.00','45.00','2025-10-24 00:02:14','2025-10-24 00:02:14','Pending','Pending');
+INSERT INTO `purchase_order` VALUES ('13','13','s01','s01','Amoxicillin 500mg','Amoxicillin 500mg','Antibiotic','Antibiotic','50','50','45.00','45.00','2025-10-24 00:02:38','2025-10-24 00:02:38','Pending','Pending');
+INSERT INTO `purchase_order` VALUES ('14','14','s01','s01','Amoxicillin 500mg','Amoxicillin 500mg','Antibiotic','Antibiotic','2','2','45.00','45.00','2025-10-24 00:04:45','2025-10-24 00:04:45','Pending','Pending');
+INSERT INTO `purchase_order` VALUES ('15','15','s01','s01','Liquid Syrup','Liquid Syrup','Antacid','Antacid','5','5','200.00','200.00','2025-10-25 21:43:39','2025-10-25 21:43:39','Pending','Pending');
+INSERT INTO `purchase_order` VALUES ('16','16','s01','s01','Liquid Syrup','Liquid Syrup','Antacid','Antacid','50','50','200.00','200.00','2025-10-25 21:44:35','2025-10-25 21:44:35','Pending','Pending');
+INSERT INTO `purchase_order` VALUES ('17','17','s01','s01','Liquid Syrup','Liquid Syrup','Antacid','Antacid','50','50','200.00','200.00','2025-10-25 22:35:54','2025-10-25 22:35:54','Pending','Pending');
+INSERT INTO `purchase_order` VALUES ('18','18','s01','s01','Amoxicillin 500mg','Amoxicillin 500mg','Antibiotic','Antibiotic','2','2','45.00','45.00','2025-10-25 22:36:49','2025-10-25 22:36:49','Pending','Pending');
+INSERT INTO `purchase_order` VALUES ('19','19','s01','s01','Amoxicillin 500mg','Amoxicillin 500mg','Antibiotic','Antibiotic','56','56','45.00','45.00','2025-10-25 22:39:47','2025-10-25 22:39:47','Pending','Pending');
+INSERT INTO `purchase_order` VALUES ('20','20','s01','s01','Amoxicillin 500mg','Amoxicillin 500mg','Antibiotic','Antibiotic','3','3','45.00','45.00','2025-10-25 22:43:18','2025-10-25 22:43:18','Approved','Approved');
+INSERT INTO `purchase_order` VALUES ('21','21','s01','s01','Liquid Syrup','Liquid Syrup','Antacid','Antacid','50','50','200.00','200.00','2025-10-26 08:45:59','2025-10-26 08:45:59','Pending','Pending');
+INSERT INTO `purchase_order` VALUES ('22','22','s01','s01','Amoxicillin 500mg','Amoxicillin 500mg','Antibiotic','Antibiotic','5','5','45.00','45.00','2025-10-26 08:50:26','2025-10-26 08:50:26','Pending','Pending');
+INSERT INTO `purchase_order` VALUES ('23','23','s01','s01','Amoxicillin 500mg','Amoxicillin 500mg','Antibiotic','Antibiotic','4','4','45.00','45.00','2025-10-26 08:53:42','2025-10-26 08:53:42','Pending','Pending');
+INSERT INTO `purchase_order` VALUES ('24','24','s01','s01','Liquid Syrup','Liquid Syrup','Antacid','Antacid','50','50','200.00','200.00','2025-10-26 08:56:37','2025-10-26 08:56:37','Approved','Approved');
+INSERT INTO `purchase_order` VALUES ('25','25','s01','s01','Amoxicillin 500mg','Amoxicillin 500mg','Antibiotic','Antibiotic','34','34','45.00','45.00','2025-10-26 09:27:28','2025-10-26 09:27:28','Pending','Pending');
+INSERT INTO `purchase_order` VALUES ('26','26','s01','s01','Azithromycin 250mg','Azithromycin 250mg','Antibiotic','Antibiotic','56','56','65.00','65.00','2025-10-26 09:33:48','2025-10-26 09:33:48','Pending','Pending');
+INSERT INTO `purchase_order` VALUES ('27','27','s01','s01','Amoxicillin 500mg','Amoxicillin 500mg','Antibiotic','Antibiotic','50','50','45.00','45.00','2025-10-26 09:40:50','2025-10-26 09:40:50','Pending','Pending');
+INSERT INTO `purchase_order` VALUES ('28','28','s01','s01','Liquid Syrup','Liquid Syrup','Antacid','Antacid','300','300','200.00','200.00','2025-10-28 19:21:18','2025-10-28 19:21:18','Approved','Approved');
+INSERT INTO `purchase_order` VALUES ('29','29','s01','s01','Liquid Syrup','Liquid Syrup','Antacid','Antacid','45','45','200.00','200.00','2025-10-28 19:25:44','2025-10-28 19:25:44','Approved','Approved');
+INSERT INTO `purchase_order` VALUES ('30','30','s01','s01','Liquid Syrup','Liquid Syrup','Antacid','Antacid','32','32','200.00','200.00','2025-10-30 11:21:55','2025-10-30 11:21:55','Pending','Pending');
+INSERT INTO `purchase_order` VALUES ('31','31','s01','s01','Liquid Syrup','Liquid Syrup','Antacid','Antacid','21','21','200.00','200.00','2025-10-30 11:22:52','2025-10-30 11:22:52','Pending','Pending');
+INSERT INTO `purchase_order` VALUES ('32','32','s57','s57','Paresitamol','Paresitamol','Painkiller','Painkiller','56','56','25.00','25.00','2025-10-30 12:33:13','2025-10-30 12:33:13','Added','Added');
 
 
 -- Table structure for table `return_details`
@@ -179,11 +222,10 @@ CREATE TABLE `sales` (
   KEY `idx_invoice_number` (`invoice_number`),
   CONSTRAINT `sales_ibfk_1` FOREIGN KEY (`sale_product_id`) REFERENCES `product` (`p_id`) ON UPDATE CASCADE,
   CONSTRAINT `sales_ibfk_2` FOREIGN KEY (`category_name`) REFERENCES `categories` (`category_name`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Dumping data for table `sales`
-INSERT INTO `sales` VALUES ('1','1','p034','p034','Antacid','Antacid','55.00','55.00','384.97','384.97','0.03','0.03','ravi','ravi','0776488523','0776488523','sahancliyanage@gmail.com','sahancliyanage@gmail.com','INV-2025-10-24-0001','INV-2025-10-24-0001','7','7','2025-10-24 15:42:07','2025-10-24 15:42:07');
-INSERT INTO `sales` VALUES ('2','2','p037','p037','Cough Syrup','Cough Syrup','148.00','148.00','1480.00','1480.00','0.00','0.00','ravi','ravi','0776488523','0776488523','chamikaliyanage2002322@gmail.com','chamikaliyanage2002322@gmail.com','INV-2025-10-24-0002','INV-2025-10-24-0002','10','10','2025-10-24 19:50:25','2025-10-24 19:50:25');
+INSERT INTO `sales` VALUES ('1','1','p051','p051','Painkiller','Painkiller','30.00','30.00','570.00','570.00','30.00','30.00','Thilani Munaweera','Thilani Munaweera','0768624297','0768624297','nuwaniprabhashi2003@gmail.com','nuwaniprabhashi2003@gmail.com','INV-2025-10-30-0001','INV-2025-10-30-0001','20','20','2025-10-30 12:36:42','2025-10-30 12:36:42');
 
 
 -- Table structure for table `supplier_info`
@@ -199,7 +241,7 @@ CREATE TABLE `supplier_info` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Dumping data for table `supplier_info`
-INSERT INTO `supplier_info` VALUES ('s01','s01','Anura Wickramasinghe','Anura Wickramasinghe','Colombo 05, Sri Lanka','Colombo 05, Sri Lanka','0771234567','0771234567','anura.wick@gmail.com','anura.wick@gmail.com');
+INSERT INTO `supplier_info` VALUES ('s01','s01','Anura Wickramasinghe','Anura Wickramasinghe','Colombo 05, Sri Lanka','Colombo 05, Sri Lanka','0771234567','0771234567','imprabashi23@gmail.com','imprabashi23@gmail.com');
 INSERT INTO `supplier_info` VALUES ('s02','s02','Nimal Perera','Nimal Perera','Kandy, Sri Lanka','Kandy, Sri Lanka','0712345678','0712345678','nimalp@gmail.com','nimalp@gmail.com');
 INSERT INTO `supplier_info` VALUES ('s03','s03','Kumari Weerasinghe','Kumari Weerasinghe','Galle, Sri Lanka','Galle, Sri Lanka','0756543210','0756543210','kumariw@hotmail.com','kumariw@hotmail.com');
 INSERT INTO `supplier_info` VALUES ('s04','s04','Ranjith Jayasinghe','Ranjith Jayasinghe','Matara, Sri Lanka','Matara, Sri Lanka','0769876543','0769876543','ranjithj@yahoo.com','ranjithj@yahoo.com');
@@ -249,6 +291,13 @@ INSERT INTO `supplier_info` VALUES ('s47','s47','Supun Karunathilaka','Supun Kar
 INSERT INTO `supplier_info` VALUES ('s48','s48','Gayasha Perera','Gayasha Perera','Kalutara, Sri Lanka','Kalutara, Sri Lanka','0752233441','0752233441','gayasha.p@gmail.com','gayasha.p@gmail.com');
 INSERT INTO `supplier_info` VALUES ('s49','s49','Chandima Jayasinghe','Chandima Jayasinghe','Kandy, Sri Lanka','Kandy, Sri Lanka','0717788992','0717788992','chandima.j@gmail.com','chandima.j@gmail.com');
 INSERT INTO `supplier_info` VALUES ('s50','s50','Manjula Rathnayake','Manjula Rathnayake','Colombo 01, Sri Lanka','Colombo 01, Sri Lanka','0786655449','0786655449','manjula.r@gmail.com','manjula.r@gmail.com');
+INSERT INTO `supplier_info` VALUES ('s51','s51','Prabashi Nuwani','Prabashi Nuwani','217/6,&#039;Bhagya&#039;,Kuruppumulla,Panadura','217/6,&#039;Bhagya&#039;,Kuruppumulla,Panadura','078445566','078445566','nuwaniprabhashi2003@gmail.com','nuwaniprabhashi2003@gmail.com');
+INSERT INTO `supplier_info` VALUES ('s52','s52','kamal Perera','kamal Perera','Gampaha','Gampaha','071223345','071223345','kamala@gmail.com','kamala@gmail.com');
+INSERT INTO `supplier_info` VALUES ('s53','s53','Sumana','Sumana','217/6,&#039;Bhagya&#039;,Kuruppumulla,Panadura','217/6,&#039;Bhagya&#039;,Kuruppumulla,Panadura','078445566','078445566','nuwaniprabhashi2003@gmail.com','nuwaniprabhashi2003@gmail.com');
+INSERT INTO `supplier_info` VALUES ('s54','s54','Prabashi Nuwani','Prabashi Nuwani','panadura','panadura','01122334455','01122334455','nutsspicepvtltd@gmail.com','nutsspicepvtltd@gmail.com');
+INSERT INTO `supplier_info` VALUES ('s55','s55','sasaas','sasaas','dddd','dddd','22335577889900','22335577889900','asa@gmail.com','asa@gmail.com');
+INSERT INTO `supplier_info` VALUES ('s56','s56','aaa','aaa','aasa','aasa','+94112255778','+94112255778','ssa@gmail.com','ssa@gmail.com');
+INSERT INTO `supplier_info` VALUES ('s57','s57','test','test','colombo 05','colombo 05','+94078445567','+94078445567','e2145432@bit.uom.lk','e2145432@bit.uom.lk');
 
 
 -- Table structure for table `supplier_product`
@@ -268,7 +317,9 @@ CREATE TABLE `supplier_product` (
 INSERT INTO `supplier_product` VALUES ('s01','s01','Antibiotic','Antibiotic','Amoxicillin 500mg','Amoxicillin 500mg','45.00','45.00');
 INSERT INTO `supplier_product` VALUES ('s01','s01','Antibiotic','Antibiotic','Azithromycin 250mg','Azithromycin 250mg','65.00','65.00');
 INSERT INTO `supplier_product` VALUES ('s01','s01','Painkiller','Painkiller','Ibuprofen 200mg','Ibuprofen 200mg','35.00','35.00');
+INSERT INTO `supplier_product` VALUES ('s01','s01','Antacid','Antacid','Liquid Syrup','Liquid Syrup','200.00','200.00');
 INSERT INTO `supplier_product` VALUES ('s01','s01','Painkiller','Painkiller','Paracetamol 500mg','Paracetamol 500mg','22.00','22.00');
+INSERT INTO `supplier_product` VALUES ('s01','s01','Antacid','Antacid','Piriton','Piriton','0.40','0.40');
 INSERT INTO `supplier_product` VALUES ('s01','s01','Vitamin','Vitamin','Vitamin C 1000mg','Vitamin C 1000mg','55.00','55.00');
 INSERT INTO `supplier_product` VALUES ('s02','s02','Painkiller','Painkiller','Aspirin 100mg','Aspirin 100mg','28.00','28.00');
 INSERT INTO `supplier_product` VALUES ('s02','s02','Antibiotic','Antibiotic','Cefuroxime 250mg','Cefuroxime 250mg','80.00','80.00');
@@ -375,6 +426,9 @@ INSERT INTO `supplier_product` VALUES ('s22','s22','Antiseptic','Antiseptic','De
 INSERT INTO `supplier_product` VALUES ('s22','s22','Painkiller','Painkiller','Ibuprofen 200mg','Ibuprofen 200mg','34.00','34.00');
 INSERT INTO `supplier_product` VALUES ('s22','s22','Cough Syrup','Cough Syrup','Tixylix 100ml','Tixylix 100ml','120.00','120.00');
 INSERT INTO `supplier_product` VALUES ('s22','s22','Vitamin','Vitamin','Vitamin C 1000mg','Vitamin C 1000mg','52.00','52.00');
+INSERT INTO `supplier_product` VALUES ('s53','s53','Cough Syrup','Cough Syrup','Panadol','Panadol','8.00','8.00');
+INSERT INTO `supplier_product` VALUES ('s54','s54','Steroid','Steroid','Piriton','Piriton','3.00','3.00');
+INSERT INTO `supplier_product` VALUES ('s57','s57','Painkiller','Painkiller','Paresitamol','Paresitamol','25.00','25.00');
 
 
 -- Table structure for table `user_groups`
@@ -407,7 +461,7 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Dumping data for table `users`
-INSERT INTO `users` VALUES ('1','1','Kavindu Perera','Kavindu Perera','admin','admin','d033e22ae348aeb5660fc2140aec35850c4da997','d033e22ae348aeb5660fc2140aec35850c4da997','1','1','no_image.png','no_image.png','1','1','2025-10-24 15:38:17','2025-10-24 15:38:17');
+INSERT INTO `users` VALUES ('1','1','Kavindu Perera','Kavindu Perera','admin','admin','d033e22ae348aeb5660fc2140aec35850c4da997','d033e22ae348aeb5660fc2140aec35850c4da997','1','1','no_image.png','no_image.png','1','1','2025-04-04 19:45:52','2025-04-04 19:45:52');
 INSERT INTO `users` VALUES ('2','2','Nimesh Lakshan','Nimesh Lakshan','staff_1','staff_1','ba36b97a41e7faf742ab09bf88405ac04f99599a','ba36b97a41e7faf742ab09bf88405ac04f99599a','2','2','no_image.png','no_image.png','1','1','2025-04-04 19:53:26','2025-04-04 19:53:26');
 INSERT INTO `users` VALUES ('3','3','Sanduni Madushani','Sanduni Madushani','staff_2','staff_2','12dea96fec20593566ab75692c9949596833adc9','12dea96fec20593566ab75692c9949596833adc9','2','2','no_image.png','no_image.png','1','1','2025-04-04 19:54:46','2025-04-04 19:54:46');
 INSERT INTO `users` VALUES ('4','4','Tharushi Senadheera','Tharushi Senadheera','salesman','salesman','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','3','3','no_image.png','no_image.png','1','1','2025-04-04 19:54:46','2025-04-04 19:54:46');

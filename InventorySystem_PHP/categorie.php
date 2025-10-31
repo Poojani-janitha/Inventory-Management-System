@@ -5,6 +5,8 @@
   page_require_level(1);
   
   $all_categories = find_all('categories');
+  //extra add prabashi 
+  $msg = $session->msg();
 ?>
 <?php
  if(isset($_POST['add_cat'])){
