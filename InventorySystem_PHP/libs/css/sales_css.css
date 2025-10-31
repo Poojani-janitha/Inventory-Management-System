@@ -1,0 +1,252 @@
+/* Professional Sales Management Theme - 2025 */
+
+/* Main Layout and Typography */
+.sales-container {
+    background: #f5f6fa;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+/* Header Styling */
+.sales-header {
+    background: linear-gradient(135deg, #6c5ce7, #a363d9);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 6px rgba(108, 92, 231, 0.1);
+}
+
+.sales-header h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+/* Search and Filter Section */
+.sales-filters {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    margin-bottom: 25px;
+}
+
+.sales-filters .form-group {
+    margin-bottom: 15px;
+}
+
+.sales-filters .form-control {
+    border: 1px solid #e1e5ee;
+    border-radius: 6px;
+    padding: 10px 15px;
+    transition: all 0.3s ease;
+}
+
+.sales-filters .form-control:focus {
+    border-color: #6c5ce7;
+    box-shadow: 0 0 0 0.2rem rgba(108, 92, 231, 0.25);
+}
+
+/* Sales Table Styling */
+.sales-table {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.sales-table .table {
+    margin-bottom: 0;
+}
+
+.sales-table thead th {
+    background: #f8f9fa;
+    border-bottom: 2px solid #e1e5ee;
+    color: #4a5568;
+    font-weight: 600;
+    padding: 15px;
+}
+
+.sales-table tbody td {
+    padding: 15px;
+    vertical-align: middle;
+    border-bottom: 1px solid #e1e5ee;
+}
+
+.sales-table tbody tr:hover {
+    background-color: #f8f9ff;
+}
+
+/* Action Buttons */
+.btn-sales {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-sales.btn-primary {
+    background: linear-gradient(135deg, #6c5ce7, #a363d9);
+    border: none;
+    color: white;
+}
+
+.btn-sales.btn-primary:hover {
+    background: linear-gradient(135deg, #5b4cc2, #8b4fc7);
+    transform: translateY(-1px);
+}
+
+.btn-sales.btn-info {
+    background: #45aaf2;
+    border: none;
+    color: white;
+}
+
+.btn-sales.btn-info:hover {
+    background: #3498db;
+}
+
+.btn-sales.btn-warning {
+    background: #fa8231;
+    border: none;
+    color: white;
+}
+
+.btn-sales.btn-danger {
+    background: #fc5c65;
+    border: none;
+    color: white;
+}
+
+/* Sales Statistics Cards */
+.sales-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-card .stat-title {
+    color: #4a5568;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+.stat-card .stat-value {
+    color: #2d3748;
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.stat-card .stat-change {
+    color: #48bb78;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* Invoice Details Panel */
+.invoice-panel {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.invoice-panel .invoice-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e1e5ee;
+}
+
+.invoice-panel .invoice-total {
+    font-size: 20px;
+    font-weight: 600;
+    color: #2d3748;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .sales-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .sales-filters {
+        padding: 15px;
+    }
+    
+    .sales-table {
+        overflow-x: auto;
+    }
+    
+    .btn-sales {
+        padding: 6px 12px;
+        font-size: 14px;
+    }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #a363d9;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #6c5ce7;
+}
+
+/* Loading States */
+.sales-loading {
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+}
+
+.sales-loading::after {
+    content: '';
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #6c5ce7;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

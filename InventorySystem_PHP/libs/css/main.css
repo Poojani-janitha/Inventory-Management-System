@@ -28,7 +28,8 @@ body{
   display: block;
   top: 50px;
   left: 0;
-  padding: 35px 15px 20px 270px;
+    padding: 35px 15px 20px 270px;
+    background: #f5f6fa;
 }
 
 .page-lgn{

@@ -217,6 +217,14 @@ $backup_stats = getBackupStats();
 ?>
 
 <?php include_once('layouts/header.php'); ?>
+<link rel="stylesheet" href="assets/css/professional-styles.css">
+
+<!-- Page Header -->
+<div class="page-header">
+  <div class="container-fluid">
+    <h1><span class="glyphicon glyphicon-hdd"></span> Database Backup Management</h1>
+  </div>
+</div>
 
 <div class="row">
    <div class="col-md-12">
@@ -230,34 +238,35 @@ $backup_stats = getBackupStats();
       <div class="panel-heading">
         <strong>
           <span class="glyphicon glyphicon-download-alt"></span>
-          <span>Database Backup Management</span>
+          <span>Backup Operations</span>
         </strong>
       </div>
       <div class="panel-body">
         
         <!-- Create Backup Section -->
-        <div class="row">
-          <div class="col-md-12">
-            <h4><span class="glyphicon glyphicon-plus"></span> Create New Backup</h4>
-            <p>Create a complete backup of your database including all tables, data, and structure.</p>
-            
-            <form method="post" action="database_backup.php" class="clearfix">
-              <div class="form-group">
-                <button type="submit" name="create_backup" class="btn btn-primary btn-lg">
-                  <span class="glyphicon glyphicon-download-alt"></span> Create Database Backup
-                </button>
-                <small class="help-block">This will create a downloadable SQL file with your complete database.</small>
-              </div>
-            </form>
+        <div class="card">
+          <div class="card-header">
+            <span class="glyphicon glyphicon-plus"></span> Create New Backup
           </div>
+          <p>Create a complete backup of your database including all tables, data, and structure.</p>
+          
+          <form method="post" action="database_backup.php" class="clearfix">
+            <div class="form-group">
+              <button type="submit" name="create_backup" class="btn btn-primary btn-lg">
+                <span class="glyphicon glyphicon-download-alt"></span> Create Database Backup
+              </button>
+              <small class="help-block">This will create a downloadable SQL file with your complete database.</small>
+            </div>
+          </form>
         </div>
 
         <hr>
 
         <!-- Backup Files Section -->
-        <div class="row">
-          <div class="col-md-12">
-            <h4><span class="glyphicon glyphicon-folder-open"></span> Available Backup Files</h4>
+        <div class="card">
+          <div class="card-header">
+            <span class="glyphicon glyphicon-folder-open"></span> Available Backup Files
+          </div>
             
             <?php if (!empty($backup_files)): ?>
               <div class="table-responsive">
@@ -309,15 +318,13 @@ $backup_stats = getBackupStats();
                 No backup files found. Create your first backup using the button above.
               </div>
             <?php endif; ?>
-          </div>
         </div>
 
-        <hr>
-
         <!-- Backup Information Section -->
-        <div class="row">
-          <div class="col-md-12">
-            <h4><span class="glyphicon glyphicon-info-sign"></span> Backup Information</h4>
+        <div class="card">
+          <div class="card-header">
+            <span class="glyphicon glyphicon-info-sign"></span> Backup Information
+          </div>
             <div class="alert alert-warning">
               <strong>Important Notes:</strong>
               <ul>
@@ -369,8 +376,6 @@ $backup_stats = getBackupStats();
                   }
                 ?></li>
               </ul>
-            </div>
-          </div>
         </div>
 
       </div>
