@@ -2,6 +2,8 @@
   $page_title = 'Edit Account';
   require_once('includes/load.php');
    page_require_level(3);
+   //extra add prabashi 
+    $msg = $session->msg();
 ?>
 <?php
 //update user image
