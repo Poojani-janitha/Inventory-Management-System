@@ -39,11 +39,7 @@
 <link rel="stylesheet" href="assets/css/professional-styles.css">
 
 <!-- Page Header -->
-<div class="page-header">
-  <div class="container-fluid">
-    <h1><span class="glyphicon glyphicon-file"></span> Invoice Management</h1>
-  </div>
-</div>
+
 
 <div class="row">
   <div class="col-md-12">
@@ -78,33 +74,18 @@
               <label for="to_date">To Date:</label>
               <input type="date" id="to_date" name="to_date" class="form-control" value="<?php echo htmlspecialchars($to_ft); ?>">
             </div>
-            <div class="form-group">
-              <button type="submit" class="btn btn-info">
-                <span class="glyphicon glyphicon-search"></span> Filter
-              </button>
-              <a href="invoice_list.php" class="btn btn-warning">
-                <span class="glyphicon glyphicon-refresh"></span> Clear
-              </a>
+            <div class="form-group" >
+              <div class = "buttonGroup">
+                  <button type="submit" class="btn btn-info">
+                    <span class="glyphicon glyphicon-search"></span> Filter
+                  </button>
+                  <a href="invoice_list.php" class="btn btn-warning">
+                    <span class="glyphicon glyphicon-refresh"></span> Clear
+                  </a>
+                </div>
             </div>
           </form>
-        </div>
-
-        <!-- Bulk delete form (by date range) -->
-        <div class="bulk-delete-section">
-          <div class="card-header">
-            <span class="glyphicon glyphicon-warning-sign"></span> Bulk Delete Operations
-          </div>
-          <form method="post" id="deleteRangeForm" onsubmit="return confirmDeleteRange();">
-            <input type="hidden" name="from_date" value="<?php echo htmlspecialchars($from_ft); ?>">
-            <input type="hidden" name="to_date" value="<?php echo htmlspecialchars($to_ft); ?>">
-            <button type="submit" name="delete_range" class="btn btn-danger" <?php echo ($from_ft && $to_ft) ? '' : 'disabled'; ?>>
-              <span class="glyphicon glyphicon-trash"></span> Delete Invoices in Date Range
-            </button>
-            <small class="help-block">Deletes all invoices where invoice date is between the selected From and To dates. This action cannot be undone.</small>
-          </form>
-        </div>
-
-        <table class="table table-bordered table-striped">
+           <table class="table table-bordered table-striped">
           <thead>
             <tr>
               <th class="text-center" style="width: 50px;">#</th>
@@ -186,6 +167,25 @@
             ?>
           </tbody>
         </table>
+        </div>
+
+       
+        
+        <!-- Bulk delete form (by date range) -->
+        <div class="bulk-delete-section">
+          <div class="">
+            <span class="glyphicon glyphicon-warning-sign"></span> Bulk Delete Operations
+          </div>
+          <form method="post" id="deleteRangeForm" onsubmit="return confirmDeleteRange();">
+            <input type="hidden" name="from_date" value="<?php echo htmlspecialchars($from_ft); ?>">
+            <input type="hidden" name="to_date" value="<?php echo htmlspecialchars($to_ft); ?>">
+            <button type="submit" name="delete_range" class="btn btn-danger" <?php echo ($from_ft && $to_ft) ? '' : 'disabled'; ?>>
+              <span class="glyphicon glyphicon-trash"></span> Delete Invoices in Date Range
+            </button>
+            <small class="help-block">Deletes all invoices where invoice date is between the selected From and To dates. This action cannot be undone.</small>
+          </form>
+        </div>
+
       </div>
     </div>
   </div>
