@@ -36,7 +36,7 @@
   $to_ft    = isset($_GET['to_date']) ? $db->escape($_GET['to_date']) : '';
 ?>
 <?php include_once('layouts/header.php'); ?>
-<link rel="stylesheet" href="assets/css/professional-styles.css">
+<link rel="stylesheet" href="libs/css/invoice_list.css">
 
 <!-- Page Header -->
 <div class="page-header">

@@ -21,44 +21,10 @@
   }
 ?>
 <?php include_once('layouts/header.php'); ?>
+<link rel="stylesheet" href="libs/css/stock_summary.css">
 <div class="row">
   <div class="col-md-12">
     <?php echo display_msg($msg); ?>
-  </div>
-</div>
-<div class="row">
-  <div class="col-md-3">
-    <div class="panel panel-primary">
-      <div class="panel-body">
-        <h4>Total Products</h4>
-        <h2><?php echo count($products); ?></h2>
-      </div>
-    </div>
-  </div>
-  <div class="col-md-3">
-    <div class="panel panel-info">
-      <div class="panel-body">
-        <h4>Total Items</h4>
-        <h2><?php echo $total_items; ?></h2>
-      </div>
-    </div>
-  </div>
-  <div class="col-md-3">
-    <div class="panel panel-success">
-      <div class="panel-body">
-        <h4>Inventory Value</h4>
-        <h2>Rs. <?php echo number_format($total_value, 2); ?></h2>
-      </div>
-    </div>
-  </div>
-  <div class="col-md-3">
-    <div class="panel panel-warning">
-      <div class="panel-body">
-        <h4>Low Stock Items</h4>
-        <h2><?php echo $low_stock; ?></h2>
-        <small>(Quantity < 10)</small>
-      </div>
-    </div>
   </div>
 </div>
 <div class="row">
@@ -69,8 +35,51 @@
           <span class="glyphicon glyphicon-list"></span>
           <span>Stock Summary Report</span>
         </strong>
+        <div class="pull-right">
+          <button type="button" class="btn btn-info" onclick="window.print()">
+            <span class="glyphicon glyphicon-print"></span> Print
+          </button>
+        </div>
       </div>
       <div class="panel-body">
+        <!-- Statistics Boxes -->
+        <div class="row">
+          <div class="col-md-3">
+            <div class="panel panel-primary">
+              <div class="panel-body">
+                <h4>Total Products</h4>
+                <h2><?php echo count($products); ?></h2>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="panel panel-info">
+              <div class="panel-body">
+                <h4>Total Items</h4>
+                <h2><?php echo $total_items; ?></h2>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="panel panel-success">
+              <div class="panel-body">
+                <h4>Inventory Value</h4>
+                <h2>Rs. <?php echo number_format($total_value, 2); ?></h2>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="panel panel-warning">
+              <div class="panel-body">
+                <h4>Low Stock Items</h4>
+                <h2><?php echo $low_stock; ?></h2>
+                <small>(Quantity < 10)</small>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Stock Details Table -->
         <?php if(empty($products)): ?>
           <div class="alert alert-info">
             <p>No products found in inventory.</p>
