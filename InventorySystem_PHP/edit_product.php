@@ -2,6 +2,8 @@
   $page_title = 'Edit Product';
   require_once('includes/load.php');
   page_require_level(2);
+  //extra add prabashi 
+    $msg = $session->msg();
 
   // Get product by ID
   $p_id = $_GET['id'] ?? '';

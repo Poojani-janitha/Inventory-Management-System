@@ -3,6 +3,8 @@
   $page_title = 'Edit Invoice';
   require_once('includes/load.php');
   page_require_level(3);
+  //extra add prabashi 
+    $msg = $session->msg();
 
   // Get invoice number from URL
   $invoice_number = isset($_GET['invoice_number']) ? $db->escape($_GET['invoice_number']) : '';
