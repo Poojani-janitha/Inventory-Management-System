@@ -261,7 +261,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $supplier_count = $db->fetch_assoc($suppliers)['total'];
             $sales_count = $db->fetch_assoc($sales)['total'];
             
-            $response = "Hello! Welcome to your Pharmacy Inventory System. Here's your current summary:\n";
+            $response = "Hello! Welcome to your HealStock Warehouse Inventory System. Here's your current summary:\n";
             $response .= "• Products: " . $product_count . "\n";
             $response .= "• Categories: " . $category_count . "\n";
             $response .= "• Suppliers: " . $supplier_count . "\n";
@@ -269,14 +269,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $response .= "Try asking: 'How many antibiotics?', 'What are expired products?', 'Suppliers that supply Panadol'";
             
         } else {
-            $response = "I can help you with pharmacy inventory queries like:\n";
+            $response = "I can help you with HealStock warehouse inventory queries like:\n";
             $response .= "• 'How many antibiotics?' - Get antibiotic stock\n";
             $response .= "• 'What are expired products?' - Check expired medicines\n";
             $response .= "• 'Suppliers that supply Panadol' - Find suppliers\n";
             $response .= "• 'Show me painkillers' - Category-wise products\n";
             $response .= "• 'Low stock products' - Restock alerts\n";
             $response .= "• 'Recent sales' - Sales information\n\n";
-            $response .= "What would you like to know?";
+            $response .= "What would you like to know about HealStock warehouse?";
         }
         
         echo json_encode([
@@ -294,7 +294,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 } else {
     echo json_encode([
         'success' => true,
-        'response' => 'Pharmacy Chatbot is working! Send me a message.',
+        'response' => 'HealStock Warehouse Chatbot is working! Send me a message.',
         'data' => []
     ]);
 }
