@@ -1,0 +1,139 @@
+/* ============================================
+   Add_product.php CSS - Returns.php Color Theme
+   Same Color Theme and Color Codes as returns.php
+   ============================================ */
+
+/* Panel Headings - Exact gradient from returns.php */
+.panel-default > .panel-heading,
+.panel > .panel-heading,
+.panel-heading {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: white !important;
+  border: none !important;
+  padding: 15px 20px;
+}
+
+.panel-heading strong {
+  font-size: 18px;
+  color: white !important;
+}
+
+.panel-heading .glyphicon {
+  color: white !important;
+}
+
+/* Form Styling */
+.panel-body .form-control {
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+  padding: 10px 15px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.panel-body .form-control:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+  outline: none;
+}
+
+.panel-body .form-control:read-only {
+  background-color: #e9ecef;
+  cursor: not-allowed;
+}
+
+.panel-body .form-group label {
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 8px;
+}
+
+.panel-body .form-group {
+  margin-bottom: 20px;
+}
+
+.text-muted {
+  color: #6c757d;
+  font-size: 0.875em;
+  margin-top: 5px;
+}
+
+/* Alert Styling */
+.alert {
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-left: 4px solid;
+}
+
+.alert-info {
+  background-color: #d1ecf1;
+  border-color: #bee5eb;
+  color: #0c5460;
+}
+
+.alert-danger {
+  background-color: #f8d7da;
+  border-color: #dc3545;
+  color: #721c24;
+}
+
+/* Button Styling - Exact gradients from returns.php */
+.btn-danger {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+  border: none;
+  color: white;
+}
+
+.btn-info {
+  background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+  border: none;
+  color: white;
+}
+
+.btn-warning {
+  background: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%);
+  border: none;
+  color: white;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  color: white;
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  border: none;
+  color: white;
+}
+
+.btn-default {
+  background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+  border: none;
+  color: white;
+}
+
+/* Button Hover Effects */
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
+}
+
+/* Print styles - Exact from returns.php */
+@media print {
+  .btn,
+  .panel-heading .pull-right {
+    display: none !important;
+  }
+}
+
+/* Responsive adjustments - Exact from returns.php */
+@media (max-width: 768px) {
+  .panel-body .form-control {
+    font-size: 14px;
+  }
+}
+

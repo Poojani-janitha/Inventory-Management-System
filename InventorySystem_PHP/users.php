@@ -11,6 +11,7 @@
   $msg = $session->msg();
 ?>
 <?php include_once('layouts/header.php'); ?>
+<link rel="stylesheet" href="libs/css/users.css">
 <div class="row">
    <div class="col-md-12">
      <?php echo display_msg($msg); ?>
