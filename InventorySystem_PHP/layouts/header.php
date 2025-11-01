@@ -126,7 +126,7 @@
                   </a>
               </li>
              <li>
-                 <a href="P_setting.php" title="edit account">
+                 <a href="edit_account.php" title="edit account">
                      <i class="glyphicon glyphicon-cog"></i>
                      Settings
                  </a>
