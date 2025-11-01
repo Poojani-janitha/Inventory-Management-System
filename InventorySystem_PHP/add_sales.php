@@ -216,6 +216,7 @@ function generateInvoiceNumber() {
 
 ?>
 <?php include_once('layouts/header.php'); ?>
+
 <link rel="stylesheet" href="assets/css/professional-styles.css">
 
 <!-- Page Header -->
