@@ -220,10 +220,10 @@ $backup_stats = getBackupStats();
 <link rel="stylesheet" href="assets/css/professional-styles.css">
 
 <!-- Page Header -->
-<div class="page-header">
-  <div class="container-fluid">
+<!-- <div class="page-header">
+   <div class="container-fluid">
     <h1><span class="glyphicon glyphicon-hdd"></span> Database Backup Management</h1>
-  </div>
+  </div> -->
 </div>
 
 <div class="row">
@@ -235,24 +235,19 @@ $backup_stats = getBackupStats();
 <div class="row">
   <div class="col-md-12">
     <div class="panel panel-default">
-      <div class="panel-heading">
-        <strong>
-          <span class="glyphicon glyphicon-download-alt"></span>
-          <span>Backup Operations</span>
-        </strong>
-      </div>
+     
       <div class="panel-body">
         
         <!-- Create Backup Section -->
         <div class="card">
-          <div class="card-header">
+          <div class="card-header" style="font-size: 2.3rem;">
             <span class="glyphicon glyphicon-plus"></span> Create New Backup
           </div>
           <p>Create a complete backup of your database including all tables, data, and structure.</p>
           
           <form method="post" action="database_backup.php" class="clearfix">
             <div class="form-group">
-              <button type="submit" name="create_backup" class="btn btn-primary btn-lg">
+              <button type="submit" name="create_backup" class="btn btn-primary btn-lg" style="background-color: cadetblue;">
                 <span class="glyphicon glyphicon-download-alt"></span> Create Database Backup
               </button>
               <small class="help-block">This will create a downloadable SQL file with your complete database.</small>
