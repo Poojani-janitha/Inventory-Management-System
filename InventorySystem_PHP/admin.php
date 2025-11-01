@@ -3,6 +3,8 @@
   require_once('includes/load.php');
   // Checkin What level user has permission to view this page
    page_require_level(1);
+
+   $msg = $session->msg();
 ?>
 <?php
 // CHANGE 1: Updated for new pharmacy database structure
@@ -71,7 +73,7 @@ $low_stock_products = find_by_sql($low_stock_query);
       <?php echo display_msg($msg); ?>
     </div>
   </div>
-
+<!-- 
   <div class="row">
     <div class="col-md-12">
       <div class="welcome-section">
@@ -79,7 +81,7 @@ $low_stock_products = find_by_sql($low_stock_query);
         <p>Monitor your warehouse inventory, track sales, manage suppliers, and ensure optimal stock levels for HealStock operations</p>
       </div>
     </div>
-  </div>
+  </div> -->
 <!-- CHANGE 3: Updated dashboard cards for new database structure -->
   <div class="row">
     <a href="users.php" style="color:black;">
@@ -255,7 +257,7 @@ $low_stock_products = find_by_sql($low_stock_query);
 .admin-dashboard {
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   min-height: 100vh;
-  padding: 20px 0;
+  padding: 5px 5px;
 }
 
 .dashboard-header {
@@ -580,7 +582,7 @@ $low_stock_products = find_by_sql($low_stock_query);
   font-weight: bold;
 }
 </style>
-<!-- CHANGE 6: Uncommented JavaScript for chatbot functionality -->
+<!-- CHANGE 6: Reverted JavaScript for original chatbot panel -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   const chatbotPanel = document.getElementById('chatbotPanel');
