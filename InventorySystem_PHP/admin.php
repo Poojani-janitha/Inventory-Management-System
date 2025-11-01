@@ -5,21 +5,63 @@
    page_require_level(1);
 ?>
 <?php
-//  $c_categorie     = count_by_id('categories');
-//  $c_product       = count_by_id('products');
-//  $c_sale          = count_by_id('sales');
-//  $c_user          = count_by_id('users');
-//  $products_sold   = find_higest_saleing_product('10');
-//  $recent_products = find_recent_product_added('5');
-//  $recent_sales    = find_recent_sale_added('5')
+// CHANGE 1: Updated for new pharmacy database structure
+$c_categorie     = count_by_id('categories');
+$c_product       = count_by_id('product');
+$c_sale          = count_by_id('sales');
+$c_user          = count_by_id('users');
+$c_supplier      = count_by_id('supplier_info');
+$c_purchase_order = count_by_id('purchase_order');
+
+// Get recent products from new structure
+$recent_products_query = "SELECT p.p_id, p.product_name, p.selling_price, p.category_name, p.recorded_date 
+                         FROM product p 
+                         ORDER BY p.recorded_date DESC 
+                         LIMIT 5";
+$recent_products = find_by_sql($recent_products_query);
+
+// Get recent sales from new structure  
+$recent_sales_query = "SELECT s.sales_id, s.sale_product_id, p.product_name, s.total, s.created_at 
+                      FROM sales s 
+                      JOIN product p ON s.sale_product_id = p.p_id 
+                      ORDER BY s.created_at DESC 
+                      LIMIT 5";
+$recent_sales = find_by_sql($recent_sales_query);
+
+// Get top selling products
+$top_products_query = "SELECT p.product_name, SUM(s.quantity) as total_sold, p.selling_price 
+                      FROM sales s 
+                      JOIN product p ON s.sale_product_id = p.p_id 
+                      GROUP BY p.p_id, p.product_name, p.selling_price 
+                      ORDER BY total_sold DESC 
+                      LIMIT 5";
+$products_sold = find_by_sql($top_products_query);
+
+// Get expired products
+$expired_products_query = "SELECT p.product_name, p.expire_date, p.quantity, s.s_name as supplier_name 
+                          FROM product p 
+                          JOIN supplier_info s ON p.s_id = s.s_id 
+                          WHERE p.expire_date < CURDATE() 
+                          ORDER BY p.expire_date ASC";
+$expired_products = find_by_sql($expired_products_query);
+
+// Get low stock products
+$low_stock_query = "SELECT p.product_name, p.quantity, p.selling_price, s.s_name as supplier_name 
+                   FROM product p 
+                   JOIN supplier_info s ON p.s_id = s.s_id 
+                   WHERE p.quantity < 50 
+                   ORDER BY p.quantity ASC 
+                   LIMIT 10";
+$low_stock_products = find_by_sql($low_stock_query);
 ?>
 <?php include_once('layouts/header.php'); ?>
-<!-- 
+<!-- CHANGE 2: Uncommented dashboard message display -->
 <div class="row">
    <div class="col-md-6">
      <?php echo display_msg($msg); ?>
    </div>
 </div>
+<!-- CHANGE 3: Updated dashboard cards for new database structure -->
   <div class="row">
     <a href="users.php" style="color:black;">
 		<div class="col-md-3">
@@ -76,7 +118,9 @@
        </div>
     </div>
 	</a>
-	
+</div>
+
+<div class="row">
 	<a href="returns.php" style="color:black;">
     <div class="col-md-3">
        <div class="panel panel-box clearfix">
@@ -84,15 +128,41 @@
           <i class="glyphicon glyphicon-arrow-left"></i>
         </div>
         <div class="panel-value pull-right">
-          <h2 class="margin-top"><?php echo count_by_id('returns')['total']; ?></h2>
+          <h2 class="margin-top"><?php echo count_by_id('return_details')['total']; ?></h2>
           <p class="text-muted">Returns</p>
         </div>
        </div>
     </div>
 	</a>
-</div>
-
-<div class="row">
+	
+	<a href="suppliers.php" style="color:black;">
+    <div class="col-md-3">
+       <div class="panel panel-box clearfix">
+         <div class="panel-icon pull-left bg-info">
+          <i class="glyphicon glyphicon-briefcase"></i>
+        </div>
+        <div class="panel-value pull-right">
+          <h2 class="margin-top"> <?php  echo $c_supplier['total']; ?> </h2>
+          <p class="text-muted">Suppliers</p>
+        </div>
+       </div>
+    </div>
+	</a>
+	
+	<a href="purchase_orders.php" style="color:black;">
+    <div class="col-md-3">
+       <div class="panel panel-box clearfix">
+         <div class="panel-icon pull-left bg-warning">
+          <i class="glyphicon glyphicon-list-alt"></i>
+        </div>
+        <div class="panel-value pull-right">
+          <h2 class="margin-top"> <?php  echo $c_purchase_order['total']; ?> </h2>
+          <p class="text-muted">Purchase Orders</p>
+        </div>
+       </div>
+    </div>
+	</a>
+	
 	<a href="database_backup.php" style="color:black;">
     <div class="col-md-3">
        <div class="panel panel-box clearfix">
@@ -121,17 +191,17 @@
          <table class="table table-striped table-bordered table-condensed">
           <thead>
            <tr>
-             <th>Title</th>
+             <th>Product Name</th>
              <th>Total Sold</th>
-             <th>Total Quantity</th>
+             <th>Price (Rs.)</th>
            <tr>
           </thead>
           <tbody>
             <?php foreach ($products_sold as  $product_sold): ?>
               <tr>
-                <td><?php echo remove_junk(first_character($product_sold['name'])); ?></td>
-                <td><?php echo (int)$product_sold['totalSold']; ?></td>
-                <td><?php echo (int)$product_sold['totalQty']; ?></td>
+                <td><?php echo remove_junk(first_character($product_sold['product_name'])); ?></td>
+                <td><?php echo (int)$product_sold['total_sold']; ?></td>
+                <td>Rs. <?php echo number_format($product_sold['selling_price'], 2); ?></td>
               </tr>
             <?php endforeach; ?>
           <tbody>
@@ -160,14 +230,14 @@
        <tbody>
          <?php foreach ($recent_sales as  $recent_sale): ?>
          <tr>
-           <td class="text-center"><?php echo count_id();?></td>
+           <td class="text-center"><?php echo $recent_sale['sales_id'];?></td>
            <td>
-            <a href="edit_sale.php?id=<?php echo (int)$recent_sale['id']; ?>">
-             <?php echo remove_junk(first_character($recent_sale['name'])); ?>
+            <a href="edit_sale.php?id=<?php echo (int)$recent_sale['sales_id']; ?>">
+             <?php echo remove_junk(first_character($recent_sale['product_name'])); ?>
            </a>
            </td>
-           <td><?php echo remove_junk(ucfirst($recent_sale['date'])); ?></td>
-           <td>$<?php echo remove_junk(first_character($recent_sale['price'])); ?></td>
+           <td><?php echo date('Y-m-d', strtotime($recent_sale['created_at'])); ?></td>
+           <td>Rs. <?php echo number_format($recent_sale['total'], 2); ?></td>
         </tr>
 
        <?php endforeach; ?>
@@ -188,20 +258,16 @@
 
         <div class="list-group">
       <?php foreach ($recent_products as  $recent_product): ?>
-            <a class="list-group-item clearfix" href="edit_product.php?id=<?php echo    (int)$recent_product['id'];?>">
+            <a class="list-group-item clearfix" href="edit_product.php?id=<?php echo $recent_product['p_id'];?>">
                 <h4 class="list-group-item-heading">
-                 <?php if($recent_product['media_id'] === '0'): ?>
                     <img class="img-avatar img-circle" src="uploads/products/no_image.png" alt="">
-                  <?php else: ?>
-                  <img class="img-avatar img-circle" src="uploads/products/<?php echo $recent_product['image'];?>" alt="" />
-                <?php endif;?>
-                <?php echo remove_junk(first_character($recent_product['name']));?>
+                <?php echo remove_junk(first_character($recent_product['product_name']));?>
                   <span class="label label-warning pull-right">
-                 $<?php echo (int)$recent_product['sale_price']; ?>
+                 Rs. <?php echo number_format($recent_product['selling_price'], 2); ?>
                   </span>
                 </h4>
                 <span class="list-group-item-text pull-right">
-                <?php echo remove_junk(first_character($recent_product['categorie'])); ?>
+                <?php echo remove_junk(first_character($recent_product['category_name'])); ?>
               </span>
           </a>
       <?php endforeach; ?>
@@ -210,8 +276,81 @@
  </div>
 </div>
  </div>
+<!-- CHANGE 4: Added new widgets for expired products and low stock -->
   <div class="row">
-
+   <div class="col-md-6">
+     <div class="panel panel-default">
+       <div class="panel-heading">
+         <strong>
+           <span class="glyphicon glyphicon-warning-sign"></span>
+           <span>Expired Products</span>
+         </strong>
+       </div>
+       <div class="panel-body">
+         <?php if(!empty($expired_products)): ?>
+         <table class="table table-striped table-bordered table-condensed">
+          <thead>
+           <tr>
+             <th>Product Name</th>
+             <th>Expire Date</th>
+             <th>Quantity</th>
+             <th>Supplier</th>
+           </tr>
+          </thead>
+          <tbody>
+            <?php foreach ($expired_products as $expired_product): ?>
+              <tr class="danger">
+                <td><?php echo remove_junk($expired_product['product_name']); ?></td>
+                <td><?php echo $expired_product['expire_date']; ?></td>
+                <td><?php echo $expired_product['quantity']; ?></td>
+                <td><?php echo remove_junk($expired_product['supplier_name']); ?></td>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
+         </table>
+         <?php else: ?>
+           <p class="text-success">No expired products found!</p>
+         <?php endif; ?>
+       </div>
+     </div>
+   </div>
+   
+   <div class="col-md-6">
+     <div class="panel panel-default">
+       <div class="panel-heading">
+         <strong>
+           <span class="glyphicon glyphicon-exclamation-sign"></span>
+           <span>Low Stock Alert (< 50 units)</span>
+         </strong>
+       </div>
+       <div class="panel-body">
+         <?php if(!empty($low_stock_products)): ?>
+         <table class="table table-striped table-bordered table-condensed">
+          <thead>
+           <tr>
+             <th>Product Name</th>
+             <th>Quantity</th>
+             <th>Price (Rs.)</th>
+             <th>Supplier</th>
+           </tr>
+          </thead>
+          <tbody>
+            <?php foreach ($low_stock_products as $low_stock): ?>
+              <tr class="warning">
+                <td><?php echo remove_junk($low_stock['product_name']); ?></td>
+                <td><span class="label label-danger"><?php echo $low_stock['quantity']; ?></span></td>
+                <td>Rs. <?php echo number_format($low_stock['selling_price'], 2); ?></td>
+                <td><?php echo remove_junk($low_stock['supplier_name']); ?></td>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
+         </table>
+         <?php else: ?>
+           <p class="text-success">All products have sufficient stock!</p>
+         <?php endif; ?>
+       </div>
+     </div>
+   </div>
   </div>
 
 
@@ -221,7 +360,7 @@
       <div class="panel-heading">
         <strong>
           <span class="glyphicon glyphicon-comment"></span>
-          <span>Inventory Assistant Chatbot</span>
+          <span>Pharmacy Assistant Chatbot</span>
           <button type="button" class="btn btn-sm btn-primary pull-right" id="toggleChatbot">
             <span class="glyphicon glyphicon-chevron-down" id="chatbotToggleIcon"></span>
           </button>
@@ -232,13 +371,14 @@
           <div class="chat-messages" id="chatMessages">
             <div class="message bot-message">
               <div class="message-content">
-                <strong>Inventory Assistant:</strong> Hello! I'm your inventory management assistant. I can help you with:
+                <strong>Pharmacy Inventory Assistant:</strong> Hello! I'm your pharmacy inventory management assistant. I can help you with:
                 <ul>
-                  <li>Product information and stock levels</li>
-                  <li>Sales data and analytics</li>
-                  <li>Category management</li>
-                  <li>Low stock alerts</li>
-                  <li>General inventory questions</li>
+                  <li>Medicine information and stock levels (e.g., "How many antibiotics?")</li>
+                  <li>Expired products alerts (e.g., "What are the expired products?")</li>
+                  <li>Supplier information (e.g., "Supplier names that supply Panadol")</li>
+                  <li>Category-wise product queries (e.g., "Show me all painkillers")</li>
+                  <li>Low stock alerts and restocking needs</li>
+                  <li>Sales data and purchase orders</li>
                 </ul>
                 How can I assist you today?
               </div>
@@ -246,7 +386,7 @@
           </div>
           <div class="chat-input-container">
             <div class="input-group">
-              <input type="text" class="form-control" id="chatInput" placeholder="Ask me about your inventory..." maxlength="500">
+              <input type="text" class="form-control" id="chatInput" placeholder="Ask me about medicines, suppliers, expired products..." maxlength="500">
               <span class="input-group-btn">
                 <button class="btn btn-primary" type="button" id="sendMessage">
                   <span class="glyphicon glyphicon-send"></span>
@@ -258,8 +398,8 @@
       </div>
     </div>
   </div>
-</div> -->
-<!-- 
+</div>
+<!-- CHANGE 5: Uncommented CSS styles for chatbot -->
 <style>
 .chat-container {
   height: 400px;
@@ -369,8 +509,7 @@
   font-weight: bold;
 }
 </style>
- -->
-<!-- 
+<!-- CHANGE 6: Uncommented JavaScript for chatbot functionality -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   const chatbotPanel = document.getElementById('chatbotPanel');
@@ -391,8 +530,8 @@ document.addEventListener('DOMContentLoaded', function() {
       chatbotPanel.style.display = 'none';
       chatbotToggleIcon.className = 'glyphicon glyphicon-chevron-down';
     }
-  }); -->
-<!--   
+  });
+  
   // Send message function
   function sendMessage() {
     const message = chatInput.value.trim();
@@ -405,8 +544,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Show typing indicator
     showTypingIndicator();
     
-    // Send to API
-    fetch('working_chatbot.php', {
+    // Send to API - CHANGE 7: Updated to use new pharmacy chatbot
+    fetch('updated_chatbot.php', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -527,6 +666,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 });
-</script> -->
+</script>
 
 <?php include_once('layouts/footer.php'); ?>
