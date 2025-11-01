@@ -6,7 +6,11 @@
 ?>
 <?php
   //Display all catgories.
-  $categorie = find_by_id('categories',(int)$_GET['id']);
+  $categorie_id = (int)$_GET['id'];
+  $sql = "SELECT * FROM categories WHERE c_id = '{$categorie_id}' LIMIT 1";
+  $result = $db->query($sql);
+  $categorie = $db->fetch_assoc($result);
+  
   if(!$categorie){
     $session->msg("d","Missing categorie id.");
     redirect('categorie.php');
@@ -19,8 +23,8 @@ if(isset($_POST['edit_cat'])){
   validate_fields($req_field);
   $cat_name = remove_junk($db->escape($_POST['categorie-name']));
   if(empty($errors)){
-        $sql = "UPDATE categories SET name='{$cat_name}'";
-       $sql .= " WHERE id='{$categorie['id']}'";
+        $sql = "UPDATE categories SET category_name='{$cat_name}'";
+       $sql .= " WHERE c_id='{$categorie['c_id']}'";
      $result = $db->query($sql);
      if($result && $db->affected_rows() === 1) {
        $session->msg("s", "Successfully updated Categorie");
@@ -46,13 +50,13 @@ if(isset($_POST['edit_cat'])){
        <div class="panel-heading">
          <strong>
            <span class="glyphicon glyphicon-th"></span>
-           <span>Editing <?php echo remove_junk(ucfirst($categorie['name']));?></span>
+           <span>Editing <?php echo remove_junk(ucfirst($categorie['category_name']));?></span>
         </strong>
        </div>
        <div class="panel-body">
-         <form method="post" action="edit_categorie.php?id=<?php echo (int)$categorie['id'];?>">
+         <form method="post" action="edit_categorie.php?id=<?php echo (int)$categorie['c_id'];?>">
            <div class="form-group">
-               <input type="text" class="form-control" name="categorie-name" value="<?php echo remove_junk(ucfirst($categorie['name']));?>">
+               <input type="text" class="form-control" name="categorie-name" value="<?php echo remove_junk(ucfirst($categorie['category_name']));?>">
            </div>
            <button type="submit" name="edit_cat" class="btn btn-primary">Update categorie</button>
        </form>
