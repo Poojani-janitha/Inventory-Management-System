@@ -34,7 +34,7 @@
   }
 ?>
 <?php include_once('layouts/header.php'); ?>
-
+<link rel="stylesheet" href="libs/css/product.css">
 <!-- Alert Modals -->
 <?php if(!empty($expiring_products) || !empty($low_stock_products)): ?>
 <div class="row">

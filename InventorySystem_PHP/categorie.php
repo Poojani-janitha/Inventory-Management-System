@@ -29,25 +29,27 @@ if (isset($_POST['add_cat'])) {
 ?>
 
 <?php include_once('layouts/header.php'); ?>
-
-<div class="row">
-  <div class="col-md-12">
-    <?php echo display_msg($msg); ?>
-    
-    <!-- ======= ADD NEW CATEGORY PANEL ======= -->
-    <div class="panel panel-default" style="width: 500px; margin-bottom: 20px;">
-      <div class="panel-heading">
-        <strong><span class="glyphicon glyphicon-plus"></span> Add New Category</strong>
-      </div>
-      <div class="panel-body" style="padding: 20px;">
-        <form method="post" action="categorie.php">
-          <div class="form-group">
-            <label for="categorie-name">Category Name</label>
-            <input type="text" class="form-control" name="categorie-name" id="categorie-name" placeholder="Enter category name" required>
-          </div>
-          <button type="submit" name="add_cat" class="btn btn-primary btn-block">
-            <span class="glyphicon glyphicon-send"></span> Add Category
-          </button>
+<link rel="stylesheet" href="libs/css/categorie.css">
+  <div class="row">
+     <div class="col-md-12">
+       <?php echo display_msg($msg); ?>
+     </div>
+  </div>
+   <div class="row">
+    <div class="col-md-5">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <strong>
+            <span class="glyphicon glyphicon-th"></span>
+            <span>Add New Category</span>
+         </strong>
+        </div>
+        <div class="panel-body">
+          <form method="post" action="categorie.php">
+            <div class="form-group">
+                <input type="text" class="form-control" name="categorie-name" placeholder="Category Name">
+            </div>
+            <button type="submit" name="add_cat" class="btn btn-primary">Add Category</button>
         </form>
       </div>
     </div>

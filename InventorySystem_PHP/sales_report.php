@@ -28,6 +28,7 @@
   }
 ?>
 <?php include_once('layouts/header.php'); ?>
+<link rel="stylesheet" href="libs/css/sales_report.css">
 <div class="row">
   <div class="col-md-12">
     <?php echo display_msg($msg); ?>
@@ -72,6 +73,9 @@
             <button type="submit" class="btn btn-primary">Filter</button>
             <a href="sales_report.php" class="btn btn-default">Reset</a>
           </form>
+          <button type="button" class="btn btn-info" onclick="window.print()" style="margin-left: 10px;">
+            <span class="glyphicon glyphicon-print"></span> Print
+          </button>
         </div>
       </div>
       <div class="panel-body">
