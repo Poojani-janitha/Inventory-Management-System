@@ -12,6 +12,85 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/css/datepicker3.min.css" />
     <link rel="stylesheet" href="libs/css/main.css" />
+    <style>
+    /* Force sidebar styling update - Override any caching issues */
+    .sidebar {
+      background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%) !important;
+      border-right: none !important;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.3) !important;
+    }
+    
+    .sidebar ul {
+      padding: 10px 0 !important;
+    }
+    
+    .sidebar ul li {
+      margin: 2px 8px !important;
+      border-radius: 8px !important;
+    }
+    
+    .sidebar ul li a {
+      color: rgba(255,255,255,0.9) !important;
+      padding: 12px 15px !important;
+      border-radius: 8px !important;
+    }
+    
+    .sidebar ul li:hover {
+      background-color: rgba(255,255,255,0.15) !important;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2) !important;
+      transform: translateX(5px) !important;
+      transition: all 0.3s ease-in-out !important;
+    }
+    
+    .sidebar ul li a:hover {
+      color: white !important;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3) !important;
+    }
+    
+    .sidebar ul li a i {
+      color: rgba(255,255,255,0.9) !important;
+      padding: 0 15px 0 0 !important;
+      width: 20px !important;
+      display: inline-block !important;
+    }
+    
+    .sidebar ul li a span {
+      font-weight: 500 !important;
+      letter-spacing: 0.5px !important;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.2) !important;
+    }
+    
+    /* Header logo update */
+    header > .logo {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3) !important;
+    }
+    
+    /* Submenu styling */
+    ul.submenu {
+      background: rgba(0,0,0,0.2) !important;
+      margin: 5px 0 !important;
+      border-radius: 8px !important;
+      padding: 5px 0 !important;
+    }
+    
+    ul.submenu li a {
+      color: rgba(255,255,255,0.8) !important;
+      font-size: 13px !important;
+    }
+    
+    ul.submenu li a:hover {
+      background-color: rgba(255,255,255,0.1) !important;
+    }
+    
+    ul.submenu li:before {
+      border-color: rgba(255,255,255,0.3) !important;
+    }
+    
+    ul.submenu li a:before {
+      border-top-color: rgba(255,255,255,0.3) !important;
+    }
+    </style>
   </head>
   <body>
   <?php  if ($session->isUserLoggedIn(true)): ?>
