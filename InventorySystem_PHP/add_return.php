@@ -60,6 +60,7 @@
  }
 ?>
 <?php include_once('layouts/header.php'); ?>
+<link rel="stylesheet" href="libs/css/add_return.css">
 <div class="row">
   <div class="col-md-12">
     <?php echo display_msg($msg); ?>
@@ -70,7 +71,7 @@
       <div class="panel panel-default">
         <div class="panel-heading">
           <strong>
-            <span class="glyphicon glyphicon-th"></span>
+            <span class="glyphicon glyphicon-plus"></span>
             <span>Add New Return</span>
          </strong>
         </div>

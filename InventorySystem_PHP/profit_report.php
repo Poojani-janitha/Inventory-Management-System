@@ -21,6 +21,7 @@
   $potential_revenue = $profit_data['potential_revenue'];
 ?>
 <?php include_once('layouts/header.php'); ?>
+<link rel="stylesheet" href="libs/css/profit_report.css">
 <div class="row">
   <div class="col-md-12">
     <?php echo display_msg($msg); ?>
@@ -34,11 +35,9 @@
           <span class="glyphicon glyphicon-stats"></span>
           <span>Profit Report</span>
         </strong>
-      </div>
-      <div class="panel-body">
-        <div class="pull-right" style="margin-bottom:15px;">
-          <form method="get" action="profit_report.php" class="form-inline">
-            <div class="form-group">
+        <div class="pull-right">
+          <form method="get" action="profit_report.php" class="form-inline" style="display: inline-block;">
+            <div class="form-group" style="margin-right: 5px;">
               <select name="year" class="form-control" style="width: 100px;">
                 <?php 
                   $current_year = date('Y');
@@ -49,7 +48,7 @@
                 <?php endfor; ?>
               </select>
             </div>
-            <div class="form-group">
+            <div class="form-group" style="margin-right: 5px;">
               <select name="month" class="form-control" style="width: 120px;">
                 <?php 
                   $months = ['01' => 'January', '02' => 'February', '03' => 'March', '04' => 'April', 
@@ -64,7 +63,12 @@
             </div>
             <button type="submit" class="btn btn-primary">Apply</button>
           </form>
+          <button type="button" class="btn btn-info" onclick="window.print()" style="margin-left: 10px;">
+            <span class="glyphicon glyphicon-print"></span> Print
+          </button>
         </div>
+      </div>
+      <div class="panel-body">
         <div class="row">
           <div class="col-md-4">
             <div class="panel panel-primary">

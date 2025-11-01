@@ -3,23 +3,86 @@
   require_once('includes/load.php');
   // Checkin What level user has permission to view this page
    page_require_level(1);
+
+   $msg = $session->msg();
 ?>
 <?php
-//  $c_categorie     = count_by_id('categories');
-//  $c_product       = count_by_id('products');
-//  $c_sale          = count_by_id('sales');
-//  $c_user          = count_by_id('users');
-//  $products_sold   = find_higest_saleing_product('10');
-//  $recent_products = find_recent_product_added('5');
-//  $recent_sales    = find_recent_sale_added('5')
+// CHANGE 1: Updated for new pharmacy database structure
+$c_categorie     = count_by_id('categories');
+$c_product       = count_by_id('product');
+$c_sale          = count_by_id('sales');
+$c_user          = count_by_id('users');
+$c_supplier      = count_by_id('supplier_info');
+$c_purchase_order = count_by_id('purchase_order');
+
+// Get recent products from new structure
+$recent_products_query = "SELECT p.p_id, p.product_name, p.selling_price, p.category_name, p.recorded_date 
+                         FROM product p 
+                         ORDER BY p.recorded_date DESC 
+                         LIMIT 5";
+$recent_products = find_by_sql($recent_products_query);
+
+// Get recent sales from new structure  
+$recent_sales_query = "SELECT s.sales_id, s.sale_product_id, p.product_name, s.total, s.created_at 
+                      FROM sales s 
+                      JOIN product p ON s.sale_product_id = p.p_id 
+                      ORDER BY s.created_at DESC 
+                      LIMIT 5";
+$recent_sales = find_by_sql($recent_sales_query);
+
+// Get top selling products
+$top_products_query = "SELECT p.product_name, SUM(s.quantity) as total_sold, p.selling_price 
+                      FROM sales s 
+                      JOIN product p ON s.sale_product_id = p.p_id 
+                      GROUP BY p.p_id, p.product_name, p.selling_price 
+                      ORDER BY total_sold DESC 
+                      LIMIT 5";
+$products_sold = find_by_sql($top_products_query);
+
+// Get expired products
+$expired_products_query = "SELECT p.product_name, p.expire_date, p.quantity, s.s_name as supplier_name 
+                          FROM product p 
+                          JOIN supplier_info s ON p.s_id = s.s_id 
+                          WHERE p.expire_date < CURDATE() 
+                          ORDER BY p.expire_date ASC";
+$expired_products = find_by_sql($expired_products_query);
+
+// Get low stock products
+$low_stock_query = "SELECT p.product_name, p.quantity, p.selling_price, s.s_name as supplier_name 
+                   FROM product p 
+                   JOIN supplier_info s ON p.s_id = s.s_id 
+                   WHERE p.quantity < 50 
+                   ORDER BY p.quantity ASC 
+                   LIMIT 10";
+$low_stock_products = find_by_sql($low_stock_query);
 ?>
 <?php include_once('layouts/header.php'); ?>
+<!-- CHANGE 2: Added styled dashboard with welcome section -->
+<div class="admin-dashboard">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="dashboard-header">
+        <h1><i class="glyphicon glyphicon-dashboard"></i> HealStock Warehouse Dashboard</h1>
+        <p>Welcome to your comprehensive inventory management system for HealStock warehouse operations</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <?php echo display_msg($msg); ?>
+    </div>
+  </div>
 <!-- 
-<div class="row">
-   <div class="col-md-6">
-     <?php echo display_msg($msg); ?>
-   </div>
-</div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="welcome-section">
+        <h3><i class="glyphicon glyphicon-home"></i> HealStock Management Hub</h3>
+        <p>Monitor your warehouse inventory, track sales, manage suppliers, and ensure optimal stock levels for HealStock operations</p>
+      </div>
+    </div>
+  </div> -->
+<!-- CHANGE 3: Updated dashboard cards for new database structure -->
   <div class="row">
     <a href="users.php" style="color:black;">
 		<div class="col-md-3">
@@ -76,7 +139,9 @@
        </div>
     </div>
 	</a>
-	
+</div>
+
+<div class="row">
 	<a href="returns.php" style="color:black;">
     <div class="col-md-3">
        <div class="panel panel-box clearfix">
@@ -84,15 +149,41 @@
           <i class="glyphicon glyphicon-arrow-left"></i>
         </div>
         <div class="panel-value pull-right">
-          <h2 class="margin-top"><?php echo count_by_id('returns')['total']; ?></h2>
+          <h2 class="margin-top"><?php echo count_by_id('return_details')['total']; ?></h2>
           <p class="text-muted">Returns</p>
         </div>
        </div>
     </div>
 	</a>
-</div>
-
-<div class="row">
+	
+	<a href="suppliers.php" style="color:black;">
+    <div class="col-md-3">
+       <div class="panel panel-box clearfix">
+         <div class="panel-icon pull-left bg-info">
+          <i class="glyphicon glyphicon-briefcase"></i>
+        </div>
+        <div class="panel-value pull-right">
+          <h2 class="margin-top"> <?php  echo $c_supplier['total']; ?> </h2>
+          <p class="text-muted">Suppliers</p>
+        </div>
+       </div>
+    </div>
+	</a>
+	
+	<a href="purchase_orders.php" style="color:black;">
+    <div class="col-md-3">
+       <div class="panel panel-box clearfix">
+         <div class="panel-icon pull-left bg-warning">
+          <i class="glyphicon glyphicon-list-alt"></i>
+        </div>
+        <div class="panel-value pull-right">
+          <h2 class="margin-top"> <?php  echo $c_purchase_order['total']; ?> </h2>
+          <p class="text-muted">Purchase Orders</p>
+        </div>
+       </div>
+    </div>
+	</a>
+	
 	<a href="database_backup.php" style="color:black;">
     <div class="col-md-3">
        <div class="panel panel-box clearfix">
@@ -107,138 +198,34 @@
     </div>
 	</a>
 </div>
-  
+<!-- CHANGE 4: Removed all data tables, keeping only cards and chatbot -->
+
+
   <div class="row">
-   <div class="col-md-4">
-     <div class="panel panel-default">
-       <div class="panel-heading">
-         <strong>
-           <span class="glyphicon glyphicon-th"></span>
-           <span>Highest Selling Products</span>
-         </strong>
-       </div>
-       <div class="panel-body">
-         <table class="table table-striped table-bordered table-condensed">
-          <thead>
-           <tr>
-             <th>Title</th>
-             <th>Total Sold</th>
-             <th>Total Quantity</th>
-           <tr>
-          </thead>
-          <tbody>
-            <?php foreach ($products_sold as  $product_sold): ?>
-              <tr>
-                <td><?php echo remove_junk(first_character($product_sold['name'])); ?></td>
-                <td><?php echo (int)$product_sold['totalSold']; ?></td>
-                <td><?php echo (int)$product_sold['totalQty']; ?></td>
-              </tr>
-            <?php endforeach; ?>
-          <tbody>
-         </table>
-       </div>
-     </div>
-   </div>
-   <div class="col-md-4">
-      <div class="panel panel-default">
+    <div class="col-md-12">
+      <div class="panel chatbot-panel">
         <div class="panel-heading">
           <strong>
-            <span class="glyphicon glyphicon-th"></span>
-            <span>LATEST SALES</span>
+            <span class="glyphicon glyphicon-comment"></span>
+            <span>HealStock Assistant Chatbot</span>
+            <button type="button" class="btn btn-sm btn-primary pull-right" id="toggleChatbot" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3);">
+              <span class="glyphicon glyphicon-chevron-down" id="chatbotToggleIcon"></span>
+            </button>
           </strong>
         </div>
-        <div class="panel-body">
-          <table class="table table-striped table-bordered table-condensed">
-       <thead>
-         <tr>
-           <th class="text-center" style="width: 50px;">#</th>
-           <th>Product Name</th>
-           <th>Date</th>
-           <th>Total Sale</th>
-         </tr>
-       </thead>
-       <tbody>
-         <?php foreach ($recent_sales as  $recent_sale): ?>
-         <tr>
-           <td class="text-center"><?php echo count_id();?></td>
-           <td>
-            <a href="edit_sale.php?id=<?php echo (int)$recent_sale['id']; ?>">
-             <?php echo remove_junk(first_character($recent_sale['name'])); ?>
-           </a>
-           </td>
-           <td><?php echo remove_junk(ucfirst($recent_sale['date'])); ?></td>
-           <td>$<?php echo remove_junk(first_character($recent_sale['price'])); ?></td>
-        </tr>
-
-       <?php endforeach; ?>
-       </tbody>
-     </table>
-    </div>
-   </div>
-  </div>
-  <div class="col-md-4">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <strong>
-          <span class="glyphicon glyphicon-th"></span>
-          <span>Recently Added Products</span>
-        </strong>
-      </div>
-      <div class="panel-body">
-
-        <div class="list-group">
-      <?php foreach ($recent_products as  $recent_product): ?>
-            <a class="list-group-item clearfix" href="edit_product.php?id=<?php echo    (int)$recent_product['id'];?>">
-                <h4 class="list-group-item-heading">
-                 <?php if($recent_product['media_id'] === '0'): ?>
-                    <img class="img-avatar img-circle" src="uploads/products/no_image.png" alt="">
-                  <?php else: ?>
-                  <img class="img-avatar img-circle" src="uploads/products/<?php echo $recent_product['image'];?>" alt="" />
-                <?php endif;?>
-                <?php echo remove_junk(first_character($recent_product['name']));?>
-                  <span class="label label-warning pull-right">
-                 $<?php echo (int)$recent_product['sale_price']; ?>
-                  </span>
-                </h4>
-                <span class="list-group-item-text pull-right">
-                <?php echo remove_junk(first_character($recent_product['categorie'])); ?>
-              </span>
-          </a>
-      <?php endforeach; ?>
-    </div>
-  </div>
- </div>
-</div>
- </div>
-  <div class="row">
-
-  </div>
-
-
-<div class="row">
-  <div class="col-md-12">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <strong>
-          <span class="glyphicon glyphicon-comment"></span>
-          <span>Inventory Assistant Chatbot</span>
-          <button type="button" class="btn btn-sm btn-primary pull-right" id="toggleChatbot">
-            <span class="glyphicon glyphicon-chevron-down" id="chatbotToggleIcon"></span>
-          </button>
-        </strong>
-      </div>
       <div class="panel-body" id="chatbotPanel" style="display: none;">
         <div class="chat-container">
           <div class="chat-messages" id="chatMessages">
             <div class="message bot-message">
               <div class="message-content">
-                <strong>Inventory Assistant:</strong> Hello! I'm your inventory management assistant. I can help you with:
+                <strong>HealStock Inventory Assistant:</strong> Hello! I'm your HealStock warehouse inventory management assistant. I can help you with:
                 <ul>
-                  <li>Product information and stock levels</li>
-                  <li>Sales data and analytics</li>
-                  <li>Category management</li>
-                  <li>Low stock alerts</li>
-                  <li>General inventory questions</li>
+                  <li>Medicine information and stock levels (e.g., "How many antibiotics?")</li>
+                  <li>Expired products alerts (e.g., "What are the expired products?")</li>
+                  <li>Supplier information (e.g., "Supplier names that supply Panadol")</li>
+                  <li>Category-wise product queries (e.g., "Show me all painkillers")</li>
+                  <li>Low stock alerts and restocking needs</li>
+                  <li>Sales data and purchase orders</li>
                 </ul>
                 How can I assist you today?
               </div>
@@ -246,7 +233,7 @@
           </div>
           <div class="chat-input-container">
             <div class="input-group">
-              <input type="text" class="form-control" id="chatInput" placeholder="Ask me about your inventory..." maxlength="500">
+              <input type="text" class="form-control" id="chatInput" placeholder="Ask me about HealStock inventory, suppliers, expired products..." maxlength="500">
               <span class="input-group-btn">
                 <button class="btn btn-primary" type="button" id="sendMessage">
                   <span class="glyphicon glyphicon-send"></span>
@@ -257,10 +244,236 @@
         </div>
       </div>
     </div>
+    </div>
   </div>
-</div> -->
-<!-- 
+
+  <!-- REMOVED: Duplicate cards section -->
+
+</div> <!-- End admin-dashboard -->
+
+<!-- CHANGE 5: Added returns.php styling for admin dashboard -->
 <style>
+/* Admin Dashboard Styling - Based on returns.php */
+.admin-dashboard {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+  padding: 5px 5px;
+}
+
+.dashboard-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 30px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.dashboard-header h1 {
+  margin: 0;
+  font-size: 2.5em;
+  font-weight: 600;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.dashboard-header p {
+  margin: 10px 0 0 0;
+  font-size: 1.2em;
+  opacity: 0.9;
+}
+
+/* Enhanced Panel Styling */
+.panel {
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  margin-bottom: 25px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.panel:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+}
+
+.panel-box {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  height: 120px;
+  position: relative;
+}
+
+.panel-box:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.panel-icon {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 40%;
+  float: left;
+}
+
+.panel-icon i {
+  font-size: 2.5em;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.panel-value {
+  padding: 20px;
+  height: 100%;
+  width: 60%;
+  float: right;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: white;
+}
+
+.panel-value h2 {
+  margin: 0;
+  font-size: 2.2em;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+.panel-value p {
+  margin: 5px 0 0 0;
+  color: #7f8c8d;
+  font-size: 1em;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Color variations for different panels */
+.bg-secondary1 { background: linear-gradient(135deg, #b17897 0%, #9b6b8a 100%) !important; }
+.bg-red { background: linear-gradient(135deg, #FF7857 0%, #e85a4f 100%) !important; }
+.bg-blue2 { background: linear-gradient(135deg, #7a83ee 0%, #6c75d8 100%) !important; }
+.bg-green { background: linear-gradient(135deg, #A3C86D 0%, #8fb85c 100%) !important; }
+.bg-orange { background: linear-gradient(135deg, #FF8C42 0%, #e67e22 100%) !important; }
+.bg-info { background: linear-gradient(135deg, #17a2b8 0%, #138496 100%) !important; }
+.bg-warning { background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%) !important; }
+.bg-purple { background: linear-gradient(135deg, #8E44AD 0%, #7d3c98 100%) !important; }
+
+/* Chatbot Panel Styling */
+.chatbot-panel {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  margin-top: 30px;
+}
+
+.chatbot-panel .panel-heading {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 8px 8px 0 0;
+  padding: 20px;
+}
+
+.chatbot-panel .panel-heading strong {
+  font-size: 1.3em;
+  font-weight: 600;
+}
+
+.chatbot-panel .panel-body {
+  padding: 0;
+}
+
+/* Welcome Section */
+.welcome-section {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 25px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.welcome-section h3 {
+  margin: 0 0 15px 0;
+  font-size: 1.8em;
+  font-weight: 600;
+}
+
+.welcome-section p {
+  margin: 0;
+  font-size: 1.1em;
+  opacity: 0.9;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .dashboard-header h1 {
+    font-size: 2em;
+  }
+  
+  .dashboard-header p {
+    font-size: 1em;
+  }
+  
+  .panel-value h2 {
+    font-size: 1.8em;
+  }
+  
+  .panel-icon i {
+    font-size: 2em;
+  }
+  
+  .panel-box {
+    height: 100px;
+  }
+}
+
+@media (max-width: 480px) {
+  .panel-icon {
+    width: 35%;
+  }
+  
+  .panel-value {
+    width: 65%;
+    padding: 15px;
+  }
+  
+  .panel-value h2 {
+    font-size: 1.5em;
+  }
+  
+  .panel-value p {
+    font-size: 0.9em;
+  }
+}
+
+/* Animation for cards */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.panel-box {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.panel-box:nth-child(1) { animation-delay: 0.1s; }
+.panel-box:nth-child(2) { animation-delay: 0.2s; }
+.panel-box:nth-child(3) { animation-delay: 0.3s; }
+.panel-box:nth-child(4) { animation-delay: 0.4s; }
+
+/* Chatbot specific styles */
 .chat-container {
   height: 400px;
   border: 1px solid #ddd;
@@ -369,8 +582,7 @@
   font-weight: bold;
 }
 </style>
- -->
-<!-- 
+<!-- CHANGE 6: Reverted JavaScript for original chatbot panel -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   const chatbotPanel = document.getElementById('chatbotPanel');
@@ -391,8 +603,8 @@ document.addEventListener('DOMContentLoaded', function() {
       chatbotPanel.style.display = 'none';
       chatbotToggleIcon.className = 'glyphicon glyphicon-chevron-down';
     }
-  }); -->
-<!--   
+  });
+  
   // Send message function
   function sendMessage() {
     const message = chatInput.value.trim();
@@ -405,8 +617,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Show typing indicator
     showTypingIndicator();
     
-    // Send to API
-    fetch('working_chatbot.php', {
+    // Send to API - CHANGE 7: Updated to use new pharmacy chatbot
+    fetch('updated_chatbot.php', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -527,6 +739,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 });
-</script> -->
+</script>
 
 <?php include_once('layouts/footer.php'); ?>

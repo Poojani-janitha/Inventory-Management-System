@@ -40,7 +40,7 @@
       <span>Products</span>
     </a>
     <ul class="nav submenu">
-       <li><a href="Purchase_orders_Accepted.php">Purchase orders</a> </li>
+       <li><a href="Purchase_orders_Accepted.php">Purchased orders</a> </li>
        <li><a href="product.php">Manage Products</a> </li>
        <li><a href="add_product.php">Add Products</a> </li>
    </ul>
@@ -89,6 +89,15 @@
     <a href="database_backup.php">
       <i class="glyphicon glyphicon-download-alt"></i>
       <span>Database Backup</span>
+    </a>
+  </li>
+
+
+  
+   <li>
+    <a href="forecast.php">
+      <i class="glyphicon glyphicon-download-alt"></i>
+      <span>Forcasting</span>
     </a>
   </li>
 

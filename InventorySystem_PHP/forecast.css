@@ -1,0 +1,95 @@
+.kpi-card:hover {
+    transform: translateY(-3px);
+    transition: all 0.3s ease;
+}
+
+.quantity-critical {
+    background-color: #f8d7da !important;
+    color: #721c24 !important;
+}
+
+.quantity-low {
+    background-color: #fff3cd !important;
+    color: #856404 !important;
+}
+
+.quantity-healthy {
+    background-color: #d4edda !important;
+    color: #155724 !important;
+}
+
+.expired {
+    color: #e74c3c;
+    font-weight: 600;
+}
+
+.about-to-expire {
+    color: #f39c12;
+    font-weight: 600;
+}
+
+.healthy-date {
+    color: #27ae60;
+}
+
+.profit-positive {
+    color: #27ae60;
+    font-weight: 600;
+}
+
+.profit-negative {
+    color: #e74c3c;
+    font-weight: 600;
+}
+
+/* sales graph 12 months */
+.dashboard-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 30px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    max-width: 950px;
+    width: 100%;
+}
+
+.chart-container {
+    position: relative;
+    height: 350px;
+    margin-bottom: 20px;
+}
+
+.metric {
+    text-align: center;
+    background: #fafafa;
+    border-radius: 12px;
+    padding: 15px;
+}
+
+/*circular style */
+.circular-progress {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: conic-gradient(var(--bs-primary) 0deg, var(--bs-light) 0deg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto 10px;
+}
+
+.circular-progress::before {
+    content: "";
+    position: absolute;
+    width: 110px;
+    height: 110px;
+    background: #fff;
+    border-radius: 50%;
+}
+
+.value {
+    position: relative;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--bs-dark);
+}

@@ -1,0 +1,133 @@
+/* ============================================
+   Purchase_orders_Accepted.php CSS - Returns.php Color Theme
+   Same Color Theme and Color Codes as returns.php
+   ============================================ */
+
+/* Panel Headings - Exact gradient from returns.php */
+.panel-default > .panel-heading,
+.panel > .panel-heading,
+.panel-heading {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: white !important;
+  border: none !important;
+  padding: 15px 20px;
+}
+
+.panel-heading strong {
+  font-size: 18px;
+  color: white !important;
+}
+
+.panel-heading .glyphicon {
+  color: white !important;
+}
+
+/* Table Styling - Exact match from returns.php */
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table {
+  margin-bottom: 0;
+}
+
+.table thead th {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white !important;
+  border-bottom: 2px solid #dee2e6;
+  vertical-align: middle;
+  font-size: 13px;
+  padding: 12px 8px;
+  white-space: nowrap;
+}
+
+.table tbody td {
+  vertical-align: middle;
+  padding: 10px 8px;
+  font-size: 13px;
+}
+
+.table-hover tbody tr:hover {
+  background-color: #f1f8ff;
+  cursor: pointer;
+}
+
+/* Button Styling - Exact gradients from returns.php */
+.btn-danger {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+  border: none;
+}
+
+.btn-info {
+  background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+  border: none;
+}
+
+.btn-warning {
+  background: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%);
+  border: none;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  color: white;
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  border: none;
+  color: white;
+}
+
+.btn-secondary {
+  background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+  border: none;
+  color: white;
+}
+
+/* Scrollbar styling for webkit browsers - Exact from returns.php */
+.table-responsive::-webkit-scrollbar {
+  height: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+  background: #667eea;
+  border-radius: 10px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+  background: #764ba2;
+}
+
+/* Print styles - Exact from returns.php */
+@media print {
+  .btn,
+  .panel-heading .pull-right {
+    display: none !important;
+  }
+  
+  .table {
+    font-size: 10px;
+  }
+}
+
+/* Responsive adjustments - Exact from returns.php */
+@media (max-width: 768px) {
+  .table thead th {
+    font-size: 11px;
+    padding: 8px 4px;
+  }
+  
+  .table tbody td {
+    font-size: 11px;
+    padding: 8px 4px;
+  }
+}
+
