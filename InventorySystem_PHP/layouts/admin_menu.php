@@ -93,6 +93,15 @@
   </li>
 
 
+  
+   <li>
+    <a href="forecast.php">
+      <i class="glyphicon glyphicon-download-alt"></i>
+      <span>Forcasting</span>
+    </a>
+  </li>
+
+
 
   
 </ul>
