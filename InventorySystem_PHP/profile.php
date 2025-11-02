@@ -41,7 +41,7 @@
               }
               
               // Update database
-              $db = new mysqli('localhost', 'root', '', 'inventory_system');
+              $db = new mysqli('localhost:3307', 'root', '', 'inventory_system');
               $stmt = $db->prepare("UPDATE users SET image = ? WHERE id = ?");
               $stmt->bind_param("si", $photo_new_name, $user_id);
               

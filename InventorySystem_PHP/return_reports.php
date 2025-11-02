@@ -2,7 +2,8 @@
   $page_title = 'Return Reports';
   require_once('includes/load.php');
   // Checkin What level user has permission to view this page
-   page_require_level(1);
+   page_require_level(2);
+    page_require_level(1);
 ?>
 <?php include_once('layouts/header.php'); ?>
 

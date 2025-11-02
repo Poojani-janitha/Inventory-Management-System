@@ -54,43 +54,197 @@ if (isset($_POST['add_cat'])) {
 ?>
 
 <?php include_once('layouts/header.php'); ?>
-<link rel="stylesheet" href="libs/css/categorie.css">
-  <div class="row">
-     <div class="col-md-12">
-       <?php echo display_msg($msg); ?>
-     </div>
+
+<!-- Force full width layout with inline styles -->
+<style>
+/* Override any external CSS that might be constraining the layout */
+.container-fluid {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+.row {
+  margin-left: -15px !important;
+  margin-right: -15px !important;
+}
+
+.col-md-4, .col-md-8 {
+  padding-left: 15px !important;
+  padding-right: 15px !important;
+  float: left !important;
+}
+
+.col-md-4 {
+  width: 33.33333333% !important;
+}
+
+.col-md-8 {
+  width: 66.66666667% !important;
+}
+
+/* Panel styling */
+.panel {
+  width: 100% !important;
+  margin-bottom: 20px !important;
+  background-color: #fff !important;
+  border: 1px solid #ddd !important;
+  border-radius: 4px !important;
+  box-shadow: 0 1px 1px rgba(0,0,0,.05) !important;
+}
+
+.panel-heading {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: white !important;
+  padding: 10px 15px !important;
+  border-bottom: 1px solid #ddd !important;
+  border-top-left-radius: 3px !important;
+  border-top-right-radius: 3px !important;
+}
+
+.panel-body {
+  padding: 15px !important;
+}
+
+/* Table styling */
+.table {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-bottom: 0 !important;
+  background-color: transparent !important;
+}
+
+.table > thead > tr > th {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: white !important;
+  vertical-align: bottom !important;
+  border-bottom: 2px solid #ddd !important;
+  padding: 8px !important;
+}
+
+.table > tbody > tr > td {
+  padding: 8px !important;
+  line-height: 1.42857143 !important;
+  vertical-align: top !important;
+  border-top: 1px solid #ddd !important;
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) {
+  background-color: #f9f9f9 !important;
+}
+
+.table-hover > tbody > tr:hover {
+  background-color: #f5f5f5 !important;
+}
+
+/* Button styling */
+.btn {
+  display: inline-block !important;
+  padding: 6px 12px !important;
+  margin-bottom: 0 !important;
+  font-size: 14px !important;
+  font-weight: normal !important;
+  line-height: 1.42857143 !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  vertical-align: middle !important;
+  cursor: pointer !important;
+  border: 1px solid transparent !important;
+  border-radius: 4px !important;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border-color: #667eea !important;
+  color: #fff !important;
+}
+
+.btn-info {
+  background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%) !important;
+  border-color: #4ecdc4 !important;
+  color: #fff !important;
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%) !important;
+  border-color: #ff6b6b !important;
+  color: #fff !important;
+}
+
+.btn-sm {
+  padding: 5px 10px !important;
+  font-size: 12px !important;
+  line-height: 1.5 !important;
+  border-radius: 3px !important;
+}
+
+/* Form styling */
+.form-control {
+  display: block !important;
+  width: 100% !important;
+  height: 34px !important;
+  padding: 6px 12px !important;
+  font-size: 14px !important;
+  line-height: 1.42857143 !important;
+  color: #555 !important;
+  background-color: #fff !important;
+  border: 1px solid #ccc !important;
+  border-radius: 4px !important;
+}
+
+.form-group {
+  margin-bottom: 15px !important;
+}
+
+/* Clear floats */
+.clearfix:before,
+.clearfix:after {
+  display: table !important;
+  content: " " !important;
+}
+
+.clearfix:after {
+  clear: both !important;
+}
+</style>
+
+<div class="row">
+  <div class="col-md-12">
+    <?php echo display_msg($msg); ?>
   </div>
-   <div class="row">
-    <div class="col-md-5">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <strong>
-            <span class="glyphicon glyphicon-plus"></span>
-            <span>Add New Category</span>
-         </strong>
-        </div>
-        <div class="panel-body">
-          <form method="post" action="categorie.php">
-            <div class="form-group">
-                <input type="text" class="form-control" name="categorie-name" placeholder="Category Name">
-            </div>
-            <button type="submit" name="add_cat" class="btn btn-primary">Add Category</button>
+</div>
+
+<div class="row clearfix">
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <strong>
+          <span class="glyphicon glyphicon-plus"></span>
+          <span>Add New Category</span>
+        </strong>
+      </div>
+      <div class="panel-body">
+        <form method="post" action="categorie.php">
+          <div class="form-group">
+            <input type="text" class="form-control" name="categorie-name" placeholder="Category Name">
+          </div>
+          <button type="submit" name="add_cat" class="btn btn-primary">Add Category</button>
         </form>
       </div>
     </div>
+  </div>
 
-    <!-- ======= CATEGORY LIST TABLE ======= -->
+  <div class="col-md-8">
     <div class="panel panel-default">
       <div class="panel-heading">
         <strong><span class="glyphicon glyphicon-th-list"></span> All Categories</strong>
       </div>
-      <div class="panel-body" style="overflow-x:auto;">
-        <table class="table table-bordered table-striped table-hover" style="min-width: 400px;">
+      <div class="panel-body">
+        <table class="table table-bordered table-striped table-hover">
           <thead>
             <tr>
-              <th class="text-center" style="width: 50px;">#</th>
+              <th class="text-center" style="width: 80px;">#</th>
               <th>Category Name</th>
-              <th class="text-center" style="width: 120px;">Actions</th>
+              <th class="text-center" style="width: 180px;">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -115,8 +269,8 @@ if (isset($_POST['add_cat'])) {
         </table>
       </div>
     </div>
-
   </div>
+</div>
 </div>
 
 <!-- Edit Category Modal -->
@@ -151,8 +305,50 @@ if (isset($_POST['add_cat'])) {
   </div>
 </div>
 
-<!-- Professional Styling (Match order.php) -->
+<!-- Professional Styling with Layout Fixes -->
 <style>
+/* Force proper column layout */
+.col-md-4, .col-md-8 {
+  padding-left: 15px !important;
+  padding-right: 15px !important;
+}
+
+/* Ensure table panel takes full width of its container */
+.col-md-8 .panel {
+  width: 100% !important;
+  margin: 0 !important;
+}
+
+/* Force table to expand to full container width */
+.col-md-8 .panel-body {
+  padding: 0 !important;
+}
+
+.col-md-8 .table {
+  width: 100% !important;
+  margin: 0 !important;
+  table-layout: fixed !important;
+}
+
+/* Adjust column widths for better space utilization */
+.col-md-8 .table th:first-child,
+.col-md-8 .table td:first-child {
+  width: 80px !important;
+  text-align: center !important;
+}
+
+.col-md-8 .table th:nth-child(2),
+.col-md-8 .table td:nth-child(2) {
+  width: auto !important;
+  padding-left: 20px !important;
+}
+
+.col-md-8 .table th:last-child,
+.col-md-8 .table td:last-child {
+  width: 180px !important;
+  text-align: center !important;
+}
+
 /* Panel Heading Gradient */
 .panel-heading {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
@@ -175,7 +371,12 @@ if (isset($_POST['add_cat'])) {
   border-bottom: 2px solid #dee2e6;
   vertical-align: middle;
   font-size: 13px;
-  padding: 12px 8px;
+  padding: 12px 15px !important;
+}
+
+.table tbody td {
+  padding: 12px 15px !important;
+  vertical-align: middle;
 }
 
 /* Table Hover Effect */
@@ -230,21 +431,9 @@ label {
   border-radius: 8px;
 }
 
-/* Scrollbar Styling */
-::-webkit-scrollbar {
-  height: 8px;
-  width: 8px;
-}
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 10px;
-}
-::-webkit-scrollbar-thumb {
-  background: #667eea;
-  border-radius: 10px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #764ba2;
+/* Remove any conflicting overflow settings */
+.panel-body {
+  overflow: visible !important;
 }
 
 /* Modal Styling */
@@ -289,6 +478,25 @@ label {
 .modal-footer .btn-primary:hover {
   background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
   transform: translateY(-1px);
+}
+
+/* Debug: Add border to see column boundaries */
+.col-md-4 {
+  border-right: 1px solid #eee;
+}
+
+/* Responsive adjustments */
+@media (max-width: 991px) {
+  .col-md-4, .col-md-8 {
+    width: 100% !important;
+    margin-bottom: 20px;
+  }
+  
+  .col-md-4 {
+    border-right: none;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 20px;
+  }
 }
 </style>
 
