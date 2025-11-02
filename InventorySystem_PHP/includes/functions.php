@@ -109,7 +109,7 @@ function randString($length = 5){
 function send_email($to, $subject, $message, $from_email = "nuwaniprabhashi2003@gmail.com") {
     $headers  = "MIME-Version: 1.0" . "\r\n";
     $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-    $headers .= "From: Inventory System <" . $from_email . ">" . "\r\n";
+    $headers .= "From: HealStock Pvt Ltd <" . $from_email . ">" . "\r\n";
     $headers .= "Reply-To: " . $from_email . "\r\n";
 
     return mail($to, $subject, $message, $headers);
