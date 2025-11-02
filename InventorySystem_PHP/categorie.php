@@ -258,7 +258,7 @@ if (isset($_POST['add_cat'])) {
                             onclick="showEditModal(<?php echo (int)$cat['c_id']; ?>, '<?php echo addslashes($cat['category_name']); ?>')">
                       <span class="glyphicon glyphicon-edit"></span>
                     </button>
-                    <a href="delete_categorie.php?id=<?php echo (int)$cat['c_id']; ?>" class="btn btn-danger btn-sm" data-toggle="tooltip" title="Delete">
+                    <a href="javascript:void(0);" onclick="confirmDelete(<?php echo (int)$cat['c_id']; ?>, '<?php echo addslashes($cat['category_name']); ?>')" class="btn btn-danger btn-sm" data-toggle="tooltip" title="Delete">
                       <span class="glyphicon glyphicon-trash"></span>
                     </a>
                   </div>
@@ -511,6 +511,24 @@ function showEditModal(categoryId, categoryName) {
   
   // Show the modal
   $('#editCategoryModal').modal('show');
+}
+
+function confirmDelete(categoryId, categoryName) {
+  // Create a detailed confirmation message
+  var message = "⚠️ IMPORTANT: Database Integrity Protection\n\n";
+  message += "You are about to delete the category: '" + categoryName + "'\n\n";
+  message += "📋 SYSTEM PROTECTION RULES:\n";
+  message += "• If this category has any products, supplier products, purchase orders, or sales records associated with it, the deletion will be BLOCKED to maintain data integrity.\n\n";
+  message += "• This prevents orphaned records and maintains referential integrity in the database.\n\n";
+  message += "• Only categories with NO dependencies can be deleted.\n\n";
+  message += "🔍 If deletion fails, you will see a detailed message showing exactly which records are preventing the deletion.\n\n";
+  message += "Do you want to proceed with the deletion attempt?";
+  
+  // Show confirmation dialog
+  if (confirm(message)) {
+    // If user confirms, redirect to delete page
+    window.location.href = 'delete_categorie.php?id=' + categoryId;
+  }
 }
 
 // Initialize tooltips
