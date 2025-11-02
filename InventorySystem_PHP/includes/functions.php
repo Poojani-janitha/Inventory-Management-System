@@ -114,4 +114,42 @@ function send_email($to, $subject, $message, $from_email = "nuwaniprabhashi2003@
 
     return mail($to, $subject, $message, $headers);
 }
+
+/*--------------------------------------------------------------*/
+/* Send return notification email function - for add_return.php */
+function send_return_email($to, $subject, $message) {
+    $from_email = "nimharachalana12@gmail.com";
+    $headers  = "MIME-Version: 1.0" . "\r\n";
+    $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+    $headers .= "From: HealStock Pvt Ltd <" . $from_email . ">" . "\r\n";
+    $headers .= "Reply-To: " . $from_email . "\r\n";
+    $headers .= "X-Mailer: PHP/" . phpversion() . "\r\n";
+
+    // Clear any previous errors
+    error_clear_last();
+    
+    // Try to send email
+    $result = @mail($to, $subject, $message, $headers);
+    
+    // If failed, log the error for debugging
+    if(!$result){
+        $error = error_get_last();
+        if($error){
+            error_log("Email sending failed to {$to}: " . $error['message']);
+        }
+        
+        // Check php.ini mail configuration
+        $smtp = ini_get('SMTP');
+        $smtp_port = ini_get('smtp_port');
+        $sendmail_from = ini_get('sendmail_from');
+        
+        if(empty($smtp)){
+            error_log("Email config: SMTP not configured in php.ini");
+        } else {
+            error_log("Email config: SMTP={$smtp}, Port={$smtp_port}, From={$sendmail_from}");
+        }
+    }
+    
+    return $result;
+}
 ?>

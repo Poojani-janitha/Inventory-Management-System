@@ -7,6 +7,31 @@ page_require_level(1);
 $all_categories = find_all('categories');
 $msg = $session->msg();
 
+// Handle edit category form submission
+if (isset($_POST['edit_cat'])) {
+  $req_field = array('categorie-name');
+  validate_fields($req_field);
+  $cat_name = remove_junk($db->escape($_POST['categorie-name']));
+  $cat_id = (int)$_POST['category_id'];
+  
+  if (empty($errors)) {
+    $sql = "UPDATE categories SET category_name='{$cat_name}' WHERE c_id='{$cat_id}'";
+    if ($db->query($sql) && $db->affected_rows() === 1) {
+      $session->msg("s", "Category updated successfully!");
+      redirect('categorie.php', false);
+      exit();
+    } else {
+      $session->msg("d", "Failed to update category.");
+      redirect('categorie.php', false);
+      exit();
+    }
+  } else {
+    $session->msg("d", $errors);
+    redirect('categorie.php', false);
+    exit();
+  }
+}
+
 // Add new category
 if (isset($_POST['add_cat'])) {
   $req_field = array('categorie-name');
@@ -75,9 +100,10 @@ if (isset($_POST['add_cat'])) {
                 <td><?php echo remove_junk(ucfirst($cat['category_name'])); ?></td>
                 <td class="text-center">
                   <div class="btn-group">
-                    <a href="edit_categorie.php?id=<?php echo (int)$cat['c_id']; ?>" class="btn btn-info btn-sm" data-toggle="tooltip" title="Edit">
+                    <button type="button" class="btn btn-info btn-sm" data-toggle="tooltip" title="Edit" 
+                            onclick="showEditModal(<?php echo (int)$cat['c_id']; ?>, '<?php echo addslashes($cat['category_name']); ?>')">
                       <span class="glyphicon glyphicon-edit"></span>
-                    </a>
+                    </button>
                     <a href="delete_categorie.php?id=<?php echo (int)$cat['c_id']; ?>" class="btn btn-danger btn-sm" data-toggle="tooltip" title="Delete">
                       <span class="glyphicon glyphicon-trash"></span>
                     </a>
@@ -90,6 +116,38 @@ if (isset($_POST['add_cat'])) {
       </div>
     </div>
 
+  </div>
+</div>
+
+<!-- Edit Category Modal -->
+<div class="modal fade" id="editCategoryModal" tabindex="-1" role="dialog" aria-labelledby="editCategoryModalLabel">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white; opacity: 0.8;">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="editCategoryModalLabel">
+          <i class="glyphicon glyphicon-edit"></i> Edit Category
+        </h4>
+      </div>
+      <div class="modal-body">
+        <form method="post" action="categorie.php" id="editCategoryForm">
+          <input type="hidden" name="category_id" id="edit_category_id">
+          
+          <div class="form-group">
+            <label for="edit_category_name">Category Name</label>
+            <input type="text" class="form-control" name="categorie-name" id="edit_category_name" required>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button> -->
+        <button type="submit" form="editCategoryForm" name="edit_cat" class="btn btn-primary">
+          <i class="glyphicon glyphicon-floppy-disk"></i> Update Category
+        </button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -188,6 +246,69 @@ label {
 ::-webkit-scrollbar-thumb:hover {
   background: #764ba2;
 }
+
+/* Modal Styling */
+.modal-content {
+  border-radius: 8px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+  border: none;
+}
+
+.modal-header {
+  border-radius: 8px 8px 0 0;
+  border-bottom: none;
+  padding: 20px;
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.modal-body {
+  padding: 25px;
+}
+
+.modal-footer {
+  border-top: 1px solid #e5e5e5;
+  padding: 15px 25px;
+  background-color: #f8f9fa;
+  border-radius: 0 0 8px 8px;
+}
+
+.modal-footer .btn {
+  min-width: 100px;
+  font-weight: 600;
+}
+
+.modal-footer .btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+}
+
+.modal-footer .btn-primary:hover {
+  background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+  transform: translateY(-1px);
+}
 </style>
+
+<script>
+function showEditModal(categoryId, categoryName) {
+  // Populate the form fields
+  document.getElementById('edit_category_id').value = categoryId;
+  document.getElementById('edit_category_name').value = categoryName;
+  
+  // Update the modal title
+  document.getElementById('editCategoryModalLabel').innerHTML = '<i class="glyphicon glyphicon-edit"></i> Edit Category: ' + categoryName;
+  
+  // Show the modal
+  $('#editCategoryModal').modal('show');
+}
+
+// Initialize tooltips
+$(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();
+});
+</script>
 
 <?php include_once('layouts/footer.php'); ?>
