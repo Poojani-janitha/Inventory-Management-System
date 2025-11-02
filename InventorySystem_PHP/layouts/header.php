@@ -131,6 +131,7 @@
                      Settings
                  </a>
              </li>
+             
              <li class="last">
                  <a href="logout.php">
                      <i class="glyphicon glyphicon-off"></i>

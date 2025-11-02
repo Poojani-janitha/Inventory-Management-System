@@ -174,8 +174,10 @@ body {
 /* ======= Animated Page Entrance ======= */
 .fadeIn { animation: fadeIn 0.8s ease-in-out; }
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; 
+        transform: translateY(10px); }
+  to { opacity: 1;
+        transform: translateY(0); }
 }
 
 /* ======= Profile Section (Centered) ======= */
@@ -291,14 +293,18 @@ body.dark-mode .panel {
 body.dark-mode .panel-heading { 
   background: linear-gradient(135deg, #4e4ecf, #6c63ff); 
   color: #fff; }
+
 body.dark-mode .notification-settings { 
   background: #2a2a3d; 
   color: #f0f0f0; }
+
 body.dark-mode .setting-item { 
   border-bottom: 1px solid #444; }
+
 body.dark-mode .alert-popup { 
   background: #4e4ecf; 
   color: #fff; }
+
 body.dark-mode .profile-info .user-role { 
   color: #ccc; }
 
