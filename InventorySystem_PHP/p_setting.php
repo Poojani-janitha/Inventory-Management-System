@@ -70,20 +70,24 @@ $msg = '';
             <?php
               $additional_settings = [
                 'darkModeToggle' => 'Dark Mode',
-                'emailAlertToggle' => 'Email Alerts',
-                'backupToggle' => 'Auto Backup',
-                'privacyPolicyToggle' => 'Privacy Policy Accepted'
+                'emailAlertToggle' => 'Email Alerts'
               ];
               foreach ($additional_settings as $id => $label):
             ?>
               <div class="setting-item">
                 <span><?php echo $label; ?></span>
                 <label class="switch">
-                  <input type="checkbox" id="<?php echo $id; ?>" <?php echo ($id != 'darkModeToggle' && $id != 'backupToggle') ? 'checked' : ''; ?> >
+                  <input type="checkbox" id="<?php echo $id; ?>" <?php echo ($id != 'darkModeToggle') ? 'checked' : ''; ?> >
                   <span class="slider round"></span>
                 </label>
               </div>
             <?php endforeach; ?>
+
+            <!-- Static Privacy Policy -->
+            <div class="setting-item">
+              <span>Privacy Policy Accepted</span>
+              <span class="text-success" style="font-weight:600;">✔ Accepted</span>
+            </div>
           </div>
         </div>
 
@@ -125,20 +129,6 @@ $(function(){
       : alert("🚫 Email alerts disabled.");
   });
 
-  // Auto Backup Simulation
-  $("#backupToggle").on('change', function(){
-    $(this).is(':checked')
-      ? alert("💾 Auto backup activated! Your data will be backed up daily.")
-      : alert("🛑 Auto backup disabled.");
-  });
-
-  // Privacy Policy Simulation
-  $("#privacyPolicyToggle").on('change', function(){
-    $(this).is(':checked')
-      ? alert("✅ Privacy policy accepted.")
-      : alert("⚠️ Privacy policy not accepted.");
-  });
-
 });
 </script>
 
@@ -174,58 +164,45 @@ body {
 /* ======= Animated Page Entrance ======= */
 .fadeIn { animation: fadeIn 0.8s ease-in-out; }
 @keyframes fadeIn {
-  from { opacity: 0; 
-        transform: translateY(10px); }
-  to { opacity: 1;
-        transform: translateY(0); }
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* ======= Profile Section (Centered) ======= */
-.profile-section { 
-  text-align: center; 
-}
-
-.profile-photo { 
-  margin: 0 auto 10px auto; 
-}
-
+/* ======= Profile Section ======= */
+.profile-section { text-align: center; }
+.profile-photo { margin: 0 auto 10px auto; }
 .profile-img { 
   width: 120px; height: 120px; 
   object-fit: cover; 
   border: 4px solid #6c63ff; 
   border-radius: 50%; }
-
 .profile-info .user-name { 
-  font-weight: 600; 
+  font-weight: 600;
   margin: 0; }
-
 .profile-info .user-role { 
   font-size: 14px; 
   color: #555; 
   margin: 2px 0 0 0; }
 
 /* ======= Settings Sections ======= */
-.settings-section { 
-  margin-bottom: 25px; }
-.section-title { 
-  margin-bottom: 15px;
+.settings-section { margin-bottom: 25px; }
+.section-title {
+   margin-bottom: 15px; 
    font-weight: 600; 
    color: #333; }
-
-.notification-settings {
-  background: #ffffff;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-.setting-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 0;
-  border-bottom: 1px solid #eaeaea;
-}
-.setting-item:last-child { border-bottom: none; }
+.notification-settings { 
+  background: #ffffff; 
+  padding: 20px; 
+  border-radius: 12px; 
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+.setting-item { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  padding: 12px 0; 
+  border-bottom: 1px solid #eaeaea; }
+.setting-item:last-child { 
+  border-bottom: none; }
 
 /* ======= Toggle Switch ======= */
 .switch { 
@@ -233,81 +210,36 @@ body {
   display: inline-block; 
   width: 52px; 
   height: 28px; }
-
 .switch input { 
   opacity: 0; 
-  width: 0;
+  width: 0; 
   height: 0; }
-
 .slider { 
-  position: absolute;
-   cursor: pointer; 
-   top: 0; left: 0; 
-   right: 0; 
-   bottom: 0; 
-   background-color: #ccc;
-    transition: .4s;
-     border-radius: 34px; }
-
-.slider:before { 
   position: absolute; 
-  content: ""; 
-  height: 22px; 
-  width: 22px; 
-  left: 3px;
-  bottom: 3px; 
-  background-color: white; 
+  cursor: pointer; 
+  top: 0; 
+  left: 0; 
+  right: 0; 
+  bottom: 0; 
+  background-color: #ccc; 
   transition: .4s; 
-  border-radius: 50%; }
-
-input:checked + .slider { 
-  background-color: #6c63ff; 
-  box-shadow: 0 0 8px rgba(108,99,255,0.5); }
+  border-radius: 34px; }
+.slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+input:checked + .slider { background-color: #6c63ff; box-shadow: 0 0 8px rgba(108,99,255,0.5); }
 input:checked + .slider:before { transform: translateX(24px); }
 
 /* ======= Alert Popup ======= */
-.alert-popup {
-  position: fixed;
-  bottom: 25px;
-  right: 25px;
-  background: #6c63ff;
-  color: #fff;
-  padding: 12px 18px;
-  border-radius: 10px;
-  font-size: 14px;
-  z-index: 9999;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  animation: fadeIn 0.4s ease;
-}
+.alert-popup { position: fixed; bottom: 25px; right: 25px; background: #6c63ff; color: #fff; padding: 12px 18px; border-radius: 10px; font-size: 14px; z-index: 9999; box-shadow: 0 4px 8px rgba(0,0,0,0.2); animation: fadeIn 0.4s ease; }
 
 /* ======= Dark Mode ======= */
-body.dark-mode {
-  background-color: #1e1e2f;
-  color: #f0f0f0;
-}
-body.dark-mode .panel { 
-  background: #2a2a3d;
-  color: #f0f0f0;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-
-body.dark-mode .panel-heading { 
-  background: linear-gradient(135deg, #4e4ecf, #6c63ff); 
-  color: #fff; }
-
-body.dark-mode .notification-settings { 
-  background: #2a2a3d; 
-  color: #f0f0f0; }
-
-body.dark-mode .setting-item { 
-  border-bottom: 1px solid #444; }
-
-body.dark-mode .alert-popup { 
-  background: #4e4ecf; 
-  color: #fff; }
-
-body.dark-mode .profile-info .user-role { 
-  color: #ccc; }
-
+body.dark-mode { background-color: #1e1e2f; color: #f0f0f0; }
+body.dark-mode .panel { background: #2a2a3d; color: #f0f0f0; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+body.dark-mode .panel-heading { background: linear-gradient(135deg, #4e4ecf, #6c63ff); color: #fff; }
+body.dark-mode .notification-settings { background: #2a2a3d; color: #f0f0f0; }
+body.dark-mode .setting-item { border-bottom: 1px solid #444; }
+body.dark-mode .alert-popup { background: #4e4ecf; color: #fff; }
+body.dark-mode .profile-info .user-role { color: #ccc; }
+body.dark-mode .section-title { color: #b3aaff; text-shadow: 0 0 6px rgba(108,99,255,0.7); }
 </style>
 
 <?php include_once('layouts/footer.php'); ?>
