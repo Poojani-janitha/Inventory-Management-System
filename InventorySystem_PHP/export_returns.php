@@ -2,7 +2,7 @@
   require_once('includes/load.php');
   // Checkin What level user has permission to view this page
    page_require_level(2);
-    page_require_level(1);
+   
    
    $format = isset($_GET['format']) ? $_GET['format'] : 'csv';
    $date_from = isset($_GET['date_from']) ? $_GET['date_from'] : date('Y-m-01');
