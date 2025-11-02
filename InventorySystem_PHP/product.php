@@ -133,7 +133,7 @@
                     <a href="edit_product.php?id=<?php echo urlencode($product['p_id']); ?>" class="btn btn-xs btn-warning" data-toggle="tooltip" title="Edit">
   
                     <i class="glyphicon glyphicon-edit"></i>
-                    <a href="delete_product.php?id=<?php echo urlencode($product['p_id']); ?>" class="btn btn-xs btn-danger" data-toggle="tooltip" title="Delete" onclick="return confirm('Are you sure you want to delete this product?\n\nProduct: <?php echo addslashes($product['product_name']); ?>\nID: <?php echo $product['p_id']; ?>');">
+                    <a href="javascript:void(0);" onclick="confirmProductDelete('<?php echo $product['p_id']; ?>', '<?php echo addslashes($product['product_name']); ?>')" class="btn btn-xs btn-danger" data-toggle="tooltip" title="Delete">
                       <i class="glyphicon glyphicon-trash"></i>
                     </a>
                     
@@ -175,6 +175,25 @@ $(document).ready(function() {
         $('.alert').fadeOut();
     }, 10000);
 });
+
+function confirmProductDelete(productId, productName) {
+  // Create a detailed confirmation message
+  var message = "⚠️ IMPORTANT: Database Integrity Protection\n\n";
+  message += "You are about to delete the product: '" + productName + "' (ID: " + productId + ")\n\n";
+  message += "📋 SYSTEM PROTECTION RULES:\n";
+  message += "• If this product has any sales records or return records associated with it, the deletion will be BLOCKED to maintain data integrity.\n\n";
+  message += "• This prevents orphaned records and maintains referential integrity in the database.\n\n";
+  message += "• Only products with NO transaction history can be deleted.\n\n";
+  message += "🔍 If deletion fails, you will see a detailed message showing exactly which records are preventing the deletion.\n\n";
+  message += "💡 TIP: Consider marking the product as 'inactive' instead of deleting if it has transaction history.\n\n";
+  message += "Do you want to proceed with the deletion attempt?";
+  
+  // Show confirmation dialog
+  if (confirm(message)) {
+    // If user confirms, redirect to delete page
+    window.location.href = 'delete_product.php?id=' + encodeURIComponent(productId);
+  }
+}
 </script>
 
 <style>
