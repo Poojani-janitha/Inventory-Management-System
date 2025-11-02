@@ -135,11 +135,12 @@
                   </a>
               </li>
              <li>
-                 <a href="edit_account.php" title="edit account">
+                 <a href="p_setting.php" title="edit account">
                      <i class="glyphicon glyphicon-cog"></i>
                      Settings
                  </a>
              </li>
+             
              <li class="last">
                  <a href="logout.php">
                      <i class="glyphicon glyphicon-off"></i>
