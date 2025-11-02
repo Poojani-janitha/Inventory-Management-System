@@ -68,6 +68,15 @@ header('Pragma: public');
 echo $invoice_html;
 
 function generateInvoiceHTML($invoice_number, $customer_name, $customer_phone, $customer_email, $sale_date, $products, $subtotal, $total_discount, $grand_total) {
+    // Try to include a company logo if it exists at assets/images/logo.png (relative to this script)
+    $logo_img_html = '';
+    $logo_rel_path = 'assets/images/logo.png';
+    $logo_fs_path = __DIR__ . '/' . $logo_rel_path;
+    if (file_exists($logo_fs_path)) {
+        // Use the relative web path so the browser can load the image
+        $logo_img_html = '<img src="' . $logo_rel_path . '" alt="HealStock Logo" class="company-logo">';
+    }
+
     $html = '
     <!DOCTYPE html>
     <html>
@@ -89,10 +98,25 @@ function generateInvoiceHTML($invoice_number, $customer_name, $customer_phone, $
                 box-shadow: 0 0 10px rgba(0,0,0,0.1);
             }
             .header {
-                text-align: center;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
                 border-bottom: 2px solid #333;
                 padding-bottom: 20px;
                 margin-bottom: 30px;
+            }
+            .company-logo {
+                width: 150px;
+                height: auto;
+                object-fit: contain;
+                display: block;
+                margin-left: 20px;
+                order: 2;
+            }
+            .company-info {
+                text-align: left;
+                order: 1;
+                flex: 1;
             }
             .company-name {
                 font-size: 28px;
@@ -204,12 +228,15 @@ function generateInvoiceHTML($invoice_number, $customer_name, $customer_phone, $
         </button>
         <div class="invoice-container">
             <div class="header">
-                <div class="company-name">Inventory Management System</div>
-                <div class="company-details">
-                    123 Main Street, Colombo 01, Sri Lanka<br>
-                    Phone: +94 11 234 5678 | Email: info@pharmacy.com<br>
-                    Website: www.pharmacy.com
+                <div class="company-info">
+                    <div class="company-name">HealStock Pvt.Ltd</div>
+                    <div class="company-details">
+                        123 Main Street, Colombo 01, Sri Lanka<br>
+                        Phone: +94 11 234 5678 | Email: info@HealStock.com<br>
+                        Website: www.HealStock.com
+                    </div>
                 </div>
+                ' . $logo_img_html . '
             </div>
             
             <div class="invoice-info">

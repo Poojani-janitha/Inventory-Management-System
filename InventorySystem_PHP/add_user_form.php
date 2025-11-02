@@ -12,69 +12,8 @@
     return;
   }
 
-  // Retrieve groups for the role select
-  $groups = find_all('user_groups');
-
-  // Form processing: use current script name for redirects so that this
-  // include works both when loaded from add_user.php and when loaded from users.php
-  $self = basename($_SERVER['PHP_SELF']);
-
-  if(isset($_POST['add_user'])){
-
-   $req_fields = array('full-name','username','password','level' );
-   validate_fields($req_fields);
-
-   // Validate password
-   $password = $_POST['password'];
-   if (strlen($password) < 6 || strlen($password) > 10) {
-       $errors[] = 'Password must be between 6 and 10 characters';
-   }
-   if (!preg_match('/[A-Z]/', $password)) {
-       $errors[] = 'Password must contain at least one capital letter';
-   }
-   if (!preg_match('/[0-9]/', $password)) {
-       $errors[] = 'Password must contain at least one number';
-   }
-   if (!preg_match('/[!@#$%^&*(),.?":{}|<>]/', $password)) {
-       $errors[] = 'Password must contain at least one special character';
-   }
-
-   if(empty($errors)){
-           $name   = remove_junk($db->escape($_POST['full-name']));
-       $username   = remove_junk($db->escape($_POST['username']));
-       $password   = remove_junk($db->escape($_POST['password']));
-       $user_level = (int)$db->escape($_POST['level']);
-       $password = sha1($password);
-
-    // Get the group name for the selected user level
-    $user_group = find_by_groupLevel($user_level);
-    if (!$user_group) {
-      $session->msg('d', 'Invalid user role selected.');
-      redirect($self, false);
-      return;
-    }
-    $group_name = ucwords($user_group['group_name']);
-
-        $query = "INSERT INTO users (";
-        $query .="name,username,password,user_level,status";
-        $query .=") VALUES (";
-        $query .=" '{$name}', '{$username}', '{$password}', '{$user_level}','1'";
-        $query .=")";
-        if($db->query($query)){
-          // Simple success flash message
-          $session->msg('s', 'User added successfully');
-          redirect($self, false);
-        } else {
-          // Simple error flash message
-          $session->msg('d', 'Failed to create user account.');
-          redirect($self, false);
-        }
-   } else {
-     // Set session flash for validation errors and redirect
-     $session->msg('d', 'Validation error: please check the form fields.');
-     redirect($self,false);
-   }
- }
+  // Note: Form processing has been moved to users.php to avoid header issues
+  // This file now only contains the form HTML and JavaScript
 ?>
 
   
@@ -83,7 +22,7 @@
     <div class="panel panel-default">
       <div class="panel-heading">
         <strong>
-          <span class="glyphicon glyphicon-th"></span>
+          <span class="glyphicon glyphicon-plus"></span>
           <span>Add New User</span>
        </strong>
       </div>
@@ -142,104 +81,51 @@
             </div>
             
             <script>
+            // Simple form validation without AJAX calls
             document.addEventListener('DOMContentLoaded', function() {
+                const submitButton = document.getElementById('submitBtn');
+                
+                // Ensure submit button is always enabled
+                if (submitButton) {
+                    submitButton.disabled = false;
+                }
+                
+                // Simple client-side validation feedback (optional)
                 const usernameInput = document.getElementById('username');
                 const passwordInput = document.getElementById('password');
-                const usernameError = document.getElementById('usernameError');
-                const passwordError = document.getElementById('passwordError');
-                const submitButton = document.querySelector('button[type="submit"]');
-                let usernameValid = false;
-                let passwordValid = false;
-
                 const usernameMessage = document.getElementById('usernameMessage');
                 const passwordMessage = document.getElementById('passwordMessage');
 
-                // Username validation
-                let usernameTimeout = null;
-                usernameInput.addEventListener('input', function() {
-                    clearTimeout(usernameTimeout);
-                    const username = this.value.trim();
-                    
-                    if (username.length === 0) {
-                        this.classList.remove('is-valid', 'is-invalid');
-                        usernameMessage.textContent = '';
-                        usernameMessage.className = 'validation-message';
-                        usernameValid = false;
-                        updateSubmitButton();
-                        return;
-                    }
-
-                    usernameTimeout = setTimeout(() => {
-                        const formData = new FormData();
-                        formData.append('username', username);
-
-                        fetch('check_username.php', {
-                            method: 'POST',
-                            body: formData
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.exists) {
-                                usernameInput.classList.remove('is-valid');
-                                usernameInput.classList.add('is-invalid');
-                                usernameMessage.textContent = '❌ Username already exists';
-                                usernameMessage.className = 'validation-message error-message';
-                                usernameValid = false;
-                            } else {
-                                usernameInput.classList.remove('is-invalid');
-                                usernameInput.classList.add('is-valid');
-                                usernameMessage.textContent = '✓ Username is available';
-                                usernameMessage.className = 'validation-message success-message';
-                                usernameValid = true;
-                            }
-                            updateSubmitButton();
-                        });
-                    }, 300); // Debounce delay
-                });
-
-                // Password validation
-                passwordInput.addEventListener('input', function() {
-                    const password = this.value;
-                    const errors = [];
-                    let requirements = [];
-                    
-                    requirements.push({
-                        met: password.length >= 6 && password.length <= 10,
-                        text: '6-10 characters'
+                if (usernameInput && usernameMessage) {
+                    usernameInput.addEventListener('input', function() {
+                        const username = this.value.trim();
+                        if (username.length >= 3) {
+                            usernameMessage.textContent = '✓ Username looks good';
+                            usernameMessage.className = 'validation-message success-message';
+                        } else if (username.length > 0) {
+                            usernameMessage.textContent = 'Username should be at least 3 characters';
+                            usernameMessage.className = 'validation-message error-message';
+                        } else {
+                            usernameMessage.textContent = '';
+                        }
                     });
-                    requirements.push({
-                        met: /[A-Z]/.test(password),
-                        text: 'capital letter'
-                    });
-                    requirements.push({
-                        met: /[0-9]/.test(password),
-                        text: 'number'
-                    });
-                    requirements.push({
-                        met: /[!@#$%^&*(),.?":{}|<>]/.test(password),
-                        text: 'special character'
-                    });
+                }
 
-                    const failedRequirements = requirements.filter(req => !req.met);
-                    
-                    if (failedRequirements.length > 0) {
-                        this.classList.remove('is-valid');
-                        this.classList.add('is-invalid');
-                        passwordMessage.textContent = '❌ Missing: ' + failedRequirements.map(r => r.text).join(', ');
-                        passwordMessage.className = 'validation-message error-message';
-                        passwordValid = false;
-                    } else {
-                        this.classList.remove('is-invalid');
-                        this.classList.add('is-valid');
-                        passwordMessage.textContent = '✓ Password meets all requirements';
-                        passwordMessage.className = 'validation-message success-message';
-                        passwordValid = true;
-                    }
-                    updateSubmitButton();
-                });
-
-                function updateSubmitButton() {
-                    submitButton.disabled = !(usernameValid && passwordValid);
+                if (passwordInput && passwordMessage) {
+                    passwordInput.addEventListener('input', function() {
+                        const password = this.value;
+                        if (password.length >= 6 && password.length <= 10 && 
+                            /[A-Z]/.test(password) && /[0-9]/.test(password) && 
+                            /[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+                            passwordMessage.textContent = '✓ Password meets requirements';
+                            passwordMessage.className = 'validation-message success-message';
+                        } else if (password.length > 0) {
+                            passwordMessage.textContent = 'Check password requirements below';
+                            passwordMessage.className = 'validation-message error-message';
+                        } else {
+                            passwordMessage.textContent = '';
+                        }
+                    });
                 }
             });
             </script>
@@ -254,44 +140,39 @@
                         </div>
 
                         <script>
-                        (function(){
+                        // Simple role description without AJAX
+                        document.addEventListener('DOMContentLoaded', function(){
                             var levelSelect = document.getElementById('level');
                             var roleAccess = document.getElementById('roleAccess');
 
-                            function renderAccess(data){
-                                if(!data || !Array.isArray(data.access) || data.access.length === 0){
-                                    roleAccess.innerHTML = '<span class="error-message">No pages assigned to this role.</span>';
-                                    return;
+                            function showRoleInfo(level) {
+                                var info = '';
+                                switch(level) {
+                                    case '1':
+                                        info = '<span class="success-message">✓ Admin - Full system access</span>';
+                                        break;
+                                    case '2':
+                                        info = '<span class="success-message">✓ Staff - Limited access to products and categories</span>';
+                                        break;
+                                    case '3':
+                                        info = '<span class="success-message">✓ Finance - Access to sales and reports</span>';
+                                        break;
+                                    default:
+                                        info = '<span class="error-message">Select a role</span>';
                                 }
-                                var html = '<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;">';
-                                data.access.forEach(function(item){
-                                    html += '<a href="'+item.url+'" class="btn btn-xs" style="background:#e9f7ef;color:#155724;border:1px solid #c3eed1;border-radius:12px;padding:6px 10px;text-decoration:none;">'+
-                                                    '<i class="glyphicon glyphicon-ok-circle" style="margin-right:6px;color:#28a745"></i>'+item.label+'</a>';
-                                });
-                                html += '</div>';
-                                roleAccess.innerHTML = html;
+                                roleAccess.innerHTML = info;
                             }
 
-                            function fetchAccess(level){
-                                var params = new URLSearchParams();
-                                params.append('level', level);
-                                fetch('role_access.php?'+params.toString(), {method: 'GET'})
-                                    .then(function(r){ return r.json(); })
-                                    .then(function(d){ renderAccess(d); })
-                                    .catch(function(){ roleAccess.innerHTML = '<span class="error-message">Unable to load role access.</span>'; });
-                            }
-
-                            if(levelSelect){
-                                // fetch initially for the default selected option
-                                fetchAccess(levelSelect.value);
+                            if(levelSelect && roleAccess){
+                                showRoleInfo(levelSelect.value);
                                 levelSelect.addEventListener('change', function(){
-                                    fetchAccess(this.value);
+                                    showRoleInfo(this.value);
                                 });
                             }
-                        })();
+                        });
                         </script>
             <div class="form-group clearfix">
-              <button type="submit" name="add_user" class="btn btn-primary">Add User</button>
+              <button type="submit" name="add_user" class="btn btn-primary" id="submitBtn">Add User</button>
             </div>
         </form>
         </div>

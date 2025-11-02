@@ -2,7 +2,8 @@
   $page_title = 'Add Return';
   require_once('includes/load.php');
   // Checkin What level user has permission to view this page
-   page_require_level(1);
+ 
+  page_require_level(2);
   //extra add prabashi 
   $msg = $session->msg();
 ?>
@@ -47,10 +48,192 @@
        $update_query = "UPDATE product SET quantity = '{$new_qty}' WHERE p_id = '{$p_id}'";
        $db->query($update_query);
        
-       $session->msg('s',"Return added successfully. Return amount: Rs. " . number_format($return_price, 2));
+       // Get supplier information for email notification using direct SQL query (more reliable)
+       $supplier_sql = "SELECT s_id, s_name, email, address, contact_number FROM supplier_info WHERE s_id = '{$s_id}' LIMIT 1";
+       $supplier_result = $db->query($supplier_sql);
+       
+       $email_sent = false;
+       $email_error = '';
+       
+       // Validate and send email to supplier
+       if($supplier_result && $db->num_rows($supplier_result) > 0){
+         $supplier = $db->fetch_assoc($supplier_result);
+         
+         // Validate email address exists and is valid format
+         if(!empty($supplier['email']) && filter_var($supplier['email'], FILTER_VALIDATE_EMAIL)){
+           $category_name = isset($product['category_name']) ? $product['category_name'] : 'N/A';
+           $supplier_name = htmlspecialchars($supplier['s_name'], ENT_QUOTES, 'UTF-8');
+           $to = trim($supplier['email']);
+           $subject = "📦 Product Return Notification - " . htmlspecialchars($product_name, ENT_QUOTES, 'UTF-8');
+           
+           // Build HTML email message
+           $return_date = date('F j, Y');
+           $return_time = date('g:i A');
+           $formatted_product_name = htmlspecialchars($product_name, ENT_QUOTES, 'UTF-8');
+           $formatted_category = htmlspecialchars($category_name, ENT_QUOTES, 'UTF-8');
+           $formatted_reason = htmlspecialchars($reason, ENT_QUOTES, 'UTF-8');
+           $formatted_notes = !empty($notes) ? htmlspecialchars($notes, ENT_QUOTES, 'UTF-8') : '';
+           
+           $message = "
+           <!DOCTYPE html>
+           <html>
+           <head>
+             <meta charset='UTF-8'>
+             <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+             <title>Product Return Notification - Inventory Management System</title>
+             <style>
+               body { 
+                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                 margin: 0; 
+                 padding: 20px; 
+                 color: #333;
+               }
+               .email-container { 
+                 max-width: 600px; 
+                 margin: 0 auto; 
+                 background: #ffffff; 
+                 border-radius: 15px; 
+                 box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+                 overflow: hidden;
+               }
+               .header { 
+                 background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+                 color: white; 
+                 padding: 30px 20px; 
+                 text-align: center; 
+                 position: relative;
+               }
+               .header h1 { 
+                 margin: 0; 
+                 font-size: 28px; 
+                 font-weight: 600; 
+                 position: relative;
+                 z-index: 1;
+               }
+               .content { padding: 40px 30px; background: #ffffff; }
+               .return-table { 
+                 width: 100%; 
+                 border-collapse: collapse; 
+                 margin-top: 15px;
+                 background: white;
+                 border-radius: 8px;
+                 overflow: hidden;
+               }
+               .return-table th { 
+                 background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+                 color: #fff; 
+                 padding: 15px 12px; 
+                 text-align: left; 
+                 font-weight: 600;
+               }
+               .return-table td { 
+                 padding: 15px 12px; 
+                 border-bottom: 1px solid #e9ecef; 
+                 background: #f8f9fa;
+               }
+               .return-table tr:last-child td {
+                 border-bottom: none;
+               }
+               .footer { 
+                 background: #2c3e50;
+                 color: #bdc3c7; 
+                 padding: 20px 30px; 
+                 text-align: center; 
+               }
+               .notice {
+                 background: #fff3cd;
+                 border-left: 4px solid #ffc107;
+                 padding: 15px;
+                 margin: 20px 0;
+                 border-radius: 5px;
+                 color: #856404;
+               }
+               .highlight {
+                 color: #dc3545;
+                 font-weight: 600;
+               }
+             </style>
+           </head>
+           <body>
+             <div class='email-container'>
+               <div class='header'>
+                 <h1>📦 Product Return Notification</h1>
+               </div>
+               <div class='content'>
+                 <p>Dear <strong>{$supplier_name}</strong>,</p>
+                 <p>We are writing to inform you about a product return from our inventory system.</p>
+                 <table class='return-table'>
+                   <tr><th>Product Name</th><td>{$formatted_product_name}</td></tr>
+                   <tr><th>Category</th><td>{$formatted_category}</td></tr>
+                   <tr><th>Return Quantity</th><td><span class='highlight'>{$qty} units</span></td></tr>
+                   <tr><th>Buying Price (per unit)</th><td>Rs. " . number_format($buying_price, 2) . "</td></tr>
+                   <tr><th>Total Refund Amount</th><td><span class='highlight'>Rs. " . number_format($return_price, 2) . "</span></td></tr>
+                   <tr><th>Return Reason</th><td>{$formatted_reason}</td></tr>
+                   <tr><th>Return Date</th><td>{$return_date} at {$return_time}</td></tr>
+                 </table>
+                 " . (!empty($formatted_notes) ? "<div class='notice'><strong>Additional Notes:</strong><br>{$formatted_notes}</div>" : "") . "
+                 <p><strong>Important:</strong> Please review this return and contact us if you have any questions or concerns regarding this return.</p>
+                 <p>Thank you for your attention to this matter.</p>
+                 <p style='margin-top: 20px; padding-top: 20px; border-top: 1px solid #e9ecef;'>
+                   <small style='color: #666;'>This is an automated email from the Inventory Management System. Please do not reply to this email.</small>
+                 </p>
+               </div>
+               <div class='footer'>
+                 <p><strong>Inventory Management System</strong></p>
+                 <p>© " . date('Y') . " All rights reserved.</p>
+               </div>
+             </div>
+           </body>
+           </html>
+           ";
+
+           // Use send_return_email() function specifically for return notifications
+           // This uses nimharachalana12@gmail.com as configured in php.ini
+           if(function_exists('send_return_email')){
+             $email_sent = send_return_email($to, $subject, $message);
+           } else {
+             // Fallback: Direct mail with nimharachalana12@gmail.com
+             $headers = "MIME-Version: 1.0\r\n";
+             $headers .= "Content-type:text/html;charset=UTF-8\r\n";
+             $headers .= "From: Inventory Management System <nimharachalana12@gmail.com>\r\n";
+             $headers .= "Reply-To: nimharachalana12@gmail.com\r\n";
+             $headers .= "X-Mailer: PHP/" . phpversion() . "\r\n";
+             
+             // Send email
+             $email_sent = @mail($to, $subject, $message, $headers);
+           }
+           
+           if($email_sent){
+             $session->msg('s', "Return processed successfully! Email notification sent to supplier ({$to}). Return amount: Rs. " . number_format($return_price, 2));
+           } else {
+             // Get detailed error information
+             $error_msg = error_get_last();
+             $error_detail = isset($error_msg['message']) ? $error_msg['message'] : 'Unknown error';
+             
+             // Check php.ini configuration
+             $smtp = ini_get('SMTP');
+             $sendmail_from = ini_get('sendmail_from');
+             
+             $debug_info = "";
+             if(empty($smtp)){
+               $debug_info = " (SMTP not configured in php.ini. Please configure SMTP in php.ini file)";
+             } elseif(empty($sendmail_from)){
+               $debug_info = " (sendmail_from not set in php.ini. Please set sendmail_from in php.ini)";
+             }
+             
+             $session->msg('w', "Return processed successfully. Return amount: Rs. " . number_format($return_price, 2) . ". However, email could not be sent to supplier ({$to})." . $debug_info . " Check error logs for details.");
+           }
+         } else {
+           $session->msg('w', "Return processed successfully. Return amount: Rs. " . number_format($return_price, 2) . ". Supplier email address is invalid or missing (Supplier ID: {$s_id})");
+         }
+       } else {
+         $session->msg('w', "Return processed successfully. Return amount: Rs. " . number_format($return_price, 2) . ". Supplier not found in database (Supplier ID: {$s_id})");
+       }
+       
        redirect('returns.php', false);
      } else {
-       $session->msg('d',' Sorry failed to add return!');
+       $session->msg('d',' Sorry failed to add return! Error: ' . $db->error);
        redirect('add_return.php', false);
      }
    } else{
@@ -60,6 +243,7 @@
  }
 ?>
 <?php include_once('layouts/header.php'); ?>
+<link rel="stylesheet" href="libs/css/add_return.css">
 <div class="row">
   <div class="col-md-12">
     <?php echo display_msg($msg); ?>
@@ -70,7 +254,7 @@
       <div class="panel panel-default">
         <div class="panel-heading">
           <strong>
-            <span class="glyphicon glyphicon-th"></span>
+            <span class="glyphicon glyphicon-plus"></span>
             <span>Add New Return</span>
          </strong>
         </div>

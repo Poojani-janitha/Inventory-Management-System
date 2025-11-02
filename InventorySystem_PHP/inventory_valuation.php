@@ -19,38 +19,10 @@
   }
 ?>
 <?php include_once('layouts/header.php'); ?>
+<link rel="stylesheet" href="libs/css/inventory_valuation.css">
 <div class="row">
   <div class="col-md-12">
     <?php echo display_msg($msg); ?>
-  </div>
-</div>
-<div class="row">
-  <div class="col-md-4">
-    <div class="panel panel-primary">
-      <div class="panel-body">
-        <h4>Total Stock Value</h4>
-        <h2>Rs. <?php echo number_format($total_stock_value, 2); ?></h2>
-        <small>(Based on Buying Price)</small>
-      </div>
-    </div>
-  </div>
-  <div class="col-md-4">
-    <div class="panel panel-success">
-      <div class="panel-body">
-        <h4>Potential Sales Value</h4>
-        <h2>Rs. <?php echo number_format($total_sales_value, 2); ?></h2>
-        <small>(Based on Selling Price)</small>
-      </div>
-    </div>
-  </div>
-  <div class="col-md-4">
-    <div class="panel panel-info">
-      <div class="panel-body">
-        <h4>Potential Profit</h4>
-        <h2>Rs. <?php echo number_format($total_potential_profit, 2); ?></h2>
-        <small>(If all items sold)</small>
-      </div>
-    </div>
   </div>
 </div>
 <div class="row">
@@ -61,8 +33,45 @@
           <span class="glyphicon glyphicon-usd"></span>
           <span>Inventory Valuation Report</span>
         </strong>
+        <div class="pull-right">
+          <button type="button" class="btn btn-info" onclick="window.print()">
+            <span class="glyphicon glyphicon-print"></span> Print
+          </button>
+        </div>
       </div>
       <div class="panel-body">
+        <!-- Statistics Boxes -->
+        <div class="row">
+          <div class="col-md-4">
+            <div class="panel panel-primary">
+              <div class="panel-body">
+                <h4>Total Stock Value</h4>
+                <h2>Rs. <?php echo number_format($total_stock_value, 2); ?></h2>
+                <small>(Based on Buying Price)</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="panel panel-success">
+              <div class="panel-body">
+                <h4>Potential Sales Value</h4>
+                <h2>Rs. <?php echo number_format($total_sales_value, 2); ?></h2>
+                <small>(Based on Selling Price)</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="panel panel-info">
+              <div class="panel-body">
+                <h4>Potential Profit</h4>
+                <h2>Rs. <?php echo number_format($total_potential_profit, 2); ?></h2>
+                <small>(If all items sold)</small>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Inventory Details Table -->
         <?php if(empty($products)): ?>
           <div class="alert alert-info">
             <p>No products found in inventory.</p>

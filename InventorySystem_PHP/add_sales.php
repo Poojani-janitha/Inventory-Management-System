@@ -216,14 +216,15 @@ function generateInvoiceNumber() {
 
 ?>
 <?php include_once('layouts/header.php'); ?>
+
 <link rel="stylesheet" href="assets/css/professional-styles.css">
 
 <!-- Page Header -->
-<div class="page-header">
+<!-- <div class="page-header">
   <div class="container-fluid">
     <h1><span class="glyphicon glyphicon-plus"></span> Add New Sale</h1>
   </div>
-</div>
+</div> -->
 
 <div class="row">
   <div class="col-md-12">
@@ -232,7 +233,7 @@ function generateInvoiceNumber() {
       <div class="panel-heading clearfix">
         <strong>
           <span class="glyphicon glyphicon-shopping-cart"></span>
-          <span>Sales Transaction</span>
+          <span>Add New Sale</span>
        </strong>
       </div>
       <div class="panel-body">
@@ -242,20 +243,20 @@ function generateInvoiceNumber() {
             <div class="col-md-6">
               <div class="form-group">
                 <label for="invoice_number" class="control-label">Invoice Number</label>
-                <input type="text" class="form-control" name="invoice_number" id="invoice_number" value="<?php echo 'INV-' . date('Y-m-d') . '-0001'; ?>" readonly style="background-color: #f5f5f5; font-weight: bold;">
+                <input type="text" class="form-control" name="invoice_number" id="invoice_number" value="<?php echo 'INV-' . date('Y-m-d') . '-0001'; ?>" readonly style="background-color: #f5f5f5; font-weight: bold;" title="Invoice number">
               </div>
             </div>
             <div class="col-md-6">
               <div class="form-group">
                 <label for="sale_date" class="control-label">Sale Date</label>
-                <input type="text" class="form-control" name="sale_date" id="sale_date" value="<?php echo date('Y-m-d H:i:s'); ?>" readonly style="background-color: #f5f5f5;">
+                <input type="text" class="form-control" name="sale_date" id="sale_date" value="<?php echo date('Y-m-d H:i:s'); ?>" readonly style="background-color: #f5f5f5;" title="Sale date and time">
               </div>
             </div>
           </div>
           
           <!-- Customer Information -->
           <div class="customer-info">
-            <h4><span class="glyphicon glyphicon-user"></span> Customer Information</h4>
+            <h3><span class="glyphicon glyphicon-user"></span> Customer Information</h4>
             
             <div class="row">
               <div class="col-md-4">
@@ -303,13 +304,13 @@ function generateInvoiceNumber() {
             <div class="col-md-6">
               <div class="form-group">
                 <label for="subtotal" class="control-label">Subtotal (LKR)</label>
-                <input type="number" class="form-control" name="subtotal" id="subtotal" step="0.01" readonly style="background-color: #f5f5f5;">
+                <input type="number" class="form-control" name="subtotal" id="subtotal" step="0.01" readonly style="background-color: #f5f5f5;" title="Subtotal amount">
               </div>
             </div>
             <div class="col-md-6">
               <div class="form-group">
                 <label for="grand_total" class="control-label">Grand Total (LKR)</label>
-                <input type="number" class="form-control grand-total" name="grand_total" id="grand_total" step="0.01" readonly>
+                <input type="number" class="form-control grand-total" name="grand_total" id="grand_total" step="0.01" readonly title="Grand total amount">
               </div>
             </div>
           </div>
@@ -381,8 +382,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Add a new product row
 function addProductRow() {
-    productRowCount++;
     var container = document.getElementById('productsContainer');
+    // Recalculate productRowCount based on existing DOM rows so numbering stays continuous after removals
+    var existingRows = container.querySelectorAll('.product-row').length;
+    productRowCount = existingRows + 1;
     
     var productRow = document.createElement('div');
     productRow.className = 'product-row';
@@ -392,50 +395,50 @@ function addProductRow() {
         <div class="panel panel-default" style="margin-top: 10px;">
             <div class="panel-heading">
                 <strong>Product ${productRowCount}</strong>
-                <button type="button" class="btn btn-danger btn-xs pull-right remove-product" data-row="${productRowCount}">
-                    <span class="glyphicon glyphicon-remove"></span> Remove
+                <button type="button" class="btn btn-danger btn-xs pull-right remove-product" data-row="${productRowCount}" title="Remove product ${productRowCount}" onclick="(function(btn){var row=btn.closest('.product-row'); if(!row) return; var rows=document.querySelectorAll('.product-row').length; if(rows>1){ row.remove(); try{ calculateGrandTotal(); }catch(e){} } else { alert('At least one product is required.'); } })(this)">
+                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Remove
                 </button>
             </div>
             <div class="panel-body">
                 <div class="row">
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label class="control-label">Category</label>
-                            <select class="form-control category-select" name="products[${productRowCount}][category_name]" data-row="${productRowCount}">
+                            <label class="control-label" for="category_${productRowCount}">Category</label>
+                            <select id="category_${productRowCount}" class="form-control category-select" name="products[${productRowCount}][category_name]" data-row="${productRowCount}" title="Select product category">
                                 <option value="">Select Category</option>
                             </select>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label class="control-label">Product</label>
-                            <select class="form-control product-select" name="products[${productRowCount}][sale_product_id]" data-row="${productRowCount}" disabled>
+                            <label class="control-label" for="product_${productRowCount}">Product</label>
+                            <select id="product_${productRowCount}" class="form-control product-select" name="products[${productRowCount}][sale_product_id]" data-row="${productRowCount}" disabled title="Select product">
                                 <option value="">Select Product</option>
                             </select>
                         </div>
                     </div>
                     <div class="col-md-2">
                         <div class="form-group">
-                            <label class="control-label">Unit Price (LKR)</label>
-                            <input type="number" class="form-control unit-price" name="products[${productRowCount}][sale_selling_price]" data-row="${productRowCount}" step="0.01" min="0" readonly>
+                            <label class="control-label" for="unitPrice_${productRowCount}">Unit Price (LKR)</label>
+                            <input id="unitPrice_${productRowCount}" type="number" class="form-control unit-price" name="products[${productRowCount}][sale_selling_price]" data-row="${productRowCount}" step="0.01" min="0" readonly title="Unit price" placeholder="0.00">
                         </div>
                     </div>
                     <div class="col-md-1">
                         <div class="form-group">
-                            <label class="control-label">Qty</label>
-                            <input type="number" class="form-control quantity" name="products[${productRowCount}][quantity]" data-row="${productRowCount}" min="1" value="1">
+                            <label class="control-label" for="quantity_${productRowCount}">Qty</label>
+                            <input id="quantity_${productRowCount}" type="number" class="form-control quantity" name="products[${productRowCount}][quantity]" data-row="${productRowCount}" min="10" value="10" title="Quantity" placeholder="10+">
                         </div>
                     </div>
                     <div class="col-md-2">
                         <div class="form-group">
-                            <label class="control-label">Total (LKR)</label>
-                            <input type="number" class="form-control product-total" data-row="${productRowCount}" step="0.01" readonly style="background-color: #f5f5f5;">
+                            <label class="control-label" for="total_${productRowCount}">Total (LKR)</label>
+                            <input id="total_${productRowCount}" type="number" class="form-control product-total" data-row="${productRowCount}" step="0.01" readonly style="background-color: #f5f5f5;" title="Product subtotal">
                         </div>
                     </div>
                     <div class="col-md-2">
                         <div class="form-group">
-                            <label class="control-label">Discount Type</label>
-                            <select class="form-control discount-type" name="products[${productRowCount}][discount_type]" data-row="${productRowCount}">
+                            <label class="control-label" for="discountType_${productRowCount}">Discount Type</label>
+                            <select id="discountType_${productRowCount}" class="form-control discount-type" name="products[${productRowCount}][discount_type]" data-row="${productRowCount}" title="Discount type">
                                 <option value="none">None</option>
                                 <option value="fixed">Fixed (LKR)</option>
                                 <option value="percentage">Percentage (%)</option>
@@ -444,14 +447,14 @@ function addProductRow() {
                     </div>
                     <div class="col-md-2">
                         <div class="form-group">
-                            <label class="control-label">Discount</label>
-                            <input type="number" class="form-control discount" name="products[${productRowCount}][discount]" data-row="${productRowCount}" step="0.01" min="0" value="0">
+                            <label class="control-label" for="discount_${productRowCount}">Discount</label>
+                            <input id="discount_${productRowCount}" type="number" class="form-control discount" name="products[${productRowCount}][discount]" data-row="${productRowCount}" step="0.01" min="0" value="0" title="Discount amount" placeholder="0.00">
                         </div>
                     </div>
                     <div class="col-md-2">
                         <div class="form-group">
-                            <label class="control-label">Final Total (LKR)</label>
-                            <input type="number" class="form-control final-total" data-row="${productRowCount}" step="0.01" readonly style="background-color: #f5f5f5;">
+                            <label class="control-label" for="finalTotal_${productRowCount}">Final Total (LKR)</label>
+                            <input id="finalTotal_${productRowCount}" type="number" class="form-control final-total" data-row="${productRowCount}" step="0.01" readonly style="background-color: #f5f5f5;" title="Final total for this product">
                         </div>
                     </div>
                     
@@ -665,30 +668,39 @@ function addProductRowEventListeners(rowNumber) {
         var productSelect = row.querySelector('.product-select');
         var selectedOption = productSelect.options[productSelect.selectedIndex];
         var quantity = parseInt(this.value) || 0;
-        
+
         // Clear previous validation
         this.setCustomValidity('');
         this.classList.remove('is-invalid');
-        
+
         // Remove any existing stock warnings
         var existingWarning = row.querySelector('.stock-warning');
         if (existingWarning) {
             existingWarning.remove();
         }
-        
+
+        // Enforce minimum quantity of 10
+        if (quantity < 10) {
+            this.setCustomValidity('Quantity must be at least 10');
+            this.classList.add('is-invalid');
+            // don't continue further validations when below minimum
+            calculateProductTotal(rowNumber);
+            return;
+        }
+
         // Validate quantity against available stock (but don't update stock yet)
-        if (selectedOption && selectedOption.dataset.quantity && quantity > 0) {
+        if (selectedOption && selectedOption.dataset.quantity) {
             var availableStock = parseInt(selectedOption.dataset.quantity);
-            
+
             if (quantity > availableStock) {
                 this.setCustomValidity('Quantity cannot exceed available stock: ' + availableStock);
                 this.classList.add('is-invalid');
-                
+
                 // Show warning message
                 showStockWarning(row, 'Insufficient stock! Available: ' + availableStock + ', Requested: ' + quantity);
             }
         }
-        
+
         calculateProductTotal(rowNumber);
     });
     
@@ -707,14 +719,24 @@ function addProductRowEventListeners(rowNumber) {
         calculateProductTotal(rowNumber);
     });
     
-    // Remove product event
-    row.querySelector('.remove-product').addEventListener('click', function() {
-        if (productRowCount > 1) {
-            row.remove();
-            productRowCount--;
-            calculateGrandTotal();
-        } else {
-            alert('At least one product is required.');
+    // Remove product event is handled by event delegation below
+    // Event delegation for remove-product button — attach immediately so it works even if added after DOMContentLoaded
+    document.addEventListener('click', function(e) {
+        var btn = e.target.closest('.remove-product');
+        if (!btn) return;
+        console.log('Remove button clicked:', btn);
+        var row = btn.closest('.product-row');
+        console.log('Product row to remove:', row);
+        if (row) {
+            var currentRows = document.querySelectorAll('.product-row').length;
+            if (currentRows > 1) {
+                row.remove();
+                // Reindex remaining rows so numbering is sequential
+                reindexProductRows();
+                console.log('Product row removed. Remaining rows after reindex:', document.querySelectorAll('.product-row').length);
+            } else {
+                alert('At least one product is required.');
+            }
         }
     });
 }
@@ -750,6 +772,78 @@ function calculateProductTotal(rowNumber) {
     
     finalTotalInput.value = finalTotal.toFixed(2);
     calculateGrandTotal();
+}
+
+// Reindex product rows to keep numbering and form names/ids sequential
+function reindexProductRows() {
+    var rows = document.querySelectorAll('.product-row');
+    rows.forEach(function(row, index) {
+        var i = index + 1;
+        // update row id
+        row.id = 'productRow_' + i;
+
+        // update heading text
+        var heading = row.querySelector('.panel-heading strong');
+        if (heading) heading.textContent = 'Product ' + i;
+
+        // update remove button data and title
+        var removeBtn = row.querySelector('.remove-product');
+        if (removeBtn) {
+            removeBtn.setAttribute('data-row', i);
+            removeBtn.title = 'Remove product ' + i;
+        }
+
+        // update selects/inputs ids, names and data-row attributes
+        var category = row.querySelector('.category-select');
+        if (category) {
+            category.id = 'category_' + i;
+            category.name = 'products[' + i + '][category_name]';
+            category.setAttribute('data-row', i);
+        }
+        var productSelect = row.querySelector('.product-select');
+        if (productSelect) {
+            productSelect.id = 'product_' + i;
+            productSelect.name = 'products[' + i + '][sale_product_id]';
+            productSelect.setAttribute('data-row', i);
+        }
+        var unitPrice = row.querySelector('.unit-price');
+        if (unitPrice) {
+            unitPrice.id = 'unitPrice_' + i;
+            unitPrice.name = 'products[' + i + '][sale_selling_price]';
+            unitPrice.setAttribute('data-row', i);
+        }
+        var quantity = row.querySelector('.quantity');
+        if (quantity) {
+            quantity.id = 'quantity_' + i;
+            quantity.name = 'products[' + i + '][quantity]';
+            quantity.setAttribute('data-row', i);
+        }
+        var total = row.querySelector('.product-total');
+        if (total) {
+            total.id = 'total_' + i;
+            total.setAttribute('data-row', i);
+        }
+        var discountType = row.querySelector('.discount-type');
+        if (discountType) {
+            discountType.id = 'discountType_' + i;
+            discountType.name = 'products[' + i + '][discount_type]';
+            discountType.setAttribute('data-row', i);
+        }
+        var discount = row.querySelector('.discount');
+        if (discount) {
+            discount.id = 'discount_' + i;
+            discount.name = 'products[' + i + '][discount]';
+            discount.setAttribute('data-row', i);
+        }
+        var finalTotal = row.querySelector('.final-total');
+        if (finalTotal) {
+            finalTotal.id = 'finalTotal_' + i;
+            finalTotal.setAttribute('data-row', i);
+        }
+    });
+    // update global counter and recalc totals
+    productRowCount = document.querySelectorAll('.product-row').length;
+    try { calculateGrandTotal(); } catch (e) { console.error(e); }
 }
 
 // Calculate grand total for all products
@@ -847,9 +941,54 @@ if (nameInput) {
   nameInput.addEventListener('input', function(e) {
     this.value = this.value.replace(/[^a-zA-Z ]/g, '');
   });
+
+// Debugging: monitor click events to help diagnose why Remove button clicks aren't detected
+// (This will log every click on the page — remove after debugging)
+document.addEventListener('click', function(ev) {
+    try {
+        console.log('DEBUG: document click at', ev.clientX, ev.clientY, 'target=', ev.target);
+        var btn = ev.target.closest ? ev.target.closest('.remove-product') : null;
+        if (btn) {
+            console.log('DEBUG: clicked element is inside .remove-product. Element:', btn);
+            var cs = window.getComputedStyle(btn);
+            console.log('DEBUG: remove button computed styles: pointerEvents=', cs.pointerEvents, 'zIndex=', cs.zIndex, 'position=', cs.position);
+        }
+        // Also log element at point (useful when overlays intercept clicks)
+        var elAtPoint = document.elementFromPoint(ev.clientX, ev.clientY);
+        if (elAtPoint) {
+            console.log('DEBUG: elementFromPoint at click:', elAtPoint);
+        }
+    } catch (err) {
+        console.error('DEBUG: error while logging click:', err);
+    }
+});
 }
 const saleForm = nameInput ? nameInput.form : null;
 if (saleForm) {
+// Fallback remove function for inline onclick handlers
+function removeProduct(btn) {
+    try {
+        console.log('removeProduct called for', btn);
+        var row = btn.closest ? btn.closest('.product-row') : null;
+        console.log('removeProduct target row:', row);
+        if (row) {
+            // Recalculate productRowCount from DOM to avoid stale counters
+            var currentRows = document.querySelectorAll('.product-row').length;
+            if (currentRows > 1) {
+                row.remove();
+                // Update productRowCount to reflect current DOM
+                productRowCount = document.querySelectorAll('.product-row').length;
+                calculateGrandTotal();
+                console.log('Product removed via removeProduct. Remaining rows:', productRowCount);
+            } else {
+                alert('At least one product is required.');
+            }
+        }
+    } catch (err) {
+        console.error('Error in removeProduct:', err);
+    }
+}
+
   saleForm.addEventListener('submit', function(e) {
     const value = nameInput.value;
     if (!/^[a-zA-Z ]+$/.test(value)) {
@@ -887,9 +1026,9 @@ document.querySelector('form').addEventListener('submit', function(e) {
         }
     }
     
-    // Validate quantity
-    if (quantityInput.value <= 0) {
-        quantityInput.setCustomValidity('Quantity must be greater than 0');
+    // Validate quantity (minimum 10)
+    if (quantityInput.value < 10) {
+        quantityInput.setCustomValidity('Quantity must be at least 10');
         quantityInput.classList.add('is-invalid');
         isValid = false;
     }
@@ -935,9 +1074,9 @@ document.querySelector('form').addEventListener('submit', function(e) {
             }
         }
         
-        // Validate quantity is greater than 0
-        if (quantityInput.value <= 0) {
-            quantityInput.setCustomValidity('Quantity must be greater than 0');
+        // Validate quantity is at least 10
+        if (parseInt(quantityInput.value) < 10) {
+            quantityInput.setCustomValidity('Quantity must be at least 10');
             quantityInput.classList.add('is-invalid');
             isValid = false;
         }
