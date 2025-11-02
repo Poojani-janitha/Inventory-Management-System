@@ -7,9 +7,9 @@ const char* ssid     = "FOT_WiFi";   // open network (no password)
 const char* password = "";           // empty for open network
 
 // Server
-const char* host = "10.50.52.47";   // your computer running XAMPP
+const char* host = "192.168.2.210";   // your computer running XAMPP
 const int   port = 80;                // default HTTP localhost
-const char* ingestPath = "http://10.50.52.47/Inventory-Management-System/InventorySystem_PHP/iot/latest.php";
+const char* ingestPath = "http://192.168.2.210/Inventory-Management-System/InventorySystem_PHP/iot/latest.php";
 
 // DHT11
 #define DHTPIN 2           // GPIO2 (D4 on many NodeMCU boards)

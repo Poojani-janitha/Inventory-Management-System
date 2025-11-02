@@ -62,8 +62,8 @@ $low_stock_products = find_by_sql($low_stock_query);
   <div class="row">
     <div class="col-md-12">
       <div class="dashboard-header">
-        <h1><i class="glyphicon glyphicon-dashboard"></i> HealStock Warehouse Dashboard</h1>
-        <p>Welcome to your comprehensive inventory management system for HealStock warehouse operations</p>
+        <h1><i class="glyphicon glyphicon-dashboard"></i> HealStock Warehouse Management System</h1>
+        <p>Welcome to HealStock’s all-in-one inventory management system.</p>
       </div>
     </div>
   </div>
