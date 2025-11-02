@@ -2,7 +2,8 @@
   $page_title = 'Returns Management';
   require_once('includes/load.php');
   // Checkin What level user has permission to view this page
-   page_require_level(1);
+   page_require_level(2);
+
   //extra add prabashi 
     $msg = $session->msg();
 ?>
@@ -27,7 +28,7 @@
             <span class="glyphicon glyphicon-plus"></span> Add New Return
           </a>
           <a href="return_report.php" class="btn btn-info btn-sm">
-            <span class="glyphicon glyphicon-stats"></span> Reports
+            <span class="glyphicon glyphicon-stats"></span> View return
           </a>
         </div>
       </div>

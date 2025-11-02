@@ -4,7 +4,7 @@
  * This script will help you test and debug email sending for returns
  */
 require_once('includes/load.php');
-page_require_level(1);
+page_require_level(2);
 
 $test_result = null;
 $test_error = null;

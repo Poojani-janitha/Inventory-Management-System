@@ -128,10 +128,33 @@
               <span><?php echo remove_junk(ucfirst($user['name'])); ?> <i class="caret"></i></span>
             </a>
             <ul class="dropdown-menu">
+<<<<<<< HEAD
               <li><a href="profile.php?id=<?php echo (int)$user['id'];?>"><i class="glyphicon glyphicon-user"></i> Profile</a></li>
               <li><a href="edit_account.php"><i class="glyphicon glyphicon-cog"></i> Settings</a></li>
               <li class="last"><a href="logout.php"><i class="glyphicon glyphicon-off"></i> Logout</a></li>
             </ul>
+=======
+              <li>
+                  <a href="profile.php?id=<?php echo (int)$user['id'];?>">
+                      <i class="glyphicon glyphicon-user"></i>
+                      Profile
+                  </a>
+              </li>
+             <li>
+                 <a href="p_setting.php" title="edit account">
+                     <i class="glyphicon glyphicon-cog"></i>
+                     Settings
+                 </a>
+             </li>
+             
+             <li class="last">
+                 <a href="logout.php">
+                     <i class="glyphicon glyphicon-off"></i>
+                     Logout
+                 </a>
+             </li>
+           </ul>
+>>>>>>> 2add8ff544a3360330fed42d8e40152deffc8106
           </li>
         </ul>
       </div>
