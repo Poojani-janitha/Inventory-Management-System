@@ -65,6 +65,13 @@
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
       text-shadow: 0 1px 2px rgba(0,0,0,0.3) !important;
     }
+    /* Larger responsive logo */
+    header > .logo img {
+      height: 60px !important;
+      max-height: 60px !important;
+      width: auto !important;
+      display: inline-block !important;
+    }
     
     /* Submenu styling */
     ul.submenu {
@@ -95,7 +102,9 @@
   <body>
   <?php  if ($session->isUserLoggedIn(true)): ?>
     <header id="header">
-      <div class="logo pull-left"> Inventory System</div>
+      <div class="logo pull-left">
+        <img src="assets/images/logo.png" alt="Inventory System" />
+      </div>
       <div class="header-content">
       <div class="header-date pull-left">
         <strong><?php echo date("F j, Y, g:i a");?></strong>
