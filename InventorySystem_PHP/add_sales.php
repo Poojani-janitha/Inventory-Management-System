@@ -1,87 +1,80 @@
 <?php
-  $page_title = 'Add Sale';
-  require_once('includes/load.php');
-  //Checkin What level user has permission to view this page
-   page_require_level(3);
-   //extra add prabashi 
-  $msg = $session->msg();
-   
+$page_title = 'Add Sale';
+
+require_once('includes/load.php');
+require_once('send_invoice_email.php');
+// Check what level user has permission to view this page
+page_require_level(3);
+
+$msg = $session->msg();
+
 // Function to generate unique invoice number
 function generateInvoiceNumber() {
     global $db;
     
-    // Get current date components
     $year = date('Y');
     $month = date('m');
     $day = date('d');
-    
-    // Create prefix: INV-YYYY-MM-DD-
     $prefix = "INV-{$year}-{$month}-{$day}-";
     
     try {
-        // Check if invoice_number column exists
         $check_sql = "SHOW COLUMNS FROM sales LIKE 'invoice_number'";
         $check_result = $db->query($check_sql);
         
         if ($check_result && $db->num_rows($check_result) > 0) {
-            // Column exists, get the last invoice number for today
             $sql = "SELECT invoice_number FROM sales WHERE invoice_number LIKE '{$prefix}%' ORDER BY invoice_number DESC LIMIT 1";
             $result = $db->query($sql);
             
             if ($result && $db->num_rows($result) > 0) {
                 $last_invoice = $db->fetch_assoc($result);
-                $last_number = intval(substr($last_invoice['invoice_number'], -4)); // Get last 4 digits
+                $last_number = intval(substr($last_invoice['invoice_number'], -4));
                 $new_number = $last_number + 1;
             } else {
                 $new_number = 1;
             }
         } else {
-            // Column doesn't exist, start from 1
             $new_number = 1;
         }
     } catch (Exception $e) {
-        // If there's any error, start from 1
         $new_number = 1;
     }
     
-    // Format the number with leading zeros (4 digits)
-    $invoice_number = $prefix . str_pad($new_number, 4, '0', STR_PAD_LEFT);
-    
-    return $invoice_number;
+    return $prefix . str_pad($new_number, 4, '0', STR_PAD_LEFT);
 }
 
-  if(isset($_POST['add_sale'])){
-    $req_fields = array('name','pNumber','email');
+if (isset($_POST['add_sale'])) {
+    $req_fields = array('name', 'pNumber', 'email');
     validate_fields($req_fields);
     
     // Generate unique invoice number
     $invoice_number = generateInvoiceNumber();
     
-    // Additional validation for phone number and email
     $pNumber = $_POST['pNumber'];
     $email = $_POST['email'];
     $name = $_POST['name'];
-    // Validate customer name (only letters and spaces)
+    
+    $errors = [];
+
+    // Validate customer name
     if (!preg_match('/^[a-zA-Z ]+$/', $name)) {
         $errors[] = "Customer name should contain only letters and spaces.";
     }
     
-    // Validate phone number format (10 digits)
+    // Validate phone number
     if (!preg_match('/^[0-9]{10}$/', $pNumber)) {
         $errors[] = "Phone number must be exactly 10 digits";
     }
     
-    // Validate email format if provided
+    // Validate email if provided
     if (!empty($email) && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errors[] = "Please enter a valid email address";
     }
     
-    // Validate products array
+    // Validate products
     if (!isset($_POST['products']) || empty($_POST['products'])) {
         $errors[] = "At least one product is required";
     }
     
-    // Validate each product
     $products = $_POST['products'];
     $subtotal = 0;
     $sales_data = [];
@@ -107,10 +100,9 @@ function generateInvoiceNumber() {
             $errors[] = "Price for product " . ($index + 1) . " must be greater than 0";
         }
         
-        // Calculate product total with discount
         $product_subtotal = $sale_selling_price * $quantity;
         $product_total = $product_subtotal;
-        $discount_amount = 0; // Store the actual discount amount in LKR
+        $discount_amount = 0;
         
         if ($discount > 0) {
             if ($discount_type === 'percentage') {
@@ -132,13 +124,12 @@ function generateInvoiceNumber() {
         
         $subtotal += $product_total;
         
-        // Store sales data with actual discount amount (not percentage)
         $sales_data[] = [
             'sale_product_id' => $db->escape($sale_product_id),
             'category_name' => $db->escape($category_name),
             'sale_selling_price' => $db->escape($sale_selling_price),
             'quantity' => $db->escape($quantity),
-            'discount' => $db->escape($discount_amount), // Store actual discount amount in LKR
+            'discount' => $db->escape($discount_amount),
             'total' => $db->escape($product_total),
             'name' => $db->escape($name),
             'pNumber' => $db->escape($pNumber),
@@ -147,32 +138,26 @@ function generateInvoiceNumber() {
         ];
     }
     
-    // Calculate grand total
     $grand_total = $subtotal;
     
-    if(empty($errors)){
+    if (empty($errors)) {
         $success_count = 0;
         
-        // Insert each product sale
         foreach ($sales_data as $sale_data) {
-            // Check if invoice_number column exists
             $check_sql = "SHOW COLUMNS FROM sales LIKE 'invoice_number'";
             $check_result = $db->query($check_sql);
             
             if ($check_result && $db->num_rows($check_result) > 0) {
-                // Column exists, include invoice_number
                 $sql = "INSERT INTO sales (sale_product_id, category_name, sale_selling_price, quantity, discount, name, pNumber, email, total, invoice_number) VALUES (";
                 $sql .= "'{$sale_data['sale_product_id']}','{$sale_data['category_name']}','{$sale_data['sale_selling_price']}','{$sale_data['quantity']}','{$sale_data['discount']}','{$sale_data['name']}','{$sale_data['pNumber']}','{$sale_data['email']}','{$sale_data['total']}','{$sale_data['invoice_number']}'";
                 $sql .= ")";
             } else {
-                // Column doesn't exist, exclude invoice_number
                 $sql = "INSERT INTO sales (sale_product_id, category_name, sale_selling_price, quantity, discount, name, pNumber, email, total) VALUES (";
                 $sql .= "'{$sale_data['sale_product_id']}','{$sale_data['category_name']}','{$sale_data['sale_selling_price']}','{$sale_data['quantity']}','{$sale_data['discount']}','{$sale_data['name']}','{$sale_data['pNumber']}','{$sale_data['email']}','{$sale_data['total']}'";
                 $sql .= ")";
             }
             
             if ($db->query($sql)) {
-                // Check if product has enough quantity before updating
                 $check_qty_sql = "SELECT quantity FROM product WHERE p_id = '{$sale_data['sale_product_id']}'";
                 $qty_result = $db->query($check_qty_sql);
                 
@@ -182,49 +167,57 @@ function generateInvoiceNumber() {
                     $sale_qty = (int)$sale_data['quantity'];
                     
                     if ($current_qty >= $sale_qty) {
-                        // Update product quantity only if sufficient stock
                         $update_qty_sql = "UPDATE product SET quantity = quantity - {$sale_data['quantity']} WHERE p_id = '{$sale_data['sale_product_id']}'";
                         if ($db->query($update_qty_sql)) {
                             $success_count++;
                         } else {
-                            $errors[] = "Failed to update quantity for product " . $sale_data['sale_product_id'];
+                            $errors[] = "Failed to update quantity for product ID " . $sale_data['sale_product_id'];
                         }
                     } else {
-                        $errors[] = "Insufficient stock for product " . $sale_data['sale_product_id'] . ". Available: {$current_qty}, Requested: {$sale_qty}";
+                        $errors[] = "Insufficient stock for product ID " . $sale_data['sale_product_id'] . ". Available: {$current_qty}, Requested: {$sale_qty}";
                     }
                 } else {
                     $errors[] = "Product not found: " . $sale_data['sale_product_id'];
                 }
             } else {
-                $errors[] = "Failed to add sale for product " . $sale_data['sale_product_id'];
+                $errors[] = "Failed to add sale for product ID " . $sale_data['sale_product_id'];
             }
         }
-        
+
+        // SUCCESS BLOCK - YOUR CODE INTEGRATED HERE
         if ($success_count > 0) {
-            $session->msg('s', "Sale added successfully! Invoice #{$invoice_number}. {$success_count} product(s) sold. Grand Total: LKR " . number_format($grand_total, 2) . ". <a href='generate_invoice.php?invoice_number=" . urlencode($invoice_number) . "' target='_blank'>View Invoice</a>");
-            // Redirect back to add sales page with success message
+            // Prepare success message
+            $success_msg = "Sale added successfully! Invoice #{$invoice_number}. {$success_count} product(s) sold. Grand Total: LKR " . number_format($grand_total, 2) . ". <a href='generate_invoice.php?invoice_number=" . urlencode($invoice_number) . "' target='_blank'>View Invoice</a>";
+            
+            // Try to send email if customer email is provided
+            if (!empty($email) && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $email_sent = sendInvoiceEmail($invoice_number, $name, $email, $pNumber, $grand_total, $db);
+                
+                if ($email_sent) {
+                    $success_msg .= " <span style='color: #28a745;'><strong>Invoice email sent to {$email}</strong></span>";
+                } else {
+                    $success_msg .= " <span style='color: #ffc107;'><strong>Invoice saved but email could not be sent</strong></span>";
+                }
+            } else {
+                $success_msg .= " <span style='color: #6c757d;'><em>(No email provided - invoice not sent)</em></span>";
+            }
+            
+            $session->msg('s', $success_msg);
             redirect('add_sales.php?success=1', false);
         } else {
-            $session->msg('d', 'Sorry, failed to add sale!');
+            $session->msg('d', 'Sorry, failed to add sale! No products were processed successfully.');
             redirect('add_sales.php', false);
         }
     } else {
-        $session->msg("d", $errors);
+        $session->msg('d', join('<br>', $errors));
         redirect('add_sales.php', false);
     }
-  }
-
+}
 ?>
+
 <?php include_once('layouts/header.php'); ?>
 
 <link rel="stylesheet" href="assets/css/professional-styles.css">
-
-<!-- Page Header -->
-<!-- <div class="page-header">
-  <div class="container-fluid">
-    <h1><span class="glyphicon glyphicon-plus"></span> Add New Sale</h1>
-  </div>
-</div> -->
 
 <div class="row">
   <div class="col-md-12">
@@ -234,7 +227,7 @@ function generateInvoiceNumber() {
         <strong>
           <span class="glyphicon glyphicon-shopping-cart"></span>
           <span>Add New Sale</span>
-       </strong>
+        </strong>
       </div>
       <div class="panel-body">
         <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" class="clearfix" id="salesForm">
@@ -243,40 +236,39 @@ function generateInvoiceNumber() {
             <div class="col-md-6">
               <div class="form-group">
                 <label for="invoice_number" class="control-label">Invoice Number</label>
-                <input type="text" class="form-control" name="invoice_number" id="invoice_number" value="<?php echo 'INV-' . date('Y-m-d') . '-0001'; ?>" readonly style="background-color: #f5f5f5; font-weight: bold;" title="Invoice number">
+                <input type="text" class="form-control" name="invoice_number" id="invoice_number" value="<?php echo 'INV-' . date('Y-m-d') . '-0001'; ?>" readonly style="background-color: #f5f5f5; font-weight: bold;">
               </div>
             </div>
             <div class="col-md-6">
               <div class="form-group">
                 <label for="sale_date" class="control-label">Sale Date</label>
-                <input type="text" class="form-control" name="sale_date" id="sale_date" value="<?php echo date('Y-m-d H:i:s'); ?>" readonly style="background-color: #f5f5f5;" title="Sale date and time">
+                <input type="text" class="form-control" name="sale_date" id="sale_date" value="<?php echo date('Y-m-d H:i:s'); ?>" readonly style="background-color: #f5f5f5;">
               </div>
             </div>
           </div>
           
           <!-- Customer Information -->
           <div class="customer-info">
-            <h3><span class="glyphicon glyphicon-user"></span> Customer Information</h4>
-            
+            <h3><span class="glyphicon glyphicon-user"></span> Customer Information</h3>
             <div class="row">
               <div class="col-md-4">
                 <div class="form-group">
                   <label for="name" class="control-label">Customer Name</label>
-                  <input type="text" class="form-control" name="name" id="name" required pattern="[a-zA-Z ]+" title="Only letters and spaces are allowed">
+                  <input type="text" class="form-control" name="name" id="name" required pattern="[a-zA-Z ]+" title="Only letters and spaces">
                 </div>
               </div>
               <div class="col-md-4">
                 <div class="form-group">
                   <label for="pNumber" class="control-label">Phone Number</label>
-                  <input type="text" class="form-control" name="pNumber" id="pNumber" pattern="[0-9]{10}" title="Please enter a valid 10-digit phone number" required>
-                  <small class="text-muted">Enter 10 digits (e.g., 0712345678)</small>
+                  <input type="text" class="form-control" name="pNumber" id="pNumber" pattern="[0-9]{10}" title="10-digit phone number" required>
+                  <small class="text-muted">e.g., 0712345678</small>
                 </div>
               </div>
               <div class="col-md-4">
                 <div class="form-group">
                   <label for="email" class="control-label">Email</label>
-                  <input type="email" class="form-control" name="email" id="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Please enter a valid email address">
-                  <small class="text-muted">Optional - Enter valid email address</small>
+                  <input type="email" class="form-control" name="email" id="email" title="Optional valid email">
+                  <small class="text-muted">Optional</small>
                 </div>
               </div>
             </div>
@@ -290,46 +282,37 @@ function generateInvoiceNumber() {
                 <span class="glyphicon glyphicon-plus"></span> Add Product
               </button>
             </div>
-            
-            <div id="productsContainer">
-              <!-- Product rows will be added here dynamically -->
-            </div>
+            <div id="productsContainer"></div>
           </div>
           
           <!-- Order Summary -->
           <div class="order-summary">
             <h4><span class="glyphicon glyphicon-calculator"></span> Order Summary</h4>
-          
-          <div class="row">
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="subtotal" class="control-label">Subtotal (LKR)</label>
-                <input type="number" class="form-control" name="subtotal" id="subtotal" step="0.01" readonly style="background-color: #f5f5f5;" title="Subtotal amount">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="subtotal" class="control-label">Subtotal (LKR)</label>
+                  <input type="number" class="form-control" name="subtotal" id="subtotal" step="0.01" readonly style="background-color: #f5f5f5;">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="grand_total" class="control-label">Grand Total (LKR)</label>
+                  <input type="number" class="form-control grand-total" name="grand_total" id="grand_total" step="0.01" readonly>
+                </div>
               </div>
             </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="grand_total" class="control-label">Grand Total (LKR)</label>
-                <input type="number" class="form-control grand-total" name="grand_total" id="grand_total" step="0.01" readonly title="Grand total amount">
+            <div class="row">
+              <div class="col-md-4">
+                <button type="button" class="btn btn-warning" onclick="clearForm()">
+                  <span class="glyphicon glyphicon-refresh"></span> Clear Form
+                </button>
               </div>
-            </div>
-          </div>
-          
-          <div class="row">
-            <!-- <div class="col-md-4">
-              <a href="sales_report.php" class="btn btn-info">
-                <span class="glyphicon glyphicon-list"></span> View Sales Report
-              </a>
-            </div> -->
-            <div class="col-md-4">
-              <button type="button" class="btn btn-warning" onclick="clearForm()">
-                <span class="glyphicon glyphicon-refresh"></span> Clear Form
-              </button>
-            </div>
-            <div class="col-md-4">
-              <button type="submit" name="add_sale" class="btn btn-danger pull-right">
-                <span class="glyphicon glyphicon-plus"></span> Add Sale
-              </button>
+              <div class="col-md-4 offset-md-4">
+                <button type="submit" name="add_sale" class="btn btn-danger pull-right">
+                  <span class="glyphicon glyphicon-plus"></span> Add Sale
+                </button>
+              </div>
             </div>
           </div>
         </form>
@@ -339,6 +322,8 @@ function generateInvoiceNumber() {
 </div>
 
 <script>
+    
+
 // Global variables
 var productRowCount = 0;
 var categories = <?php 
@@ -1108,5 +1093,4 @@ document.querySelector('form').addEventListener('submit', function(e) {
     }
 });
 </script>
-
 <?php include_once('layouts/footer.php'); ?>
