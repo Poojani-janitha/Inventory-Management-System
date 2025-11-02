@@ -6,9 +6,9 @@
   
   $user_id = (int)$_GET['id'];
   if(empty($user_id)):
-    redirect('home.php',false);
+    redirect('home.php', false);
   else:
-    $user_p = find_by_id('users',$user_id);
+    $user_p = find_by_id('users', $user_id);
   endif;
   
   // Initialize message variable
@@ -40,8 +40,7 @@
                 unlink($upload_dir . $user_p['image']);
               }
               
-              // Update database
-              $db = new mysqli('localhost:3307', 'root', '', 'inventory_system');
+              // Use existing database connection from load.php/config.php
               $stmt = $db->prepare("UPDATE users SET image = ? WHERE id = ?");
               $stmt->bind_param("si", $photo_new_name, $user_id);
               
@@ -52,7 +51,6 @@
                 $session->msg('d', 'Failed to update profile image in database.');
               }
               $stmt->close();
-              $db->close();
             } else {
               $session->msg('d', 'Failed to upload image.');
             }
@@ -88,7 +86,7 @@
         $sql = "DELETE FROM users WHERE id = '{$delete_user_id}'";
         $result = $db->query($sql);
         
-        if($result && $db->affected_rows() === 1){
+        if($result && $db->affected_rows === 1){
           $session->msg('s', 'Account deleted successfully!');
           // Logout and redirect to login page
           $session->logout();
@@ -287,23 +285,23 @@
     border-color: #667eea;
     color: #667eea;
   }
-  
+
   .btn-danger-modern {
     background: #dc3545;
     color: white;
     border: none;
   }
-  
+
   .btn-danger-modern:hover {
     background: #c82333;
     transform: translateY(-2px);
     box-shadow: 0 10px 25px rgba(220, 53, 69, 0.4);
   }
-  
+
   #imageUploadForm {
     display: none;
   }
-  
+
   .modal-backdrop {
     display: none;
     position: fixed;
@@ -316,11 +314,11 @@
     align-items: center;
     justify-content: center;
   }
-  
+
   .modal-backdrop.active {
     display: flex;
   }
-  
+
   .upload-modal {
     background: white;
     padding: 40px;
@@ -329,24 +327,24 @@
     width: 90%;
     box-shadow: 0 20px 60px rgba(0,0,0,0.3);
   }
-  
+
   .upload-modal h3 {
     margin: 0 0 25px 0;
     color: #212529;
     font-size: 24px;
   }
-  
+
   .file-upload-wrapper {
     position: relative;
     margin: 25px 0;
   }
-  
+
   .file-upload-input {
     opacity: 0;
     position: absolute;
     z-index: -1;
   }
-  
+
   .file-upload-label {
     display: block;
     padding: 40px;
@@ -357,24 +355,24 @@
     cursor: pointer;
     transition: all 0.3s ease;
   }
-  
+
   .file-upload-label:hover {
     background: #e9ecef;
     border-color: #667eea;
   }
-  
+
   .file-upload-label.active {
     background: #667eea;
     border-color: #667eea;
     color: white;
   }
-  
+
   .modal-buttons {
     display: flex;
     gap: 15px;
     margin-top: 25px;
   }
-  
+
   .warning-box {
     background: #fff3cd;
     border: 2px solid #ffc107;
@@ -382,7 +380,7 @@
     padding: 20px;
     margin-bottom: 20px;
   }
-  
+
   .warning-box h4 {
     color: #856404;
     margin: 0 0 10px 0;
@@ -390,24 +388,24 @@
     align-items: center;
     gap: 10px;
   }
-  
+
   .warning-box p {
     color: #856404;
     margin: 0;
     font-size: 14px;
   }
-  
+
   .password-input-wrapper {
     margin: 20px 0;
   }
-  
+
   .password-input-wrapper label {
     display: block;
     margin-bottom: 8px;
     color: #495057;
     font-weight: 600;
   }
-  
+
   .password-input-wrapper input {
     width: 100%;
     padding: 12px 15px;
@@ -415,7 +413,7 @@
     border-radius: 8px;
     font-size: 16px;
   }
-  
+
   .password-input-wrapper input:focus {
     outline: none;
     border-color: #dc3545;
@@ -424,7 +422,7 @@
 
 <div class="profile-container">
   <?php echo display_msg($session->msg()); ?>
-  
+
   <div class="profile-card">
     <div class="profile-header">
       <div class="profile-image-wrapper">
@@ -443,34 +441,34 @@
         ?>
       </p>
     </div>
-    
+
     <div class="profile-info">
       <div class="info-grid">
         <div class="info-item">
           <div class="info-label">Username</div>
           <div class="info-value"><?php echo remove_junk(ucwords($user_p['username'])); ?></div>
         </div>
-        
+
         <div class="info-item">
           <div class="info-label">User Level</div>
           <div class="info-value">
             <?php echo $level_names[$user_p['user_level']] ?? 'User'; ?>
           </div>
         </div>
-        
+
         <div class="info-item">
           <div class="info-label">Status</div>
           <div class="info-value">
-            <?php echo ($user_p['status'] == 1) ? 'Active' : 'Inactive'; ?>
+            <?php echo ($user_p['status'] == 1) ? 'Active' : 'Deactive'; ?>
           </div>
         </div>
-        
+
         <div class="info-item">
           <div class="info-label">Last Login</div>
           <div class="info-value"><?php echo read_date($user_p['last_login']); ?></div>
         </div>
       </div>
-      
+
       <?php if($user_p['id'] === $user['id']): ?>
         <div class="action-buttons">
           <a href="edit_account.php" class="btn-modern btn-primary-modern">
@@ -547,44 +545,44 @@
   function openUploadModal() {
     document.getElementById('uploadModal').classList.add('active');
   }
-  
+
   function closeUploadModal() {
     document.getElementById('uploadModal').classList.remove('active');
     document.getElementById('profile_image').value = '';
     updateFileLabel();
   }
-  
+
   function openDeleteModal() {
     document.getElementById('deleteModal').classList.add('active');
   }
-  
+
   function closeDeleteModal() {
     document.getElementById('deleteModal').classList.remove('active');
     document.getElementById('confirm_password').value = '';
   }
-  
+
   // Close modals when clicking outside
   document.getElementById('uploadModal').addEventListener('click', function(e) {
     if (e.target === this) {
       closeUploadModal();
     }
   });
-  
+
   document.getElementById('deleteModal').addEventListener('click', function(e) {
     if (e.target === this) {
       closeDeleteModal();
     }
   });
-  
+
   // Update label when file is selected
   document.getElementById('profile_image').addEventListener('change', function(e) {
     updateFileLabel();
   });
-  
+
   function updateFileLabel() {
     const input = document.getElementById('profile_image');
     const label = document.getElementById('fileLabel');
-    
+
     if (input.files && input.files[0]) {
       const fileName = input.files[0].name;
       label.innerHTML = `
@@ -602,39 +600,39 @@
       label.classList.remove('active');
     }
   }
-  
+
   // Drag and drop functionality
   const fileLabel = document.getElementById('fileLabel');
-  
+
   ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
     fileLabel.addEventListener(eventName, preventDefaults, false);
   });
-  
+
   function preventDefaults(e) {
     e.preventDefault();
     e.stopPropagation();
   }
-  
+
   ['dragenter', 'dragover'].forEach(eventName => {
     fileLabel.addEventListener(eventName, highlight, false);
   });
-  
+
   ['dragleave', 'drop'].forEach(eventName => {
     fileLabel.addEventListener(eventName, unhighlight, false);
   });
-  
+
   function highlight(e) {
     fileLabel.style.borderColor = '#667eea';
     fileLabel.style.background = '#e9ecef';
   }
-  
+
   function unhighlight(e) {
     fileLabel.style.borderColor = '#dee2e6';
     fileLabel.style.background = '#f8f9fa';
   }
-  
+
   fileLabel.addEventListener('drop', handleDrop, false);
-  
+
   function handleDrop(e) {
     const dt = e.dataTransfer;
     const files = dt.files;
