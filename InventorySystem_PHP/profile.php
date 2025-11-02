@@ -17,6 +17,12 @@
   // Handle image upload
   if(isset($_POST['upload_image'])){
     $upload_dir = 'uploads/users/';
+    
+    // Create directory if it doesn't exist
+    if(!is_dir($upload_dir)){
+      mkdir($upload_dir, 0777, true);
+    }
+    
     $allowed_types = array('jpg', 'jpeg', 'png', 'gif');
     
     if(!empty($_FILES['profile_image']['name'])){
@@ -35,34 +41,50 @@
             $photo_destination = $upload_dir . $photo_new_name;
             
             if(move_uploaded_file($photo_tmp, $photo_destination)){
-              // Delete old image if exists and not default
-              if($user_p['image'] !== 'no_image.png' && file_exists($upload_dir . $user_p['image'])){
-                unlink($upload_dir . $user_p['image']);
-              }
               
-              // Use existing database connection from load.php/config.php
-              $stmt = $db->prepare("UPDATE users SET image = ? WHERE id = ?");
-              $stmt->bind_param("si", $photo_new_name, $user_id);
+              // Store old image name before updating
+              $old_image = $user_p['image'];
               
-              if($stmt->execute()){
+              // Update database with new photo filename using your custom DB class
+              $photo_new_name_escaped = $db->escape($photo_new_name);
+              $sql = "UPDATE users SET image = '{$photo_new_name_escaped}' WHERE id = '{$user_id}'";
+              $result = $db->query($sql);
+              
+              if($result){
+                // Delete old image AFTER successful database update
+                if($old_image !== 'no_image.png' && !empty($old_image) && file_exists($upload_dir . $old_image)){
+                  unlink($upload_dir . $old_image);
+                }
+                
                 $session->msg('s', 'Profile image updated successfully!');
                 redirect('profile.php?id='.$user_id, false);
               } else {
+                // If database update fails, delete the newly uploaded file
+                if(file_exists($photo_destination)){
+                  unlink($photo_destination);
+                }
                 $session->msg('d', 'Failed to update profile image in database.');
+                redirect('profile.php?id='.$user_id, false);
               }
-              $stmt->close();
             } else {
-              $session->msg('d', 'Failed to upload image.');
+              $session->msg('d', 'Failed to upload image. Please check folder permissions.');
+              redirect('profile.php?id='.$user_id, false);
             }
           } else {
             $session->msg('d', 'Image size is too large. Maximum 5MB allowed.');
+            redirect('profile.php?id='.$user_id, false);
           }
         } else {
           $session->msg('d', 'Invalid file type. Only JPG, JPEG, PNG, and GIF allowed.');
+          redirect('profile.php?id='.$user_id, false);
         }
       } else {
-        $session->msg('d', 'Error uploading file.');
+        $session->msg('d', 'Error uploading file. Error code: ' . $photo_error);
+        redirect('profile.php?id='.$user_id, false);
       }
+    } else {
+      $session->msg('d', 'Please select an image to upload.');
+      redirect('profile.php?id='.$user_id, false);
     }
   }
   
