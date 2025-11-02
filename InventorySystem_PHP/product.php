@@ -375,7 +375,10 @@
                 <td class="text-center">
                   <div class="btn-group">
                     <a href="edit_product.php?id=<?php echo urlencode($product['p_id']); ?>" class="btn btn-xs btn-warning" data-toggle="tooltip" title="Edit">
-                      <i class="glyphicon glyphicon-edit"></i>
+  
+                    <i class="glyphicon glyphicon-edit"></i>
+                    <a href="javascript:void(0);" onclick="confirmProductDelete('<?php echo $product['p_id']; ?>', '<?php echo addslashes($product['product_name']); ?>')" class="btn btn-xs btn-danger" data-toggle="tooltip" title="Delete">
+                      <i class="glyphicon glyphicon-trash"></i>
                     </a>
                     <button type="button" 
                             class="btn btn-xs btn-danger delete-product-btn" 
@@ -522,6 +525,58 @@ $(document).ready(function() {
         }
     });
 });
+
+function confirmProductDelete(productId, productName) {
+  // Create a detailed confirmation message
+  var message = "⚠️ IMPORTANT: Database Integrity Protection\n\n";
+  message += "You are about to delete the product: '" + productName + "' (ID: " + productId + ")\n\n";
+  message += "📋 SYSTEM PROTECTION RULES:\n";
+  message += "• If this product has any sales records or return records associated with it, the deletion will be BLOCKED to maintain data integrity.\n\n";
+  message += "• This prevents orphaned records and maintains referential integrity in the database.\n\n";
+  message += "• Only products with NO transaction history can be deleted.\n\n";
+  message += "🔍 If deletion fails, you will see a detailed message showing exactly which records are preventing the deletion.\n\n";
+  message += "💡 TIP: Consider marking the product as 'inactive' instead of deleting if it has transaction history.\n\n";
+  message += "Do you want to proceed with the deletion attempt?";
+  
+  // Show confirmation dialog
+  if (confirm(message)) {
+    // If user confirms, redirect to delete page
+    window.location.href = 'delete_product.php?id=' + encodeURIComponent(productId);
+  }
+}
+</script>
+
+<style>
+.alert {
+    margin-bottom: 20px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.alert-warning {
+    background-color: #fcf8e3;
+    border-color: #faebcc;
+    color: #8a6d3b;
+}
+
+.alert-danger {
+    background-color: #f2dede;
+    border-color: #ebccd1;
+    color: #a94442;
+}
+
+.alert h4 {
+    margin-top: 0;
+    font-weight: bold;
+}
+
+.alert ul {
+    margin-bottom: 0;
+}
+
+.alert li {
+    margin-bottom: 5px;
+}
 
 function openDeleteModal() {
     $('#deleteModal').addClass('active');

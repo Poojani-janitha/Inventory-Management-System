@@ -15,7 +15,7 @@
       <div class="jumbotron text-center">
         <img src="assets/images/logo.png" alt="HealStock Logo" class="home-logo" style="max-height:300px; width:auto; max-width:100%; margin-bottom:20px; display:block; margin-left:auto; margin-right:auto;" />
         <h3>
-    "To make medicine management smarter and more reliable with HealStock."
+    Welcome to HealStock’s all-in-one inventory management system.
 </h3>
       </div>
     </div>
