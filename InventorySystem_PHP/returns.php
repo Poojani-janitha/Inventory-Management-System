@@ -27,7 +27,7 @@
             <span class="glyphicon glyphicon-plus"></span> Add New Return
           </a>
           <a href="return_report.php" class="btn btn-info btn-sm">
-            <span class="glyphicon glyphicon-stats"></span> Reports
+            <span class="glyphicon glyphicon-stats"></span> View return
           </a>
         </div>
       </div>
