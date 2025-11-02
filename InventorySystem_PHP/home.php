@@ -13,8 +13,10 @@
  <div class="col-md-12">
     <div class="panel">
       <div class="jumbotron text-center">
-         <h1>Welcome User <hr> Inventory Management System</h1>
-         <p>Browes around to find out the pages that you can access!</p>
+        <img src="assets/images/logo.png" alt="HealStock Logo" class="home-logo" style="max-height:300px; width:auto; max-width:100%; margin-bottom:20px; display:block; margin-left:auto; margin-right:auto;" />
+        <h3>
+    "To make medicine management smarter and more reliable with HealStock."
+</h3>
       </div>
     </div>
  </div>
