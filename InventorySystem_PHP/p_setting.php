@@ -5,52 +5,6 @@ page_require_level(2);
 
 $user = current_user();
 $msg = '';
-
-// Handle form submission
-if($_SERVER['REQUEST_METHOD'] === 'POST'){
-
-    // Update profile info
-    if(isset($_POST['update_profile'])){
-        $name = remove_junk($db->escape($_POST['full_name']));
-        $username = remove_junk($db->escape($_POST['username']));
-        $email = remove_junk($db->escape($_POST['email']));
-        $password = $_POST['password'] ?? '';
-
-        $sql = "UPDATE users SET name='{$name}', username='{$username}', email='{$email}'";
-
-        if(!empty($password)){
-            $hashed = sha1($password);
-            $sql .= ", password='{$hashed}'";
-        }
-
-        $sql .= " WHERE id=".$user['id'];
-
-        if($db->query($sql)){
-            $msg = display_msg("Profile updated successfully!", "success");
-        } else {
-            $msg = display_msg("Failed to update profile.", "danger");
-        }
-    }
-
-    // Update profile photo
-    if(isset($_POST['update_photo']) && isset($_FILES['user_image'])){
-        $file_name = $_FILES['user_image']['name'];
-        $file_tmp = $_FILES['user_image']['tmp_name'];
-        $target_dir = "uploads/users/";
-        $target_file = $target_dir . basename($file_name);
-
-        if(move_uploaded_file($file_tmp, $target_file)){
-            $sql = "UPDATE users SET image='{$file_name}' WHERE id=".$user['id'];
-            $db->query($sql);
-            $msg = display_msg("Profile photo updated successfully!", "success");
-        } else {
-            $msg = display_msg("Failed to upload photo.", "danger");
-        }
-    }
-
-    // Reload user data
-    $user = current_user();
-}
 ?>
 
 <?php include_once('layouts/header.php'); ?>
@@ -65,61 +19,289 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 
 <div class="row">
   <div class="col-md-12">
-    <div class="panel panel-default">
-      <div class="panel-heading" style="background:#6c63ff;color:#fff;">
-        <strong><i class="glyphicon glyphicon-cog"></i> Profile Settings</strong>
+    <div class="panel panel-default" id="mainPanel">
+      <!-- Stylish Title -->
+      <div class="panel-heading">
+        <strong><i class="glyphicon glyphicon-cog"></i> PROFILE SETTINGS</strong>
       </div>
-      <div class="panel-body">
-        <div class="row">
-          <div class="col-md-4 text-center">
-            <img src="uploads/users/<?php echo $user['image'] ?? 'default.png'; ?>" class="img-circle" style="width:150px;height:150px;object-fit:cover;">
-            <br><br>
-            <form method="POST" enctype="multipart/form-data">
-              <input type="file" name="user_image" class="form-control" required>
-              <br>
-              <button type="submit" name="update_photo" class="btn btn-primary btn-block">Change Photo</button>
-            </form>
-          </div>
 
-          <div class="col-md-8">
-            <form method="POST">
-              <div class="form-group">
-                <label>Full Name:</label>
-                <input type="text" name="full_name" class="form-control" value="<?php echo remove_junk($user['name']); ?>" required>
-              </div>
-              <div class="form-group">
-                <label>Username:</label>
-                <input type="text" name="username" class="form-control" value="<?php echo remove_junk($user['username']); ?>" required>
-              </div>
-              <div class="form-group">
-                <label>Email:</label>
-                <input type="email" name="email" class="form-control" value="<?php echo remove_junk($user['email']); ?>" required>
-              </div>
-              <div class="form-group">
-                <label>Change Password:</label>
-                <input type="password" name="password" class="form-control" placeholder="Enter new password (optional)">
-              </div>
-              <button type="submit" name="update_profile" class="btn btn-success">Update Profile</button>
-            </form>
+      <div class="panel-body fadeIn">
+
+        <!-- Profile Photo & Info (Centered) -->
+        <div class="profile-section text-center mb-4">
+          <div class="profile-photo mb-2">
+            <img src="uploads/users/<?php echo $user['image'] ?? 'default.png'; ?>" 
+                 class="img-circle profile-img"
+                 alt="User Image">
+          </div>
+          <div class="profile-info">
+            <h3 class="user-name"><?php echo remove_junk(ucwords($user['name'])); ?></h3>
+            <p class="user-role text-muted"><?php echo $user['user_level'] == '1' ? 'Admin' : 'User'; ?></p>
           </div>
         </div>
+
+        <!-- Notification Settings Section -->
+        <div class="settings-section">
+          <h4 class="section-title"><i class="glyphicon glyphicon-bell"></i> Notification Settings</h4>
+          <div class="notification-settings">
+            <?php
+              $notification_settings = [
+                'notifToggle' => 'Notifications',
+                'popupToggle' => 'Show Pop-ups',
+                'soundToggle' => 'Play Pop-up Sound'
+              ];
+              foreach ($notification_settings as $id => $label):
+            ?>
+              <div class="setting-item">
+                <span><?php echo $label; ?></span>
+                <label class="switch">
+                  <input type="checkbox" id="<?php echo $id; ?>" checked>
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            <?php endforeach; ?>
+          </div>
+        </div>
+
+        <!-- Additional Settings Section -->
+        <div class="settings-section mt-4">
+          <h4 class="section-title"><i class="glyphicon glyphicon-cog"></i> Additional Settings</h4>
+          <div class="notification-settings">
+            <?php
+              $additional_settings = [
+                'darkModeToggle' => 'Dark Mode',
+                'emailAlertToggle' => 'Email Alerts',
+                'backupToggle' => 'Auto Backup',
+                'privacyPolicyToggle' => 'Privacy Policy Accepted'
+              ];
+              foreach ($additional_settings as $id => $label):
+            ?>
+              <div class="setting-item">
+                <span><?php echo $label; ?></span>
+                <label class="switch">
+                  <input type="checkbox" id="<?php echo $id; ?>" <?php echo ($id != 'darkModeToggle' && $id != 'backupToggle') ? 'checked' : ''; ?> >
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            <?php endforeach; ?>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
 </div>
 
 <script>
-$(document).ready(function(){
-  setTimeout(function(){
-    $(".alert").fadeOut();
-  }, 5000);
+$(function(){
+
+  // Fade out alerts
+  setTimeout(() => $(".alert").fadeOut(), 4000);
+
+  // Toggle feedback popup
+  $(".switch input").on('change', function(){
+    const name = $(this).attr('id').replace('Toggle','');
+    const status = $(this).is(':checked') ? 'ON' : 'OFF';
+    const message = `<div class='alert-popup'>
+                      <i class='glyphicon glyphicon-info-sign'></i> ${name.toUpperCase()} turned ${status}
+                    </div>`;
+    $("body").append(message);
+    setTimeout(() => $(".alert-popup").fadeOut(600, function(){ $(this).remove(); }), 1500);
+  });
+
+  // Dark Mode
+  $("#darkModeToggle").on('change', function(){
+    if($(this).is(':checked')){
+      $("body").addClass("dark-mode");
+    } else {
+      $("body").removeClass("dark-mode");
+    }
+  });
+
+  // Email Alert Simulation
+  $("#emailAlertToggle").on('change', function(){
+    $(this).is(':checked')
+      ? alert("✅ Email alerts enabled! You’ll get stock and activity updates.")
+      : alert("🚫 Email alerts disabled.");
+  });
+
+  // Auto Backup Simulation
+  $("#backupToggle").on('change', function(){
+    $(this).is(':checked')
+      ? alert("💾 Auto backup activated! Your data will be backed up daily.")
+      : alert("🛑 Auto backup disabled.");
+  });
+
+  // Privacy Policy Simulation
+  $("#privacyPolicyToggle").on('change', function(){
+    $(this).is(':checked')
+      ? alert("✅ Privacy policy accepted.")
+      : alert("⚠️ Privacy policy not accepted.");
+  });
+
 });
 </script>
 
 <style>
-.panel { border-radius: 10px; box-shadow: 0 3px 6px rgba(0,0,0,0.1); }
-.form-control { border-radius: 5px; }
-.btn { border-radius: 5px; }
+/* ======= General ======= */
+body {
+  background-color: #ffffff;
+  color: #333;
+}
+.panel {
+  border-radius: 15px;
+  background: #f9f9ff;
+  color: #333;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  transition: all 0.4s ease;
+}
+.panel-heading {
+  background: linear-gradient(135deg, #6c63ff, #8576ff);
+  color: #fff;
+  text-align: left;
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+  padding: 15px 25px;
+  position: relative;
+  overflow: hidden;
+}
+.panel-heading i { margin-right: 8px; }
+
+/* ======= Animated Page Entrance ======= */
+.fadeIn { animation: fadeIn 0.8s ease-in-out; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ======= Profile Section (Centered) ======= */
+.profile-section { 
+  text-align: center; 
+}
+
+.profile-photo { 
+  margin: 0 auto 10px auto; 
+}
+
+.profile-img { 
+  width: 120px; height: 120px; 
+  object-fit: cover; 
+  border: 4px solid #6c63ff; 
+  border-radius: 50%; }
+
+.profile-info .user-name { 
+  font-weight: 600; 
+  margin: 0; }
+
+.profile-info .user-role { 
+  font-size: 14px; 
+  color: #555; 
+  margin: 2px 0 0 0; }
+
+/* ======= Settings Sections ======= */
+.settings-section { 
+  margin-bottom: 25px; }
+.section-title { 
+  margin-bottom: 15px;
+   font-weight: 600; 
+   color: #333; }
+
+.notification-settings {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #eaeaea;
+}
+.setting-item:last-child { border-bottom: none; }
+
+/* ======= Toggle Switch ======= */
+.switch { 
+  position: relative; 
+  display: inline-block; 
+  width: 52px; 
+  height: 28px; }
+
+.switch input { 
+  opacity: 0; 
+  width: 0;
+  height: 0; }
+
+.slider { 
+  position: absolute;
+   cursor: pointer; 
+   top: 0; left: 0; 
+   right: 0; 
+   bottom: 0; 
+   background-color: #ccc;
+    transition: .4s;
+     border-radius: 34px; }
+
+.slider:before { 
+  position: absolute; 
+  content: ""; 
+  height: 22px; 
+  width: 22px; 
+  left: 3px;
+  bottom: 3px; 
+  background-color: white; 
+  transition: .4s; 
+  border-radius: 50%; }
+
+input:checked + .slider { 
+  background-color: #6c63ff; 
+  box-shadow: 0 0 8px rgba(108,99,255,0.5); }
+input:checked + .slider:before { transform: translateX(24px); }
+
+/* ======= Alert Popup ======= */
+.alert-popup {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  background: #6c63ff;
+  color: #fff;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-size: 14px;
+  z-index: 9999;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  animation: fadeIn 0.4s ease;
+}
+
+/* ======= Dark Mode ======= */
+body.dark-mode {
+  background-color: #1e1e2f;
+  color: #f0f0f0;
+}
+body.dark-mode .panel { 
+  background: #2a2a3d;
+  color: #f0f0f0;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+
+body.dark-mode .panel-heading { 
+  background: linear-gradient(135deg, #4e4ecf, #6c63ff); 
+  color: #fff; }
+body.dark-mode .notification-settings { 
+  background: #2a2a3d; 
+  color: #f0f0f0; }
+body.dark-mode .setting-item { 
+  border-bottom: 1px solid #444; }
+body.dark-mode .alert-popup { 
+  background: #4e4ecf; 
+  color: #fff; }
+body.dark-mode .profile-info .user-role { 
+  color: #ccc; }
+
 </style>
 
 <?php include_once('layouts/footer.php'); ?>
