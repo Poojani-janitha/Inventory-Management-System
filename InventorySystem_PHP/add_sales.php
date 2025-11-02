@@ -1,6 +1,7 @@
 <?php
   $page_title = 'Add Sale';
   require_once('includes/load.php');
+  
   //Checkin What level user has permission to view this page
    page_require_level(3);
    //extra add prabashi 
@@ -200,11 +201,59 @@ function generateInvoiceNumber() {
             }
         }
         
-        if ($success_count > 0) {
-            $session->msg('s', "Sale added successfully! Invoice #{$invoice_number}. {$success_count} product(s) sold. Grand Total: LKR " . number_format($grand_total, 2) . ". <a href='generate_invoice.php?invoice_number=" . urlencode($invoice_number) . "' target='_blank'>View Invoice</a>");
-            // Redirect back to add sales page with success message
-            redirect('add_sales.php?success=1', false);
+        // if ($success_count > 0) {
+        //     $session->msg('s', "Sale added successfully! Invoice #{$invoice_number}. {$success_count} product(s) sold. Grand Total: LKR " . number_format($grand_total, 2) . ". <a href='generate_invoice.php?invoice_number=" . urlencode($invoice_number) . "' target='_blank'>View Invoice</a>");
+        //     // Redirect back to add sales page with success message
+        //     redirect('add_sales.php?success=1', false);
+        // } 
+        // 
+       
+
+
+// REPLACE THE CODE BLOCK IN add_sales.php (around line 180)
+// Replace from "if ($success_count > 0) {" to the closing brace "}"
+
+if ($success_count > 0) {
+    // Get customer details from the first sale record (they're the same for all items)
+    $customer_email = $sales_data[0]['email'];
+    $customer_name = $sales_data[0]['name'];
+    $customer_phone = $sales_data[0]['pNumber'];
+    
+    // Remove escape characters for email function
+    $customer_email = str_replace("'", "", $customer_email);
+    $customer_name = str_replace("'", "", $customer_name);
+    $customer_phone = str_replace("'", "", $customer_phone);
+    
+    // Build success message
+    $success_message = "Sale added successfully! Invoice #{$invoice_number}. {$success_count} product(s) sold. Grand Total: LKR " . number_format($grand_total, 2) . ".";
+    
+    // Try to send invoice email if customer email is provided
+    if(!empty($customer_email) && filter_var($customer_email, FILTER_VALIDATE_EMAIL)) {
+        error_log("Attempting to send invoice email to: {$customer_email}");
+        
+        $email_sent = send_invoice_email($invoice_number, $customer_email, $customer_name, $customer_phone);
+        
+        if($email_sent) {
+            $success_message .= " ✉️ Invoice email sent to {$customer_email}.";
+            error_log("Invoice email sent successfully to {$customer_email}");
         } else {
+            $success_message .= " ⚠️ Email could not be sent.";
+            error_log("Failed to send invoice email to {$customer_email}");
+        }
+    } else {
+        error_log("No valid email provided. Email: '{$customer_email}'");
+    }
+    
+    // Add invoice link
+    $success_message .= " <a href='generate_invoice.php?invoice_number=" . urlencode($invoice_number) . "' target='_blank'>View Invoice</a>";
+    
+    $session->msg('s', $success_message);
+    
+    // Redirect back to add sales page with success message
+    redirect('add_sales.php?success=1', false);
+}
+
+        else {
             $session->msg('d', 'Sorry, failed to add sale!');
             redirect('add_sales.php', false);
         }
