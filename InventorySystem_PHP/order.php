@@ -252,9 +252,8 @@ if (isset($_POST['place_order'])) {
             <body>
               <div class='email-container'>
                 <div class='header'>
-                  <div class='company-logo'></div>
-                  <h1>🛒 New Purchase Order</h1>
-                  <p class='subtitle'>Inventory Management System</p>
+                  <h1>HealStock Pvt Ltd</h1>
+                  <p class='subtitle'>  🛒 New Purchase Order</p>
                 </div>
                 <div class='content'>
                   <div class='greeting'>
