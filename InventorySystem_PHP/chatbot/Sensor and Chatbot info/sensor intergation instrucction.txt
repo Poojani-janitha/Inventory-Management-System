@@ -1,7 +1,75 @@
-1)install esp32
+🔧 Step 3: Add the ESP8266 Board to Arduino IDE
+
+Go to File → Preferences.
+
+In the field “Additional Boards Manager URLs”, paste this link:
+
+https://arduino.esp8266.com/stable/package_esp8266com_index.json
+
+
+Click OK.
+
+
+🧱 Step 4: Install the ESP8266 Board Package
+
+	Go to Tools → Board → Boards Manager…
+
+	Search for “ESP8266”.
+
+	Click Install on the package named “esp8266 by ESP8266 Community”.
+
+	Wait until the installation completes.
+
+
+
+🪛 Step 5: Select Your ESP8266 Board and Port
+
+Go to Tools → Board → ESP8266 Boards and choose your board type, for example:
+
+NodeMCU 1.0 (ESP-12E Module)
+
+Wemos D1 R2 & mini
+
+Then go to Tools → Port and select the port (e.g., COM3, COM5, etc.) that matches your ESP8266.
+
+💡 If you don’t see any port, you may need to install the CH340 or CP2102 USB driver, depending on your board’s USB chip.
+
+📦 Step 6: Install Required Libraries
+
+You may need these commonly used libraries depending on your project:
+
+Go to Sketch → Include Library → Manage Libraries...
+
+Search and install:
+
+ESP8266WiFi (comes with the board package)
+
+ESP8266WebServer
+
+Adafruit_Sensor (for sensors)
+
+DHT sensor library (for DHT11/DHT22)
+
+ArduinoJson (for web or API data)
+
+PubSubClient (for MQTT)
+
+Blynk (if using Blynk IoT)
+
+✅ Step 7: Verify the Setup
+
+Go to File → Examples → ESP8266 → Blink.
+
+Click Upload (right arrow icon).
+
+Wait for the message “Done Uploading” and check if the onboard LED blinks.
+
+
 2)install DHT Sensor  Library
-3)create a database "sensor db"
+
 4) create a table "dht11"
+
+   9
 id int auto increment
 temparature int 
 humidity  int 
