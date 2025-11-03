@@ -20,6 +20,13 @@
           $level = (int)$db->escape($_POST['level']);
        $status   = remove_junk($db->escape($_POST['status']));
        
+       // Check if username already exists (but not for the current user)
+       $username_check = "SELECT id FROM users WHERE username = '{$username}' AND id != '{$id}' LIMIT 1";
+       $username_result = $db->query($username_check);
+       if($username_result && $db->num_rows($username_result) > 0) {
+           $errors[] = "Username '{$username}' already exists. Please choose a different username.";
+       }
+       
        // Check if new password is provided
        $password_update = "";
        if(!empty($_POST['password'])) {
@@ -97,7 +104,16 @@
         $username   = remove_junk($db->escape($_POST['username']));
         $password   = remove_junk($db->escape($_POST['password']));
         $user_level = (int)$db->escape($_POST['level']);
-        $password = sha1($password);
+        
+        // Check if username already exists
+        $username_check = "SELECT id FROM users WHERE username = '{$username}' LIMIT 1";
+        $username_result = $db->query($username_check);
+        if($username_result && $db->num_rows($username_result) > 0) {
+            $errors[] = "Username '{$username}' already exists. Please choose a different username.";
+        }
+        
+        if(empty($errors)) {
+            $password = sha1($password);
 
      // Get the group name for the selected user level
      $user_group = find_by_groupLevel($user_level);
@@ -123,6 +139,12 @@
            redirect('users.php', false);
            exit();
          }
+        } else {
+          // Username already exists error
+          $session->msg('d', $errors);
+          redirect('users.php', false);
+          exit();
+        }
     } else {
       // Set session flash for validation errors and redirect
       $session->msg('d', 'Please fix the validation errors and try again.');
@@ -193,6 +215,36 @@
   border: 1px solid #ddd;
   padding: 10px 15px;
   font-size: 14px;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  min-width: 0 !important;
+  height: auto !important;
+  min-height: 40px !important;
+}
+
+/* Specific styling for select dropdowns to fix text truncation */
+.modal-body select.form-control {
+  height: 42px !important;
+  line-height: 1.5 !important;
+  padding: 8px 30px 8px 15px !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e") !important;
+  background-position: right 10px center !important;
+  background-repeat: no-repeat !important;
+  background-size: 16px 12px !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+}
+
+/* Ensure select options are properly displayed */
+.modal-body select.form-control option {
+  padding: 8px 15px !important;
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+  white-space: normal !important;
 }
 
 .modal-body .form-control:focus {
@@ -306,9 +358,9 @@
         <?php foreach($all_users as $a_user): ?>
           <tr>
            <td class="text-center"><?php echo count_id();?></td>
-           <td><?php echo remove_junk(ucwords($a_user['name']))?></td>
-           <td><?php echo remove_junk(ucwords($a_user['username']))?></td>
-           <td class="text-center"><?php echo remove_junk(ucwords($a_user['group_name']))?></td>
+           <td><?php echo remove_junk($a_user['name'])?></td>
+           <td><?php echo remove_junk($a_user['username'])?></td>
+           <td class="text-center"><?php echo remove_junk($a_user['group_name'])?></td>
            <td class="text-center">
            <?php if($a_user['status'] === '1'): ?>
             <span class="label label-success"><?php echo "Active"; ?></span>

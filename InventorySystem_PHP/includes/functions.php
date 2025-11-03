@@ -11,6 +11,12 @@ function real_escape($str){
 /*--------------------------------------------------------------*/
 /* Remove HTML characters */
 function remove_junk($str){
+    // Handle array input safely (for error messages)
+    if(is_array($str)) {
+        return implode('<br>', array_map('remove_junk', $str));
+    }
+    // Ensure we have a string
+    $str = (string)$str;
     $str = nl2br($str);
     $str = htmlspecialchars(strip_tags($str), ENT_QUOTES);
     return $str;
