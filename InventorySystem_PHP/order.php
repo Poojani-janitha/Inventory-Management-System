@@ -286,14 +286,13 @@ if (isset($_POST['place_order'])) {
                     <h3>📞 Need Assistance?</h3>
                     <p style='margin: 0 0 15px 0; color: #666;'>For any queries or clarifications, please don't hesitate to contact us:</p>
                     <div class='contact-links'>
-                      <a href='mailto:admin@inventorysystem.com'>📧 Email Support</a>
+                      <a href='mailto:nuwaniprabhashi2003@gmail.com'>📧 Email Support</a>
                       <a href='tel:+94112345678'>📞 Call Us</a>
                     </div>
                   </div>
                 </div>
                 <div class='footer'>
-                  <p><strong>Inventory Management System</strong></p>
-                  <p>This is an automated message. Please do not reply to this email.</p>
+                  <p><strong>HealStock Pvt Ltd</strong></p>
                   <p>© " . date('Y') . " All rights reserved.</p>
                 </div>
               </div>
@@ -303,8 +302,8 @@ if (isset($_POST['place_order'])) {
 
             $headers = "MIME-Version: 1.0\r\n";
             $headers .= "Content-type:text/html;charset=UTF-8\r\n";
-            $headers .= "From: Inventory System <noreply@inventorysystem.com>\r\n";
-            $headers .= "Reply-To: admin@inventorysystem.com\r\n";
+            $headers .= "From: HealStock Pvt Ltd <noreply@inventorysystem.com>\r\n";
+            $headers .= "Reply-To: nuwaniprabhashi2003@gmail.com\r\n";
 
             if(mail($to, $subject, $message, $headers)){
                 $session->msg("s", "Order placed successfully and email sent to supplier.");
