@@ -6,7 +6,7 @@ require_once('includes/load.php');
 page_require_level(1);
 
 // ---------- DATABASE CONNECTION ----------
-$servername = "localhost:3307";
+$servername = "localhost";
 $username = "root";
 $password = "";
 $dbname = "inventory_system";
