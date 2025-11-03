@@ -38,12 +38,32 @@ if (isset($_POST['add_cat'])) {
   validate_fields($req_field);
   $cat_name = remove_junk($db->escape($_POST['categorie-name']));
   if (empty($errors)) {
-    $sql = "INSERT INTO categories (category_name) VALUES ('{$cat_name}')";
+    // Check if category name already exists
+    $check_sql = "SELECT c_id FROM categories WHERE category_name = '{$cat_name}' LIMIT 1";
+    $check_result = $db->query($check_sql);
+    
+    if ($check_result && $db->num_rows($check_result) > 0) {
+      $session->msg("d", "Category '{$cat_name}' already exists. Please choose a different name.");
+      redirect('categorie.php', false);
+      exit();
+    }
+    
+    // Get the next available c_id
+    $max_id_sql = "SELECT MAX(c_id) as max_id FROM categories";
+    $max_id_result = $db->query($max_id_sql);
+    $next_id = 1; // Default if no categories exist
+    
+    if ($max_id_result && $db->num_rows($max_id_result) > 0) {
+      $max_row = $db->fetch_assoc($max_id_result);
+      $next_id = ($max_row['max_id'] ?? 0) + 1;
+    }
+    
+    $sql = "INSERT INTO categories (c_id, category_name) VALUES ('{$next_id}', '{$cat_name}')";
     if ($db->query($sql)) {
-      $session->msg("s", "Successfully added new category");
+      $session->msg("s", "Successfully added new category '{$cat_name}'");
       redirect('categorie.php', false);
     } else {
-      $session->msg("d", "Failed to add category.");
+      $session->msg("d", "Failed to add category. Please try again.");
       redirect('categorie.php', false);
     }
   } else {
