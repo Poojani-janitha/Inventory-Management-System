@@ -126,7 +126,7 @@ $low_stock_products = find_by_sql($low_stock_query);
     </div>
 	</a>
 	
-	<a href="sales.php" style="color:black;">
+	<a href="invoice_list.php" style="color:black;">
     <div class="col-md-3">
        <div class="panel panel-box clearfix">
          <div class="panel-icon pull-left bg-green">
@@ -156,7 +156,7 @@ $low_stock_products = find_by_sql($low_stock_query);
     </div>
 	</a>
 	
-	<a href="suppliers.php" style="color:black;">
+	<a href="add_supplier.php" style="color:black;">
     <div class="col-md-3">
        <div class="panel panel-box clearfix">
          <div class="panel-icon pull-left bg-info">
@@ -170,7 +170,7 @@ $low_stock_products = find_by_sql($low_stock_query);
     </div>
 	</a>
 	
-	<a href="purchase_orders.php" style="color:black;">
+	<a href="order.php" style="color:black;">
     <div class="col-md-3">
        <div class="panel panel-box clearfix">
          <div class="panel-icon pull-left bg-warning">
