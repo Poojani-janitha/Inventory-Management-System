@@ -1,4 +1,4 @@
-"# 🏭 HealStock Warehouse Management System
+#🏭 HealStock Warehouse Management System
 
 **Project Name:** Smart Inventory Management System  
 **Organization:** HealStock Pvt Ltd  
@@ -179,4 +179,3 @@ For support or collaboration:
 ---
 
 
-" caheck this now , all are corrct or wrong
