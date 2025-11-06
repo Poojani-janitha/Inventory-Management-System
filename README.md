@@ -1,18 +1,175 @@
-# Samart Inventory-Management-System
-HealStock WareHouse management system
---------------------------
+# 🏭 HealStock Warehouse Management System
 
+**Project Name:** Smart Inventory Management System  
+**Organization:** HealStock Pvt Ltd  
 
-1)clone the repository to htdoc folder inside the xxamp 
-1)create database in phpmyadmin "inventory_system".
-6) import "updated_sql.sql" file  inside the DATABASE FILE folder
-7)Make localhost connection using config.php inside include folder 
-8)Admin credentials  
-      username -  prabashi
-      password - TG1379##
-Financial staff credentials
-      username  - sahan
-      
+---
 
+## 📘 Overview
 
+**HealStock Warehouse Management System** is a web-based inventory management platform designed to optimize warehouse operations for **HealStock Pvt Ltd**.  
+It improves efficiency in managing **suppliers, users, inventory, products, returns, finances, and reports**, while integrating **real-time IoT sensor data** and an **AI-powered chatbot** for warehouse assistance.
 
+The system ensures secure access through **role-based permissions**:
+- 🧑‍💼 **Admin** – Full authorization across all modules  
+- 💰 **Financial Staff** – Sales and finance management  
+- 📦 **Warehouse Staff** – Product and return management  
+
+---
+
+## ⚙️ Features
+
+✅ Supplier Management  
+✅ User Management  
+✅ Inventory & Product Management  
+✅ Return Management  
+✅ Real-Time IoT Sensor Data Display  
+✅ Warehouse Chatbot Assistance  
+✅ Financial Management & Reports  
+✅ Forecasting Module  
+✅ Role-Based Access Control (RBAC)  
+
+---
+
+## 🧩 Installation Guide
+
+Follow these steps to install and run the HealStock system on **XAMPP**:
+
+### 1️⃣ Clone the Repository
+Clone this repository into your `htdocs` folder inside your **XAMPP** directory:
+```
+
+````
+
+### 2️⃣ Create the Database
+
+Open **phpMyAdmin** and create a new database:
+
+```
+inventory_system
+```
+
+### 3️⃣ Import the SQL File
+
+Import the file located at:
+
+```
+DATABASE FILE/updated_sql.sql
+```
+
+### 4️⃣ Configure Database Connection
+
+Open:
+
+```
+include/config.php
+```
+
+Edit the file to match your local XAMPP database credentials:
+
+```php
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "inventory_system";
+```
+
+### 5️⃣ Start the Server
+
+1. Launch **XAMPP Control Panel**
+2. Start **Apache** and **MySQL**
+3. Open your browser and visit:
+
+```
+http://localhost/HealStock-Inventory-Management-System
+```
+
+---
+
+## 🔐 Login Credentials
+
+### 👨‍💼 Admin
+
+* **Username:** `prabashi`
+* **Password:** `TG1379##`
+
+### 💰 Financial Staff
+
+* **Username:** `sahan`
+* **Password:** `TG1379##`
+
+### 📦 Warehouse Staff
+
+* **Username:** `nimhara`
+* **Password:** `TG1379##`
+
+---
+
+## 🏗️ Tech Stack
+
+| Category        | Technology                        |
+| --------------- | --------------------------------- |
+| **Frontend**    | HTML, CSS, Bootstrap              |
+| **Backend**     | PHP                               |
+| **Database**    | MySQL                             |
+| **Server**      | XAMPP (Apache)                    |
+| **Other Tools** | JavaScript, AJAX, IoT Integration |
+
+---
+
+## 🧠 About the System
+
+HealStock Warehouse Management System provides a centralized solution for managing all warehouse and financial operations. It allows users to:
+
+* Maintain supplier and product records efficiently
+* Monitor real-time inventory updates using IoT sensors
+* Manage product returns and stock adjustments
+* Generate financial reports and perform forecasting
+* Utilize chatbot support for warehouse assistance
+
+This system is designed to **reduce manual effort**, **minimize errors**, and **enhance decision-making** within warehouse operations.
+
+---
+
+## 👥 User Roles
+
+| Role                | Permissions                                                                    |
+| ------------------- | ------------------------------------------------------------------------------ |
+| **Admin**           | Full control over all modules including user, supplier, and product management |
+| **Financial Staff** | Manage sales, payments, and financial reports                                  |
+| **Warehouse Staff** | Add, update, and manage products and returns                                   |
+
+---
+
+## 👨‍💻 Contributors
+
+* **Prabashi** – Project Lead / Admin Module
+* **Sahan** – Financial Module
+* **Nimhara** – Warehouse Module
+  *(Add your remaining team members here if needed)*
+
+---
+
+## 📜 License
+
+This project is developed for **academic and organizational use** under **HealStock Pvt Ltd**.
+© 2025 HealStock Pvt Ltd. All rights reserved.
+
+---
+
+## 🌐 Contact
+
+For support or collaboration:
+📧 **[healstock.support@gmail.com](mailto:healstock.support@gmail.com)**
+
+---
+
+⭐ **If you like this project, don’t forget to give it a star on GitHub!** ⭐
+
+```
+
+---
+
+Would you like me to add **GitHub-style badges** (for PHP version, license, contributors, etc.) and a **Table of Contents** at the top?  
+That would make your README look like a professional open-source project page.
+```
