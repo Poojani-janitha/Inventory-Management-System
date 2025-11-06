@@ -145,10 +145,14 @@ This system is designed to **reduce manual effort**, **minimize errors**, and **
 
 ## 👨‍💻 Contributors
 
-* **Prabashi** – Project Lead / Admin Module
-* **Sahan** – Financial Module
-* **Nimhara** – Warehouse Module
-  *(Add your remaining team members here if needed)*
+* **Pooja** –  Admin Module /User managment /chatbot intergration / sensor data display
+* **Sahan** – Financial Module /Email generating
+* **Nimhara** – Warehouse Module /Email generating
+* **Prabashi** – supplier Module / Purchasing /Email generating
+* **Kaweesha** – Report Module
+* **krishani** – Product Mnagement /Profile Mannagement
+* **Vihanga** – Forcasting / Category management
+
 
 ---
 
