@@ -38,7 +38,7 @@ Follow these steps to install and run the HealStock system on **XAMPP**:
 ### 1️⃣ Clone the Repository
 Clone this repository into your `htdocs` folder inside your **XAMPP** directory:
 ```
-
+https://github.com/Poojani-janitha/Inventory-Management-System.git
 ````
 
 ### 2️⃣ Create the Database
