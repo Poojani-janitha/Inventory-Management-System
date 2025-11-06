@@ -1,4 +1,4 @@
-# 🏭 HealStock Warehouse Management System
+"# 🏭 HealStock Warehouse Management System
 
 **Project Name:** Smart Inventory Management System  
 **Organization:** HealStock Pvt Ltd  
@@ -9,6 +9,7 @@
 
 **HealStock Warehouse Management System** is a web-based inventory management platform designed to optimize warehouse operations for **HealStock Pvt Ltd**, a company that purchases medicines from various vendors and supplies them to other pharmacies.  
 The system enhances efficiency in managing **suppliers, users, inventory, products, returns, finances, and reports**, while also integrating **real-time IoT sensor data** and an **AI-powered warehouse chatbot** for smart assistance.
+
 
 The system ensures secure access through **role-based permissions**:
 - 🧑‍💼 **Admin** – Full authorization across all modules  
@@ -23,12 +24,12 @@ The system ensures secure access through **role-based permissions**:
 ✅ User Management  
 ✅ Inventory & Product Management  
 ✅ Return Management  
-✅ Real-Time Sensor Data Display of Humidity and Temperature  
+✅ Real-Time Sensor Data Display of Humidity and Temparature
 ✅ Warehouse Chatbot Assistance  
 ✅ Financial Management & Reports  
 ✅ Forecasting Module  
 ✅ Role-Based Access Control (RBAC)  
-✅ Real-Time Email Service  
+✅ Real-Time Email Service
 
 ---
 
@@ -39,130 +40,143 @@ Follow these steps to install and run the HealStock system on **XAMPP**:
 ### 1️⃣ Clone the Repository
 Clone this repository into your `htdocs` folder inside your **XAMPP** directory:
 ```bash
-git clone https://github.com/Poojani-janitha/Inventory-Management-System.git
+https://github.com/Poojani-janitha/Inventory-Management-System.git
+````
 
+### 2️⃣ Create the Database
 
-2️⃣ Create the Database
+Open **phpMyAdmin** and create a new database:
 
-Open phpMyAdmin and create a new database:
-
+```
 inventory_system
+```
 
-3️⃣ Import the SQL File
+### 3️⃣ Import the SQL File
 
 Import the file located at:
 
+```
 DATABASE FILE/updated_sql.sql
+```
 
-4️⃣ Configure Database Connection
+### 4️⃣ Configure Database Connection
 
 Open:
 
+```
 include/config.php
-
+```
 
 Edit the file to match your local XAMPP database credentials:
 
+```php
 $servername = "localhost";
 $username = "root";
 $password = "";
 $dbname = "inventory_system";
+```
 
-5️⃣ Start the Server
+### 5️⃣ Start the Server
 
-Launch XAMPP Control Panel
+1. Launch **XAMPP Control Panel**
+2. Start **Apache** and **MySQL**
+3. Open your browser and visit:
 
-Start Apache and MySQL
-
-Open your browser and visit:
-
+```
 http://localhost/HealStock-Inventory-Management-System
+```
 
-🔐 Login Credentials
-👨‍💼 Admin
+---
 
-Username: prabashi
+## 🔐 Login Credentials
 
-Password: TG1379##
+### 👨‍💼 Admin
 
-💰 Financial Staff
+* **Username:** `prabashi`
+* **Password:** `TG1379##`
 
-Username: sahan
+### 💰 Financial Staff
 
-Password: TG1379##
+* **Username:** `sahan`
+* **Password:** `TG1379##`
 
-📦 Warehouse Staff
+### 📦 Warehouse Staff
 
-Username: nimhara
+* **Username:** `nimhara`
+* **Password:** `TG1379##`
 
-Password: TG1379##
+---
 
-🏗️ Tech Stack
-Category	Technology
-Frontend	HTML, CSS, Bootstrap
-Backend	PHP
-Database	MySQL
-Server	XAMPP (Apache)
-Other Tools	JavaScript, AJAX, IoT Integration
-🧠 About the System
+## 🏗️ Tech Stack
+
+| Category        | Technology                        |
+| --------------- | --------------------------------- |
+| **Frontend**    | HTML, CSS, Bootstrap              |
+| **Backend**     | PHP                               |
+| **Database**    | MySQL                             |
+| **Server**      | XAMPP (Apache)                    |
+| **Other Tools** | JavaScript, AJAX, IoT Integration |
+
+---
+
+## 🧠 About the System
 
 HealStock Warehouse Management System provides a centralized solution for managing all warehouse and financial operations. It allows users to:
 
-Maintain supplier and product records efficiently
+* Maintain supplier and product records efficiently
+* Monitor real-time inventory updates using IoT sensors
+* Manage product returns and stock adjustments
+* Generate financial reports and perform forecasting
+* Utilize chatbot support for warehouse assistance
 
-Monitor real-time inventory updates using IoT sensors
+This system is designed to **reduce manual effort**, **minimize errors**, and **enhance decision-making** within warehouse operations.
 
-Manage product returns and stock adjustments
+---
 
-Generate financial reports and perform forecasting
+## 👥 User Roles
 
-Utilize chatbot support for warehouse assistance
+| Role                | Permissions                                                                    |
+| ------------------- | ------------------------------------------------------------------------------ |
+| **Admin**           | Full control over all modules including user, supplier, and product management |
+| **Financial Staff** | Manage sales, payments, invoce generate.                                 |
+| **Warehouse Staff** | Add, update, and manage products and returns                                   |
 
-This system is designed to reduce manual effort, minimize errors, and enhance decision-making within warehouse operations.
+---
 
-👥 User Roles
-Role	Permissions
-Admin	Full control over all modules including user, supplier, and product management
-Financial Staff	Manage sales, payments, and invoice generation.
-Warehouse Staff	Add, update, and manage products and returns
-👨‍💻 Contributors
+## 👨‍💻 Contributors
 
-Prabashi – Project Lead / Admin Module
+* **Prabashi** – Project Lead / Admin Module
+* **Sahan** – Financial Module
+* **Nimhara** – Warehouse Module
+  *(Add your remaining team members here if needed)*
 
-Sahan – Financial Module
+---
 
-Nimhara – Warehouse Module
-(Add your remaining team members here if needed)
+## 🙌 Acknowledgment
 
-🙌 Acknowledgment
-
-This project was developed with guidance and inspiration from various YouTube tutorials and online learning resources related to PHP, MySQL, and inventory management systems.
+This project was developed with guidance and inspiration from various **YouTube tutorials** and online learning resources related to PHP, MySQL, and inventory management systems.  
 We extend our gratitude to the content creators and developers whose videos helped us understand and implement core functionalities in our system.
 
-📜 License
 
-This project is developed for academic and organizational use under HealStock Pvt Ltd.
+## 📜 License
 
+This project is developed for **academic and organizational use** under **HealStock Pvt Ltd**.
 © 2025 HealStock Pvt Ltd. All rights reserved.
 
-🌐 Contact
+---
+
+## 🌐 Contact
 
 For support or collaboration:
-📧 healstock.support@gmail.com
-
-⭐ If you like this project, don’t forget to give it a star on GitHub! ⭐
-
+📧 **[hpjpooja@gmail.com](mailto:hpjpooja@gmail.com)**
 
 ---
 
-✅ **Summary of Fixes Applied**
-- Fixed temperature spelling  
-- Added missing Markdown line breaks  
-- Improved repository clone formatting  
-- Corrected grammar in user role descriptions  
-- Added spacing and punctuation consistency  
+⭐ **If you like this project, don’t forget to give it a star on GitHub!** ⭐
+
+```
 
 ---
 
-This version is **completely ready for GitHub** — clean, grammatically correct, and visually perfect.  
-Would you like me to make a **
+
+" caheck this now , all are corrct or wrong
