@@ -490,10 +490,10 @@ CREATE TABLE IF NOT EXISTS users (
 
 
 INSERT INTO users (id, name, username, password, user_level, image, status, last_login) VALUES
-(1, 'prabashi', 'prabashi', '6327235380e09ec87c4fa535709f92df403c1102', 1, 'no_image.png', 1, '2025-04-04 19:45:52'),
-(2, 'kaweesha', 'kaweesha', '6327235380e09ec87c4fa535709f92df403c1102', 2, 'no_image.png', 1, '2025-04-04 19:53:26'),
-(3, 'sahan', 'sahan', '6327235380e09ec87c4fa535709f92df403c1102', 3, 'no_image.png', 1, '2025-04-04 19:54:46'),
-(4, 'nimhara', 'nimhara', '6327235380e09ec87c4fa535709f92df403c1102', 2, 'no_image.png', 1, '2025-04-04 19:54:46');
+(1, 'prabashi', 'prabashi', '08ebf8449f8486749bf4538f5407f4e053eb2835', 1, 'no_image.png', 1, '2025-04-04 19:45:52'),
+(2, 'kaweesha', 'kaweesha', '08ebf8449f8486749bf4538f5407f4e053eb2835', 2, 'no_image.png', 1, '2025-04-04 19:53:26'),
+(3, 'sahan', 'sahan', '08ebf8449f8486749bf4538f5407f4e053eb2835', 3, 'no_image.png', 1, '2025-04-04 19:54:46'),
+(4, 'nimhara', 'nimhara', '08ebf8449f8486749bf4538f5407f4e053eb2835', 2, 'no_image.png', 1, '2025-04-04 19:54:46');
 
 
 
