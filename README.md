@@ -28,6 +28,7 @@ The system ensures secure access through **role-based permissions**:
 ✅ Financial Management & Reports  
 ✅ Forecasting Module  
 ✅ Role-Based Access Control (RBAC)  
+✅ Real-Time Email Service
 
 ---
 
@@ -136,7 +137,7 @@ This system is designed to **reduce manual effort**, **minimize errors**, and **
 | Role                | Permissions                                                                    |
 | ------------------- | ------------------------------------------------------------------------------ |
 | **Admin**           | Full control over all modules including user, supplier, and product management |
-| **Financial Staff** | Manage sales, payments, and financial reports                                  |
+| **Financial Staff** | Manage sales, payments, invoce generate.                                 |
 | **Warehouse Staff** | Add, update, and manage products and returns                                   |
 
 ---
@@ -149,6 +150,12 @@ This system is designed to **reduce manual effort**, **minimize errors**, and **
   *(Add your remaining team members here if needed)*
 
 ---
+
+## 🙌 Acknowledgment
+
+This project was developed with guidance and inspiration from various **YouTube tutorials** and online learning resources related to PHP, MySQL, and inventory management systems.  
+We extend our gratitude to the content creators and developers whose videos helped us understand and implement core functionalities in our system.
+
 
 ## 📜 License
 
@@ -170,6 +177,4 @@ For support or collaboration:
 
 ---
 
-Would you like me to add **GitHub-style badges** (for PHP version, license, contributors, etc.) and a **Table of Contents** at the top?  
-That would make your README look like a professional open-source project page.
-```
+
