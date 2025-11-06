@@ -1,4 +1,4 @@
-#🏭 HealStock Warehouse Management System
+# 🏭 HealStock Warehouse Management System
 
 **Project Name:** Smart Inventory Management System  
 **Organization:** HealStock Pvt Ltd  
