@@ -93,17 +93,17 @@ http://localhost/HealStock-Inventory-Management-System
 ### 👨‍💼 Admin
 
 * **Username:** `prabashi`
-* **Password:** `Tg1379##`
+* **Password:** `Staff@1`
 
 ### 💰 Financial Staff
 
 * **Username:** `sahan`
-* **Password:** `Tg1379##`
+* **Password:** `Staff@1`
 
 ### 📦 Warehouse Staff
 
 * **Username:** `nimhara`
-* **Password:** `Tg1379##`
+* **Password:** `Staff@1`
 
 ---
 
